@@ -20,10 +20,10 @@ All colors MUST be HSL for consistency
     --popover: 240 10% 10%;           /* Very dark for popovers */
     --popover-foreground: 48 90% 85%; /* Gold text */
 
-    /* Primary Brand Colors - Gold Theme */
-    --primary: 48 90% 65%;            /* Rich gold primary */
-    --primary-foreground: 240 6% 8%;  /* Dark text on gold */
-    --primary-glow: 48 95% 75%;       /* Lighter gold for effects */
+    /* Primary Brand Colors - Drina Bus Green */
+    --primary: 142 76% 36%;           /* Drina Bus Green */
+    --primary-foreground: 0 0% 100%;  /* White text on green */
+    --primary-glow: 142 76% 45%;      /* Lighter green for effects */
 
     /* Secondary Colors - Warm Grays */
     --secondary: 240 8% 18%;          /* Medium dark gray */
@@ -33,9 +33,9 @@ All colors MUST be HSL for consistency
     --muted: 240 6% 16%;              /* Subtle background */
     --muted-foreground: 48 30% 65%;   /* Muted gold text */
 
-    /* Accent Colors - Amber/Orange */
-    --accent: 36 100% 60%;            /* Bright amber accent */
-    --accent-foreground: 240 6% 8%;   /* Dark text on accent */
+    /* Accent Colors - Drina Green */
+    --accent: 142 76% 45%;            /* Drina green accent */
+    --accent-foreground: 0 0% 100%;   /* White text on accent */
 
     /* Destructive Colors - Red with gold undertones */
     --destructive: 0 65% 55%;         /* Muted red */

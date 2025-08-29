@@ -1,6 +1,8 @@
+import { useState } from "react";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { 
   Bus, 
   Users, 
@@ -11,14 +13,22 @@ import {
   MapPin,
   Clock,
   CheckCircle,
-  Wrench
+  Wrench,
+  Settings,
+  FileText,
+  BarChart3
 } from "lucide-react";
+import VehicleManagement from "@/components/fleet/VehicleManagement";
+import DriverManagement from "@/components/fleet/DriverManagement";
+import RouteManagement from "@/components/routes/RouteManagement";
 
 interface DirectorDashboardProps {
   onLogout: () => void;
 }
 
 const DirectorDashboard = ({ onLogout }: DirectorDashboardProps) => {
+  const [activeTab, setActiveTab] = useState("dashboard");
+  
   // Mock data for dashboard
   const stats = {
     totalVehicles: 6,
@@ -105,11 +115,16 @@ const DirectorDashboard = ({ onLogout }: DirectorDashboardProps) => {
       {/* Header */}
       <header className="border-b border-border bg-card/50 backdrop-blur-sm sticky top-0 z-50">
         <div className="container mx-auto px-4 py-4 flex justify-between items-center">
-          <div>
-            <h1 className="text-2xl font-bold text-foreground">Dashboard - Direktor</h1>
-            <p className="text-sm text-muted-foreground">
-              Dobrodošli u Drina Bus Fleet Manager
-            </p>
+          <div className="flex items-center gap-4">
+            <div className="w-10 h-10 bg-primary rounded-lg flex items-center justify-center">
+              <Bus className="w-6 h-6 text-primary-foreground" />
+            </div>
+            <div>
+              <h1 className="text-2xl font-bold text-foreground">Drina Bus - Admin Panel</h1>
+              <p className="text-sm text-muted-foreground">
+                Fleet & Operations Manager
+              </p>
+            </div>
           </div>
           <Button variant="outline" onClick={onLogout}>
             Odjava
@@ -117,9 +132,38 @@ const DirectorDashboard = ({ onLogout }: DirectorDashboardProps) => {
         </div>
       </header>
 
-      <div className="container mx-auto p-6 space-y-6">
-        {/* Key Metrics */}
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+      <div className="container mx-auto p-6">
+        <Tabs value={activeTab} onValueChange={setActiveTab} className="space-y-6">
+          <TabsList className="grid w-full grid-cols-6">
+            <TabsTrigger value="dashboard" className="flex items-center gap-2">
+              <BarChart3 className="w-4 h-4" />
+              Dashboard
+            </TabsTrigger>
+            <TabsTrigger value="vehicles" className="flex items-center gap-2">
+              <Bus className="w-4 h-4" />
+              Vozni Park
+            </TabsTrigger>
+            <TabsTrigger value="employees" className="flex items-center gap-2">
+              <Users className="w-4 h-4" />
+              Uposlenici
+            </TabsTrigger>
+            <TabsTrigger value="routes" className="flex items-center gap-2">
+              <MapPin className="w-4 h-4" />
+              Vožnje
+            </TabsTrigger>
+            <TabsTrigger value="maintenance" className="flex items-center gap-2">
+              <Wrench className="w-4 h-4" />
+              Održavanje
+            </TabsTrigger>
+            <TabsTrigger value="reports" className="flex items-center gap-2">
+              <FileText className="w-4 h-4" />
+              Izvještaji
+            </TabsTrigger>
+          </TabsList>
+
+          <TabsContent value="dashboard" className="space-y-6">
+            {/* Key Metrics */}
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
           <Card className="border-border/50 shadow-dark">
             <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
               <CardTitle className="text-sm font-medium text-muted-foreground">
@@ -269,35 +313,93 @@ const DirectorDashboard = ({ onLogout }: DirectorDashboardProps) => {
           </Card>
         </div>
 
-        {/* Quick Actions */}
-        <Card className="border-border/50 shadow-dark">
-          <CardHeader>
-            <CardTitle className="text-foreground">Brze Akcije</CardTitle>
-            <CardDescription>
-              Najčešće korišćene funkcije
-            </CardDescription>
-          </CardHeader>
-          <CardContent>
-            <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-              <Button variant="premium" className="h-20 flex-col gap-2">
-                <Bus className="w-6 h-6" />
-                <span className="text-sm">Nova Vožnja</span>
-              </Button>
-              <Button variant="outline" className="h-20 flex-col gap-2">
-                <Users className="w-6 h-6" />
-                <span className="text-sm">Uposlenici</span>
-              </Button>
-              <Button variant="outline" className="h-20 flex-col gap-2">
-                <Wrench className="w-6 h-6" />
-                <span className="text-sm">Održavanje</span>
-              </Button>
-              <Button variant="outline" className="h-20 flex-col gap-2">
-                <TrendingUp className="w-6 h-6" />
-                <span className="text-sm">Izvještaji</span>
-              </Button>
-            </div>
-          </CardContent>
-        </Card>
+            {/* Quick Actions */}
+            <Card className="border-border/50 shadow-dark">
+              <CardHeader>
+                <CardTitle className="text-foreground">Brze Akcije</CardTitle>
+                <CardDescription>
+                  Najčešće korišćene funkcije
+                </CardDescription>
+              </CardHeader>
+              <CardContent>
+                <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+                  <Button 
+                    variant="default" 
+                    className="h-20 flex-col gap-2"
+                    onClick={() => setActiveTab("routes")}
+                  >
+                    <MapPin className="w-6 h-6" />
+                    <span className="text-sm">Nova Vožnja</span>
+                  </Button>
+                  <Button 
+                    variant="outline" 
+                    className="h-20 flex-col gap-2"
+                    onClick={() => setActiveTab("vehicles")}
+                  >
+                    <Bus className="w-6 h-6" />
+                    <span className="text-sm">Vozni Park</span>
+                  </Button>
+                  <Button 
+                    variant="outline" 
+                    className="h-20 flex-col gap-2"
+                    onClick={() => setActiveTab("employees")}
+                  >
+                    <Users className="w-6 h-6" />
+                    <span className="text-sm">Uposlenici</span>
+                  </Button>
+                  <Button 
+                    variant="outline" 
+                    className="h-20 flex-col gap-2"
+                    onClick={() => setActiveTab("reports")}
+                  >
+                    <TrendingUp className="w-6 h-6" />
+                    <span className="text-sm">Izvještaji</span>
+                  </Button>
+                </div>
+              </CardContent>
+            </Card>
+          </TabsContent>
+
+          <TabsContent value="vehicles">
+            <VehicleManagement />
+          </TabsContent>
+
+          <TabsContent value="employees">
+            <DriverManagement />
+          </TabsContent>
+
+          <TabsContent value="routes">
+            <RouteManagement />
+          </TabsContent>
+
+          <TabsContent value="maintenance">
+            <Card>
+              <CardHeader>
+                <CardTitle>Održavanje i Servisi</CardTitle>
+                <CardDescription>
+                  Upravljanje održavanjem vozila i troškovima
+                </CardDescription>
+              </CardHeader>
+              <CardContent>
+                <p className="text-muted-foreground">Modul za održavanje će biti implementiran...</p>
+              </CardContent>
+            </Card>
+          </TabsContent>
+
+          <TabsContent value="reports">
+            <Card>
+              <CardHeader>
+                <CardTitle>Izvještaji i Analitika</CardTitle>
+                <CardDescription>
+                  Finansijski i operativni izvještaji
+                </CardDescription>
+              </CardHeader>
+              <CardContent>
+                <p className="text-muted-foreground">Modul za izvještaje će biti implementiran...</p>
+              </CardContent>
+            </Card>
+          </TabsContent>
+        </Tabs>
       </div>
     </div>
   );

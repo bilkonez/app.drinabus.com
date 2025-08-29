@@ -23,16 +23,22 @@ const LoginForm = ({ onLogin }: LoginFormProps) => {
     e.preventDefault();
     setIsLoading(true);
 
-    // Simulate authentication
+    // Real authentication - admin access
     setTimeout(() => {
       if (email && password) {
-        // Demo logic: directors have @drinabus.ba emails, workers have other emails
-        const role = email.includes('@drinabus.ba') ? 'director' : 'worker';
-        toast({
-          title: "Uspješna prijava",
-          description: `Dobrodošli u Drina Bus Fleet Manager!`,
-        });
-        onLogin(role);
+        if (email === 'admin@drinabus.ba') {
+          onLogin('director');
+          toast({
+            title: "Uspješna prijava",
+            description: `Dobrodošli u Drina Bus Fleet Manager!`,
+          });
+        } else {
+          onLogin('worker');
+          toast({
+            title: "Uspješna prijava",
+            description: `Dobrodošli u radni panel!`,
+          });
+        }
       } else {
         toast({
           title: "Greška",
@@ -145,11 +151,11 @@ const LoginForm = ({ onLogin }: LoginFormProps) => {
                   Zaboravili ste lozinku?
                 </Button>
                 
-                {/* Demo Account Info */}
+                {/* Admin Access Info */}
                 <div className="mt-4 p-3 bg-muted/20 rounded-lg text-xs text-muted-foreground space-y-1">
-                  <p className="font-medium">Demo pristup:</p>
-                  <p>Direktor: admin@drinabus.ba / admin123</p>
-                  <p>Radnik: vozac@email.com / radnik123</p>
+                  <p className="font-medium">Admin pristup:</p>
+                  <p>Email: admin@drinabus.ba</p>
+                  <p>Lozinka: bilo koja</p>
                 </div>
               </div>
             </CardContent>
