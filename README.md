@@ -1,73 +1,127 @@
-# Welcome to your Lovable project
+🚌 Drina Bus Admin Panel
 
-## Project info
+Drina Bus Admin Panel je web aplikacija razvijena putem Lovable
+ i integrisana sa Supabase
+, namijenjena za upravljanje autobuskom firmom Drina Bus (Ustikolina, BiH).
+Aplikacija omogućava direktoru/administraciji da upravlja voznim parkom, uposlenicima, vožnjama, troškovima, podsjetnicima i izvještajima – sve kroz moderan i jednostavan interfejs.
 
-**URL**: https://lovable.dev/projects/d332d3fd-ba03-4e5e-b923-95886be1de04
+🚀 Funkcionalnosti
+🔐 Login & UI
 
-## How can I edit this code?
+Svijetla tema sa crno-zlatnim akcentima
 
-There are several ways of editing your application.
+Autentikacija putem Supabase Auth (email + lozinka)
 
-**Use Lovable**
+Opcija “Zapamti me” (trajna sesija ako je čekirano)
 
-Simply visit the [Lovable Project](https://lovable.dev/projects/d332d3fd-ba03-4e5e-b923-95886be1de04) and start prompting.
+Ako postoji aktivna sesija → preskok login-a
 
-Changes made via Lovable will be committed automatically to this repo.
+📅 Dashboard
 
-**Use your preferred IDE**
+Pregled aktivnih vožnji
 
-If you want to work locally using your own IDE, you can clone this repo and push changes. Pushed changes will also be reflected in Lovable.
+Status vozila (dostupno / na servisu / zauzeto)
 
-The only requirement is having Node.js & npm installed - [install with nvm](https://github.com/nvm-sh/nvm#installing-and-updating)
+Podsjetnici na dokumente i rokove
 
-Follow these steps:
+Brza statistika: broj vožnji, troškovi, prihodi, profit
 
-```sh
-# Step 1: Clone the repository using the project's Git URL.
-git clone <YOUR_GIT_URL>
+🔔 Reminder sistem
 
-# Step 2: Navigate to the project directory.
-cd <YOUR_PROJECT_NAME>
+Automatski podsjetnici 30 dana prije isteka:
 
-# Step 3: Install the necessary dependencies.
-npm i
+licence vozača
 
-# Step 4: Start the development server with auto-reloading and an instant preview.
-npm run dev
-```
+registracije vozila
 
-**Edit a file directly in GitHub**
+tehnički pregled (godišnji i 6-mjesečni)
 
-- Navigate to the desired file(s).
-- Click the "Edit" button (pencil icon) at the top right of the file view.
-- Make your changes and commit the changes.
+baždarenje tahografa
 
-**Use GitHub Codespaces**
+PP aparati
 
-- Navigate to the main page of your repository.
-- Click on the "Code" button (green button) near the top right.
-- Select the "Codespaces" tab.
-- Click on "New codespace" to launch a new Codespace environment.
-- Edit files directly within the Codespace and commit and push your changes once you're done.
+tahograf kartice uposlenika
 
-## What technologies are used for this project?
+🚍 Vozni park
 
-This project is built with:
+Evidencija vozila (marka, model, registracija, status)
 
-- Vite
-- TypeScript
-- React
-- shadcn-ui
-- Tailwind CSS
+Podsjetnici na rokove (registracija, tehnički, PP aparat)
 
-## How can I deploy this project?
+Servisi i održavanje (mali servisi, intervencije, troškovi, upload računa)
 
-Simply open [Lovable](https://lovable.dev/projects/d332d3fd-ba03-4e5e-b923-95886be1de04) and click on Share -> Publish.
+Kilometraža se ne prati (izbačeno polje)
 
-## Can I connect a custom domain to my Lovable project?
+👨‍💼 Uposlenici
 
-Yes, you can!
+Evidencija uposlenika sa statusima i ulogama
 
-To connect a domain, navigate to Project > Settings > Domains and click Connect Domain.
+Rokovi za vozačke dozvole i tahograf kartice
 
-Read more here: [Setting up a custom domain](https://docs.lovable.dev/tips-tricks/custom-domain#step-by-step-guide)
+Podsjetnici 30 dana ranije
+
+🚌 Vožnje
+
+Tipovi: linijski i vanlinijski (transfer vožnje uklonjene)
+
+Polja: relacija, datumi, vozilo, vozač, ukupna cijena, napomene
+
+Generisanje PDF dokumenata:
+
+Ugovor o prevozu
+
+Putni list
+
+Potvrda o odmoru vozača
+
+🔧 Održavanje
+
+Unos rokova: registracija, tehnički pregled (godišnji + 6-mjesečni), tahograf, PP aparati
+
+Mali servisi (ulje, filteri, ostale intervencije)
+
+Upload dokumenata i računa
+
+📊 Izvještaji & Analitika
+
+Svakodnevno ažurirani izvještaji:
+
+broj vožnji
+
+prihodi (suma ukupnih cijena)
+
+troškovi (gorivo, putarine, dnevnice, servisi)
+
+profit (prihodi – troškovi)
+
+Grafovi i tabele sa mogućnošću exporta u PDF/CSV
+
+Insights sekcija: automatski uvidi i “zanimljive činjenice”
+
+najskuplje vozilo po km
+
+vozač sa najviše vožnji
+
+ruta sa najvećim prihodom
+
+troškovi servisa kao % prihoda
+
+mjeseci kada više dokumenata ističe istovremeno
+
+trendovi rasta/pada cijena vožnji
+
+🛠️ Tehnologije
+
+Lovable
+ – low-code development platform
+
+Supabase
+ – baza podataka (PostgreSQL), autentikacija i storage
+
+Frontend: Next.js/React (automatski generisan kroz Lovable)
+
+Stil: moderni UI (svijetla tema + crno-zlatni akcenti)
+
+Projekat razvijen za Drina Bus d.o.o.
+Lokacija: Ustikolina, BiH
+Kontakt: Bilal Ćurović
