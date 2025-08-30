@@ -2,115 +2,108 @@
 @tailwind components;
 @tailwind utilities;
 
-/* Drina Bus Fleet Manager - Modern Dark & Gold Design System
+/* Drina Bus Fleet Manager - Light Theme with Black & Gold Accents
 All colors MUST be HSL for consistency
 */
 
 @layer base {
   :root {
-    /* Core Background Colors */
-    --background: 240 6% 8%;          /* Deep charcoal black */
-    --foreground: 48 90% 85%;         /* Warm gold text */
+    /* Core Background Colors - Light Theme */
+    --background: 0 0% 100%;          /* Pure white background */
+    --foreground: 240 10% 4%;         /* Almost black text */
 
     /* Card & Surface Colors */
-    --card: 240 8% 12%;               /* Slightly lighter dark surface */
-    --card-foreground: 48 90% 85%;    /* Gold text on cards */
+    --card: 0 0% 100%;                /* White cards */
+    --card-foreground: 240 10% 4%;    /* Dark text on cards */
 
     /* Popover & Dialog Colors */
-    --popover: 240 10% 10%;           /* Very dark for popovers */
-    --popover-foreground: 48 90% 85%; /* Gold text */
+    --popover: 0 0% 100%;             /* White popovers */
+    --popover-foreground: 240 10% 4%; /* Dark text */
 
     /* Primary Brand Colors - Drina Bus Green */
     --primary: 142 76% 36%;           /* Drina Bus Green */
     --primary-foreground: 0 0% 100%;  /* White text on green */
     --primary-glow: 142 76% 45%;      /* Lighter green for effects */
 
-    /* Secondary Colors - Warm Grays */
-    --secondary: 240 8% 18%;          /* Medium dark gray */
-    --secondary-foreground: 48 90% 85%; /* Gold text */
+    /* Secondary Colors - Light Grays */
+    --secondary: 240 5% 96%;          /* Very light gray */
+    --secondary-foreground: 240 10% 4%; /* Dark text */
 
     /* Muted Colors */
-    --muted: 240 6% 16%;              /* Subtle background */
-    --muted-foreground: 48 30% 65%;   /* Muted gold text */
+    --muted: 240 5% 96%;              /* Light gray background */
+    --muted-foreground: 240 4% 46%;   /* Medium gray text */
 
-    /* Accent Colors - Drina Green */
-    --accent: 142 76% 45%;            /* Drina green accent */
-    --accent-foreground: 0 0% 100%;   /* White text on accent */
+    /* Accent Colors - Gold */
+    --accent: 45 90% 50%;             /* Gold accent */
+    --accent-foreground: 240 10% 4%;  /* Dark text on gold */
 
-    /* Destructive Colors - Red with gold undertones */
-    --destructive: 0 65% 55%;         /* Muted red */
-    --destructive-foreground: 48 90% 95%; /* Light gold text */
+    /* Destructive Colors */
+    --destructive: 0 84% 60%;         /* Red */
+    --destructive-foreground: 0 0% 100%; /* White text */
 
     /* Border & Input Colors */
-    --border: 240 8% 20%;             /* Subtle borders */
-    --input: 240 8% 20%;              /* Input backgrounds */
-    --ring: 48 90% 65%;               /* Gold focus rings */
+    --border: 240 6% 90%;             /* Light borders */
+    --input: 240 6% 96%;              /* Light input backgrounds */
+    --ring: 45 90% 50%;               /* Gold focus rings */
 
-    /* Success Colors - Green with gold tint */
-    --success: 120 40% 50%;           /* Muted green */
-    --success-foreground: 48 90% 95%; /* Light text */
+    /* Success Colors */
+    --success: 142 76% 36%;           /* Drina green */
+    --success-foreground: 0 0% 100%;  /* White text */
 
     /* Warning Colors */
-    --warning: 45 90% 55%;            /* Golden yellow */
-    --warning-foreground: 240 6% 8%;  /* Dark text */
+    --warning: 45 90% 50%;            /* Gold warning */
+    --warning-foreground: 240 10% 4%; /* Dark text */
 
     /* Info Colors */
-    --info: 200 80% 60%;              /* Cool blue */
-    --info-foreground: 48 90% 95%;    /* Light text */
+    --info: 221 83% 53%;              /* Blue */
+    --info-foreground: 0 0% 100%;     /* White text */
 
     /* Design System Variables */
     --radius: 0.75rem;                /* Rounded corners */
     
     /* Gradients */
     --gradient-primary: linear-gradient(135deg, hsl(var(--primary)), hsl(var(--primary-glow)));
-    --gradient-dark: linear-gradient(180deg, hsl(var(--background)), hsl(240 8% 6%));
-    --gradient-gold: linear-gradient(45deg, hsl(48 90% 65%), hsl(45 95% 75%));
+    --gradient-light: linear-gradient(180deg, hsl(0 0% 100%), hsl(240 5% 98%));
+    --gradient-gold: linear-gradient(45deg, hsl(45 90% 50%), hsl(45 95% 60%));
     
     /* Shadows */
-    --shadow-elegant: 0 10px 30px -10px hsl(var(--primary) / 0.2);
-    --shadow-gold: 0 0 40px hsl(var(--primary-glow) / 0.15);
-    --shadow-dark: 0 4px 20px hsl(240 8% 4% / 0.4);
+    --shadow-elegant: 0 4px 25px -5px hsl(240 10% 4% / 0.1);
+    --shadow-gold: 0 0 30px hsl(45 90% 50% / 0.2);
+    --shadow-light: 0 2px 10px hsl(240 10% 4% / 0.05);
     
     /* Animations */
     --transition-smooth: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
     --transition-bounce: all 0.2s cubic-bezier(0.68, -0.55, 0.265, 1.55);
 
     --sidebar-background: 0 0% 98%;
-
     --sidebar-foreground: 240 5.3% 26.1%;
-
     --sidebar-primary: 240 5.9% 10%;
-
     --sidebar-primary-foreground: 0 0% 98%;
-
     --sidebar-accent: 240 4.8% 95.9%;
-
     --sidebar-accent-foreground: 240 5.9% 10%;
-
     --sidebar-border: 220 13% 91%;
-
     --sidebar-ring: 217.2 91.2% 59.8%;
   }
 
-  .light {
-    /* Light theme (optional fallback) */
-    --background: 48 95% 96%;
-    --foreground: 240 8% 15%;
-    --card: 48 95% 98%;
-    --card-foreground: 240 8% 15%;
-    --primary: 48 90% 45%;
-    --primary-foreground: 48 95% 98%;
-    --secondary: 240 5% 90%;
-    --secondary-foreground: 240 8% 15%;
-    --muted: 240 5% 94%;
-    --muted-foreground: 240 5% 45%;
-    --accent: 36 100% 50%;
-    --accent-foreground: 48 95% 98%;
-    --destructive: 0 65% 50%;
-    --destructive-foreground: 48 95% 98%;
-    --border: 240 5% 85%;
-    --input: 240 5% 92%;
-    --ring: 48 90% 45%;
+  .dark {
+    /* Dark theme fallback */
+    --background: 240 6% 8%;
+    --foreground: 48 90% 85%;
+    --card: 240 8% 12%;
+    --card-foreground: 48 90% 85%;
+    --primary: 142 76% 36%;
+    --primary-foreground: 0 0% 100%;
+    --secondary: 240 8% 18%;
+    --secondary-foreground: 48 90% 85%;
+    --muted: 240 6% 16%;
+    --muted-foreground: 48 30% 65%;
+    --accent: 45 90% 50%;
+    --accent-foreground: 240 6% 8%;
+    --destructive: 0 65% 55%;
+    --destructive-foreground: 48 90% 95%;
+    --border: 240 8% 20%;
+    --input: 240 8% 20%;
+    --ring: 45 90% 50%;
     --sidebar-background: 240 5.9% 10%;
     --sidebar-foreground: 240 4.8% 95.9%;
     --sidebar-primary: 224.3 76.3% 48%;
