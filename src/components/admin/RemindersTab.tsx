@@ -14,17 +14,16 @@ interface Reminder {
   ref_id: string;
 }
 
-interface UpcomingRide {
+interface TomorrowRide {
   id: string;
   label: string;
   start_date: string;
   start_time: string;
-  days_left: number;
 }
 
 const RemindersTab = () => {
   const [reminders, setReminders] = useState<Reminder[]>([]);
-  const [upcomingRides, setUpcomingRides] = useState<UpcomingRide[]>([]);
+  const [tomorrowRides, setTomorrowRides] = useState<TomorrowRide[]>([]);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
@@ -34,15 +33,25 @@ const RemindersTab = () => {
   const fetchData = async () => {
     try {
       setLoading(true);
-      const { data, error } = await supabase
+      
+      // Fetch reminders
+      const { data: reminderData, error: reminderError } = await supabase
         .from('v_reminders_due')
         .select('*')
         .order('days_left', { ascending: true });
 
-      if (error) throw error;
-      setReminders(data || []);
+      if (reminderError) throw reminderError;
+      setReminders(reminderData || []);
+
+      // Fetch tomorrow's rides
+      const { data: ridesData, error: ridesError } = await supabase
+        .from('v_tomorrow_rides')
+        .select('*');
+
+      if (ridesError) throw ridesError;
+      setTomorrowRides(ridesData || []);
     } catch (error) {
-      console.error('Error fetching reminders:', error);
+      console.error('Error fetching data:', error);
     } finally {
       setLoading(false);
     }
@@ -106,7 +115,7 @@ const RemindersTab = () => {
         <div>
           <h2 className="text-2xl font-bold">Reminderi</h2>
           <p className="text-muted-foreground">
-            Pregled svih nadolazećih rokova i vožnji (30 dana unaprijed)
+            Pregled nadolazećih rokova i sutrašnjih vožnji
           </p>
         </div>
       </div>
@@ -149,6 +158,54 @@ const RemindersTab = () => {
                   </div>
                 </div>
               ))}
+            </div>
+          )}
+        </CardContent>
+      </Card>
+
+      {/* Vožnje sutra */}
+      <Card>
+        <CardHeader>
+          <CardTitle className="flex items-center gap-2">
+            <Clock className="h-5 w-5" />
+            Vožnje sutra
+          </CardTitle>
+          <CardDescription>
+            Sve vožnje zakazane za sutra
+          </CardDescription>
+        </CardHeader>
+        <CardContent>
+          {tomorrowRides.length === 0 ? (
+            <div className="text-center py-8 text-muted-foreground">
+              <span className="text-4xl mb-4 block">🚍</span>
+              <p>Nema vožnji za sutra 🚍</p>
+            </div>
+          ) : (
+            <div className="overflow-x-auto">
+              <Table>
+                <TableHeader>
+                  <TableRow>
+                    <TableHead>Relacija</TableHead>
+                    <TableHead>Datum</TableHead>
+                    <TableHead>Sat polaska</TableHead>
+                  </TableRow>
+                </TableHeader>
+                <TableBody>
+                  {tomorrowRides.map((ride) => (
+                    <TableRow key={ride.id}>
+                      <TableCell className="font-medium">
+                        {ride.label}
+                      </TableCell>
+                      <TableCell>
+                        {formatDate(ride.start_date)}
+                      </TableCell>
+                      <TableCell>
+                        {ride.start_time}
+                      </TableCell>
+                    </TableRow>
+                  ))}
+                </TableBody>
+              </Table>
             </div>
           )}
         </CardContent>

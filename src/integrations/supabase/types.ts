@@ -69,6 +69,13 @@ export type Database = {
             referencedColumns: ["id"]
           },
           {
+            foreignKeyName: "costs_ride_id_fkey"
+            columns: ["ride_id"]
+            isOneToOne: false
+            referencedRelation: "v_tomorrow_rides"
+            referencedColumns: ["id"]
+          },
+          {
             foreignKeyName: "costs_vehicle_id_fkey"
             columns: ["vehicle_id"]
             isOneToOne: false
@@ -112,6 +119,13 @@ export type Database = {
             columns: ["ride_id"]
             isOneToOne: false
             referencedRelation: "rides"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "documents_ride_id_fkey"
+            columns: ["ride_id"]
+            isOneToOne: false
+            referencedRelation: "v_tomorrow_rides"
             referencedColumns: ["id"]
           },
         ]
@@ -413,6 +427,27 @@ export type Database = {
           kind: string | null
           ref_id: string | null
           title: string | null
+        }
+        Relationships: []
+      }
+      v_tomorrow_rides: {
+        Row: {
+          id: string | null
+          label: string | null
+          start_date: string | null
+          start_time: string | null
+        }
+        Insert: {
+          id?: string | null
+          label?: never
+          start_date?: never
+          start_time?: never
+        }
+        Update: {
+          id?: string | null
+          label?: never
+          start_date?: never
+          start_time?: never
         }
         Relationships: []
       }
