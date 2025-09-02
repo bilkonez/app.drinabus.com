@@ -91,7 +91,7 @@ const Calendar = () => {
   const fetchFilterData = useCallback(async () => {
     try {
       const [employeesResult, vehiclesResult] = await Promise.all([
-        supabase.from('employees').select('id, first_name, last_name').eq('active', true),
+        supabase.from('v_employees_with_roles').select('id, first_name, last_name').eq('is_vozac', true).eq('active', true),
         supabase.from('vehicles').select('id, registration, brand, model').eq('status', 'dostupno')
       ]);
 

@@ -130,6 +130,46 @@ export type Database = {
           },
         ]
       }
+      employee_roles: {
+        Row: {
+          created_at: string | null
+          employee_id: string
+          role_id: string
+        }
+        Insert: {
+          created_at?: string | null
+          employee_id: string
+          role_id: string
+        }
+        Update: {
+          created_at?: string | null
+          employee_id?: string
+          role_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "employee_roles_employee_id_fkey"
+            columns: ["employee_id"]
+            isOneToOne: false
+            referencedRelation: "employees"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "employee_roles_employee_id_fkey"
+            columns: ["employee_id"]
+            isOneToOne: false
+            referencedRelation: "v_employees_with_roles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "employee_roles_role_id_fkey"
+            columns: ["role_id"]
+            isOneToOne: false
+            referencedRelation: "roles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       employees: {
         Row: {
           active: boolean | null
@@ -322,6 +362,13 @@ export type Database = {
             referencedColumns: ["id"]
           },
           {
+            foreignKeyName: "rides_driver_id_fkey"
+            columns: ["driver_id"]
+            isOneToOne: false
+            referencedRelation: "v_employees_with_roles"
+            referencedColumns: ["id"]
+          },
+          {
             foreignKeyName: "rides_vehicle_id_fkey"
             columns: ["vehicle_id"]
             isOneToOne: false
@@ -336,6 +383,18 @@ export type Database = {
             referencedColumns: ["id"]
           },
         ]
+      }
+      roles: {
+        Row: {
+          id: string
+        }
+        Insert: {
+          id: string
+        }
+        Update: {
+          id?: string
+        }
+        Relationships: []
       }
       vehicle_deadlines: {
         Row: {
@@ -496,6 +555,28 @@ export type Database = {
           profit_total: number | null
           revenue_total: number | null
           rides_count: number | null
+        }
+        Relationships: []
+      }
+      v_employees_with_roles: {
+        Row: {
+          active: boolean | null
+          created_at: string | null
+          email: string | null
+          first_name: string | null
+          id: string | null
+          is_mehanicar: boolean | null
+          is_operativa: boolean | null
+          is_vozac: boolean | null
+          last_name: string | null
+          license_expiry: string | null
+          notes: string | null
+          phone: string | null
+          role: string | null
+          roles_array: string[] | null
+          roles_csv: string | null
+          tachograph_card_expiry: string | null
+          updated_at: string | null
         }
         Relationships: []
       }

@@ -129,9 +129,9 @@ const RideManagement = () => {
   const fetchEmployees = async () => {
     try {
       const { data, error } = await supabase
-        .from('employees')
+        .from('v_employees_with_roles')
         .select('id, first_name, last_name')
-        .eq('role', 'vozac')
+        .eq('is_vozac', true)
         .eq('active', true)
         .order('last_name');
 
