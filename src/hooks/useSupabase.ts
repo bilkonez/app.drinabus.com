@@ -79,7 +79,7 @@ export const useSupabase = ({ table, onSuccess, onError }: UseSupabaseOptions) =
   const updateRecord = useCallback(async (id: string, updates: any) => {
     setLoading(true);
     try {
-      const { data: result, error } = await supabase
+      const { data: result, error } = await (supabase as any)
         .from(table)
         .update(updates)
         .eq('id', id)
@@ -113,7 +113,7 @@ export const useSupabase = ({ table, onSuccess, onError }: UseSupabaseOptions) =
   const deleteRecord = useCallback(async (id: string) => {
     setLoading(true);
     try {
-      const { error } = await supabase
+      const { error } = await (supabase as any)
         .from(table)
         .delete()
         .eq('id', id);
