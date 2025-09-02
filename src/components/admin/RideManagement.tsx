@@ -8,7 +8,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 import { Badge } from "@/components/ui/badge";
-import { Plus, Edit, Trash2, Route, FileText } from "lucide-react";
+import { Plus, Edit, Trash2, Route, FileText, X } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "@/hooks/use-toast";
 
@@ -43,8 +43,7 @@ interface Employee {
 
 interface RideSegment {
   id?: string;
-  segment_start: string;
-  segment_end?: string;
+  start_time: string; // samo vrijeme (HH:MM)
   origin: string;
   destination: string;
   vehicle_id: string | null;
@@ -64,6 +63,7 @@ const RideManagement = () => {
     origin: "",
     destination: "",
     start_at: "",
+    ride_date: "", // novi field za datum lokal vožnje
     vehicle_id: "",
     driver_id: "",
     total_price: "",
@@ -194,10 +194,12 @@ const RideManagement = () => {
           
           // Insert new segments
           if (segments.length > 0) {
+            const rideDate = formData.ride_date || new Date().toISOString().split('T')[0];
+            
             const segmentData = segments.map(segment => ({
               ride_id: rideId,
-              segment_start: segment.segment_start,
-              segment_end: segment.segment_end || null,
+              segment_start: `${rideDate}T${segment.start_time}:00`,
+              segment_end: null,
               origin: segment.origin,
               destination: segment.destination,
               vehicle_id: segment.vehicle_id || null,
@@ -231,7 +233,7 @@ const RideManagement = () => {
         if (formData.ride_type === 'lokal' && segments.length > 0) {
           // Validate segments before inserting
           const validSegments = segments.filter(segment => 
-            segment.segment_start && 
+            segment.start_time && 
             segment.origin && 
             segment.destination
           );
@@ -243,17 +245,20 @@ const RideManagement = () => {
           if (validSegments.length === 0) {
             toast({
               title: "Greška",
-              description: "Morate dodati barem jedan valjan segment sa datumom početka, polazištem i odredištem",
+              description: "Morate dodati barem jedan valjan segment sa vremenom početka, polazištem i odredištem",
               variant: "destructive",
             });
             setLoading(false);
             return;
           }
 
+          // Combine ride date with segment start time
+          const rideDate = formData.ride_date || new Date().toISOString().split('T')[0];
+          
           const segmentData = validSegments.map(segment => ({
             ride_id: rideId,
-            segment_start: segment.segment_start,
-            segment_end: segment.segment_end || null,
+            segment_start: `${rideDate}T${segment.start_time}:00`,
+            segment_end: null, // Ne koristimo više end time
             origin: segment.origin,
             destination: segment.destination,
             vehicle_id: segment.vehicle_id || null,
@@ -329,6 +334,7 @@ const RideManagement = () => {
         origin: ride.origin,
         destination: ride.destination,
         start_at: ride.start_at || "",
+        ride_date: "",
         vehicle_id: ride.vehicle_id || "",
         driver_id: ride.driver_id || "",
         total_price: ride.total_price?.toString() || "",
@@ -341,14 +347,19 @@ const RideManagement = () => {
         const rideSegments = await fetchRideSegments(ride.id);
         setSegments(rideSegments.map(segment => ({
           id: segment.id,
-          segment_start: segment.segment_start,
-          segment_end: segment.segment_end || "",
+          start_time: new Date(segment.segment_start).toTimeString().slice(0, 5), // Extract HH:MM
           origin: segment.origin,
           destination: segment.destination,
           vehicle_id: segment.vehicle_id,
           segment_price: segment.segment_price,
           notes: segment.notes || "",
         })));
+        
+        // Set ride date from first segment
+        if (rideSegments.length > 0) {
+          const rideDate = new Date(rideSegments[0].segment_start).toISOString().split('T')[0];
+          setFormData(prev => ({ ...prev, ride_date: rideDate }));
+        }
       } else {
         setSegments([]);
       }
@@ -365,6 +376,7 @@ const RideManagement = () => {
       origin: "",
       destination: "",
       start_at: "",
+      ride_date: "",
       vehicle_id: "",
       driver_id: "",
       total_price: "",
@@ -377,8 +389,7 @@ const RideManagement = () => {
 
   const addSegment = () => {
     setSegments([...segments, {
-      segment_start: "",
-      segment_end: "",
+      start_time: "",
       origin: "",
       destination: "",
       vehicle_id: null,
@@ -625,69 +636,71 @@ const RideManagement = () => {
               )}
 
               {formData.ride_type === 'lokal' && (
-                <div className="space-y-4">
-                  <div className="flex items-center justify-between">
-                    <Label>Segmenti vožnje</Label>
-                    <Button type="button" onClick={addSegment} size="sm" variant="outline">
-                      <Plus className="h-4 w-4 mr-1" />
-                      Dodaj segment
-                    </Button>
+                <>
+                  <div className="space-y-2">
+                    <Label htmlFor="ride_date">Datum vožnje *</Label>
+                    <Input
+                      id="ride_date"
+                      type="date"
+                      value={formData.ride_date}
+                      onChange={(e) => setFormData({...formData, ride_date: e.target.value})}
+                      required
+                    />
                   </div>
-                  
-                  {segments.map((segment, index) => (
-                    <div key={index} className="border rounded-lg p-3 space-y-3">
-                      <div className="flex items-center justify-between">
-                        <span className="text-sm font-medium">Segment {index + 1}</span>
-                        <Button 
-                          type="button" 
-                          onClick={() => removeSegment(index)} 
-                          size="sm" 
-                          variant="outline"
-                        >
-                          <Trash2 className="h-4 w-4" />
-                        </Button>
-                      </div>
-                      
-                      <div className="grid grid-cols-2 gap-2">
+
+                  <div className="space-y-4">
+                    <div className="flex items-center justify-between">
+                      <Label className="text-base font-semibold">Segmenti vožnje</Label>
+                      <Button type="button" onClick={addSegment} size="sm">
+                        <Plus className="h-4 w-4 mr-1" />
+                        Dodaj segment
+                      </Button>
+                    </div>
+                    
+                    {segments.map((segment, index) => (
+                      <div key={index} className="border rounded-lg p-4 space-y-3 bg-muted/30">
+                        <div className="flex items-center justify-between">
+                          <span className="text-sm font-medium">Segment {index + 1}</span>
+                          <Button
+                            type="button"
+                            variant="ghost"
+                            size="sm"
+                            onClick={() => removeSegment(index)}
+                          >
+                            <X className="h-4 w-4" />
+                          </Button>
+                        </div>
+                        
                         <div>
-                          <Label className="text-xs">Polazak *</Label>
+                          <Label className="text-xs">Vrijeme početka *</Label>
                           <Input
-                            type="datetime-local"
-                            value={segment.segment_start}
-                            onChange={(e) => updateSegment(index, 'segment_start', e.target.value)}
+                            type="time"
+                            value={segment.start_time}
+                            onChange={(e) => updateSegment(index, 'start_time', e.target.value)}
                             required
                           />
                         </div>
-                        <div>
-                          <Label className="text-xs">Završetak</Label>
-                          <Input
-                            type="datetime-local"
-                            value={segment.segment_end || ""}
-                            onChange={(e) => updateSegment(index, 'segment_end', e.target.value)}
-                          />
+                        
+                        <div className="grid grid-cols-2 gap-2">
+                          <div>
+                            <Label className="text-xs">Polazište *</Label>
+                            <Input
+                              value={segment.origin}
+                              onChange={(e) => updateSegment(index, 'origin', e.target.value)}
+                              placeholder="Sarajevo"
+                              required
+                            />
+                          </div>
+                          <div>
+                            <Label className="text-xs">Odredište *</Label>
+                            <Input
+                              value={segment.destination}
+                              onChange={(e) => updateSegment(index, 'destination', e.target.value)}
+                              placeholder="Beograd"
+                              required
+                            />
+                          </div>
                         </div>
-                      </div>
-                      
-                      <div className="grid grid-cols-2 gap-2">
-                        <div>
-                          <Label className="text-xs">Polazište *</Label>
-                          <Input
-                            value={segment.origin}
-                            onChange={(e) => updateSegment(index, 'origin', e.target.value)}
-                            placeholder="Sarajevo"
-                            required
-                          />
-                        </div>
-                        <div>
-                          <Label className="text-xs">Odredište *</Label>
-                          <Input
-                            value={segment.destination}
-                            onChange={(e) => updateSegment(index, 'destination', e.target.value)}
-                            placeholder="Beograd"
-                            required
-                          />
-                        </div>
-                      </div>
                       
                       <div className="grid grid-cols-2 gap-2">
                         <div>
@@ -728,10 +741,11 @@ const RideManagement = () => {
                           placeholder="Napomene za segment..."
                         />
                       </div>
-                    </div>
-                  ))}
-                </div>
-              )}
+                       </div>
+                     ))}
+                   </div>
+                 </>
+               )}
 
               <div className="space-y-2">
                 <Label htmlFor="driver_id">Vozač</Label>
