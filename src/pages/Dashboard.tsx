@@ -1,4 +1,5 @@
 import { useState, useEffect } from "react";
+import { useNavigate } from "react-router-dom";
 import { useAuth } from "@/contexts/AuthContext";
 import { supabase } from "@/integrations/supabase/client";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
@@ -23,7 +24,7 @@ import RideManagement from "@/components/admin/RideManagement";
 import MaintenanceManagement from "@/components/admin/MaintenanceManagement";
 import RemindersTab from "@/components/admin/RemindersTab";
 import ReportsTab from "@/components/admin/ReportsTab";
-import CalendarPage from "@/pages/Calendar";
+
 const logoImage = "/lovable-uploads/6dd2d576-8aab-4bef-bf5a-0c7d8a00f49f.png";
 
 interface Reminder {
@@ -50,6 +51,7 @@ interface DashboardStats {
 
 const Dashboard = () => {
   const { user } = useAuth();
+  const navigate = useNavigate();
   const [activeTab, setActiveTab] = useState("overview");
   const [reminders, setReminders] = useState<Reminder[]>([]);
   const [tomorrowRides, setTomorrowRides] = useState<TomorrowRide[]>([]);
@@ -219,6 +221,16 @@ const Dashboard = () => {
           </div>
           
           <div className="flex items-center gap-2 md:gap-3">
+            <Button 
+              variant="ghost" 
+              size="sm" 
+              onClick={() => navigate('/calendar')}
+              className="text-xs"
+            >
+              <CalendarIcon className="h-3 w-3 md:h-4 md:w-4 mr-1 md:mr-2" />
+              <span className="hidden sm:inline">Kalendar</span>
+              <span className="sm:hidden">Cal</span>
+            </Button>
             <span className="hidden md:inline text-xs md:text-sm text-muted-foreground truncate max-w-32">
               {user?.email}
             </span>
@@ -234,16 +246,11 @@ const Dashboard = () => {
       <div className="container mx-auto px-4 py-6">
         <Tabs value={activeTab} onValueChange={setActiveTab} className="space-y-4 md:space-y-6">
           <div className="overflow-x-auto">
-            <TabsList className="grid w-full min-w-[800px] md:min-w-0 grid-cols-8 text-xs md:text-sm">
+            <TabsList className="grid w-full min-w-[700px] md:min-w-0 grid-cols-7 text-xs md:text-sm">
               <TabsTrigger value="overview" className="flex items-center gap-1 md:gap-2 px-2 md:px-4">
                 <TrendingUp className="h-3 w-3 md:h-4 md:w-4" />
                 <span className="hidden sm:inline">Pregled</span>
                 <span className="sm:hidden">Home</span>
-              </TabsTrigger>
-              <TabsTrigger value="calendar" className="flex items-center gap-1 md:gap-2 px-2 md:px-4">
-                <CalendarIcon className="h-3 w-3 md:h-4 md:w-4" />
-                <span className="hidden sm:inline">Kalendar</span>
-                <span className="sm:hidden">Cal</span>
               </TabsTrigger>
               <TabsTrigger value="vehicles" className="flex items-center gap-1 md:gap-2 px-2 md:px-4">
                 <Bus className="h-3 w-3 md:h-4 md:w-4" />
@@ -439,9 +446,6 @@ const Dashboard = () => {
             </div>
           </TabsContent>
 
-          <TabsContent value="calendar">
-            <CalendarPage />
-          </TabsContent>
 
           <TabsContent value="vehicles">
             <VehicleManagement />
