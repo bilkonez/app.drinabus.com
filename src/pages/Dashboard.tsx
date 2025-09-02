@@ -119,11 +119,12 @@ const Dashboard = () => {
 
       if (vehiclesError) throw vehiclesError;
 
-      // Fetch today's rides
+      // Fetch today's completed rides
       const today = new Date().toISOString().split('T')[0];
       const { data: ridesToday, error: ridesTodayError } = await supabase
         .from('rides')
         .select('id')
+        .eq('status', 'zavrseno')
         .gte('start_at', today)
         .lt('start_at', new Date(Date.now() + 24 * 60 * 60 * 1000).toISOString().split('T')[0]);
 
@@ -306,11 +307,11 @@ const Dashboard = () => {
 
               <Card>
                 <CardHeader className="pb-3">
-                  <CardTitle className="text-base">Vožnje danas</CardTitle>
+                  <CardTitle className="text-base">Završene vožnje danas</CardTitle>
                 </CardHeader>
                 <CardContent>
                   <div className="text-2xl font-bold text-foreground">{stats.rides_today}</div>
-                  <p className="text-xs text-muted-foreground">zakazano/završeno</p>
+                  <p className="text-xs text-muted-foreground">završeno danas</p>
                 </CardContent>
               </Card>
 
