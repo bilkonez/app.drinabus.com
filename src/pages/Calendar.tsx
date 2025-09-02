@@ -469,7 +469,7 @@ const Calendar = () => {
                 onView={setCurrentView}
                 onNavigate={setCurrentDate}
                 messages={messages}
-                formats={{
+                  formats={{
                   timeGutterFormat: 'HH:mm',
                   eventTimeRangeFormat: ({ start, end }, culture, localizer) =>
                     moment(start).format('HH:mm') + ' - ' + moment(end).format('HH:mm'),
