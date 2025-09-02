@@ -873,16 +873,18 @@ const RideManagement = () => {
                             </Badge>
                           </TableCell>
                            <TableCell>
-                             <div className="text-sm">
-                                {rideDate.toLocaleDateString('en-GB', { day: '2-digit', month: '2-digit', year: 'numeric' })}
-                               <div className="text-muted-foreground">
-                                  {rideDate.toLocaleTimeString('en-GB', { 
-                                    hour: '2-digit', 
-                                    minute: '2-digit',
-                                    hour12: false 
-                                  })}
-                               </div>
-                             </div>
+                              <div className="text-sm">
+                                 {rideDate.toLocaleDateString('en-GB', { day: '2-digit', month: '2-digit', year: 'numeric' })}
+                                <div className="text-muted-foreground">
+                                  {ride.ride_type === 'lokal' ? 'Više segmenata' : 
+                                   rideDate.toLocaleTimeString('en-GB', { 
+                                     hour: '2-digit', 
+                                     minute: '2-digit',
+                                     hour12: false 
+                                   })
+                                  }
+                                </div>
+                              </div>
                            </TableCell>
                            <TableCell className="text-sm">
                              {ride.ride_type === 'lokal' ? 'Lokal prevoz' : getVehicleName(ride.vehicle_id)}
