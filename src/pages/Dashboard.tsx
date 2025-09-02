@@ -209,73 +209,83 @@ const Dashboard = () => {
       {/* Header */}
       <header className="border-b bg-card/50 backdrop-blur-sm sticky top-0 z-50">
         <div className="container mx-auto px-4 py-3 flex items-center justify-between">
-          <div className="flex items-center gap-3">
-            <img src={logoImage} alt="Drina Bus Logo" className="h-10 w-auto" />
-            <div>
-              <h1 className="text-xl font-bold text-foreground">Drina Bus</h1>
-              <p className="text-sm text-muted-foreground">Upravljanje voznim parkom</p>
+          <div className="flex items-center gap-2 md:gap-3">
+            <img src={logoImage} alt="Drina Bus Logo" className="h-8 md:h-10 w-auto" />
+            <div className="hidden sm:block">
+              <h1 className="text-lg md:text-xl font-bold text-foreground">Drina Bus</h1>
+              <p className="text-xs md:text-sm text-muted-foreground">Upravljanje voznim parkom</p>
             </div>
           </div>
           
-          <div className="flex items-center gap-3">
-            <span className="text-sm text-muted-foreground">
+          <div className="flex items-center gap-2 md:gap-3">
+            <span className="hidden md:inline text-xs md:text-sm text-muted-foreground truncate max-w-32">
               {user?.email}
             </span>
-            <Button variant="outline" size="sm" onClick={handleLogout}>
-              <LogOut className="h-4 w-4 mr-2" />
-              Odjava
+            <Button variant="outline" size="sm" onClick={handleLogout} className="text-xs">
+              <LogOut className="h-3 w-3 md:h-4 md:w-4 mr-1 md:mr-2" />
+              <span className="hidden sm:inline">Odjava</span>
+              <span className="sm:hidden">Exit</span>
             </Button>
           </div>
         </div>
       </header>
 
       <div className="container mx-auto px-4 py-6">
-        <Tabs value={activeTab} onValueChange={setActiveTab} className="space-y-6">
-          <TabsList className="grid w-full grid-cols-7">
-            <TabsTrigger value="overview" className="flex items-center gap-2">
-              <TrendingUp className="h-4 w-4" />
-              Pregled
-            </TabsTrigger>
-            <TabsTrigger value="vehicles" className="flex items-center gap-2">
-              <Bus className="h-4 w-4" />
-              Vozni park
-            </TabsTrigger>
-            <TabsTrigger value="employees" className="flex items-center gap-2">
-              <Users className="h-4 w-4" />
-              Uposlenici
-            </TabsTrigger>
-            <TabsTrigger value="rides" className="flex items-center gap-2">
-              <Route className="h-4 w-4" />
-              Vožnje
-            </TabsTrigger>
-            <TabsTrigger value="maintenance" className="flex items-center gap-2">
-              <Settings className="h-4 w-4" />
-              Održavanje
-            </TabsTrigger>
-            <TabsTrigger value="reminders" className="flex items-center gap-2">
-              <Calendar className="h-4 w-4" />
-              Reminderi
-            </TabsTrigger>
-            <TabsTrigger value="reports" className="flex items-center gap-2">
-              <FileText className="h-4 w-4" />
-              Izvještaji
-            </TabsTrigger>
-          </TabsList>
+        <Tabs value={activeTab} onValueChange={setActiveTab} className="space-y-4 md:space-y-6">
+          <div className="overflow-x-auto">
+            <TabsList className="grid w-full min-w-[700px] md:min-w-0 grid-cols-7 text-xs md:text-sm">
+              <TabsTrigger value="overview" className="flex items-center gap-1 md:gap-2 px-2 md:px-4">
+                <TrendingUp className="h-3 w-3 md:h-4 md:w-4" />
+                <span className="hidden sm:inline">Pregled</span>
+                <span className="sm:hidden">Home</span>
+              </TabsTrigger>
+              <TabsTrigger value="vehicles" className="flex items-center gap-1 md:gap-2 px-2 md:px-4">
+                <Bus className="h-3 w-3 md:h-4 md:w-4" />
+                <span className="hidden sm:inline">Vozni park</span>
+                <span className="sm:hidden">Vozila</span>
+              </TabsTrigger>
+              <TabsTrigger value="employees" className="flex items-center gap-1 md:gap-2 px-2 md:px-4">
+                <Users className="h-3 w-3 md:h-4 md:w-4" />
+                <span className="hidden sm:inline">Uposlenici</span>
+                <span className="sm:hidden">Tim</span>
+              </TabsTrigger>
+              <TabsTrigger value="rides" className="flex items-center gap-1 md:gap-2 px-2 md:px-4">
+                <Route className="h-3 w-3 md:h-4 md:w-4" />
+                <span className="hidden lg:inline">Vožnje</span>
+                <span className="lg:hidden">Rute</span>
+              </TabsTrigger>
+              <TabsTrigger value="maintenance" className="flex items-center gap-1 md:gap-2 px-2 md:px-4">
+                <Settings className="h-3 w-3 md:h-4 md:w-4" />
+                <span className="hidden lg:inline">Održavanje</span>
+                <span className="lg:hidden">Servis</span>
+              </TabsTrigger>
+              <TabsTrigger value="reminders" className="flex items-center gap-1 md:gap-2 px-2 md:px-4">
+                <Calendar className="h-3 w-3 md:h-4 md:w-4" />
+                <span className="hidden lg:inline">Reminderi</span>
+                <span className="lg:hidden">Alert</span>
+              </TabsTrigger>
+              <TabsTrigger value="reports" className="flex items-center gap-1 md:gap-2 px-2 md:px-4">
+                <FileText className="h-3 w-3 md:h-4 md:w-4" />
+                <span className="hidden lg:inline">Izvještaji</span>
+                <span className="lg:hidden">Rep.</span>
+              </TabsTrigger>
+            </TabsList>
+          </div>
 
           <TabsContent value="overview" className="space-y-6">
             {/* Hero with Bus Images */}
-            <div className="relative rounded-lg overflow-hidden bg-gradient-to-r from-primary to-primary/80 text-primary-foreground p-8">
-              <div className="flex items-center justify-between">
+            <div className="relative rounded-lg overflow-hidden bg-gradient-to-r from-primary to-primary/80 text-primary-foreground p-4 md:p-8">
+              <div className="flex flex-col md:flex-row items-start md:items-center justify-between gap-4">
                 <div className="space-y-2">
-                  <h2 className="text-3xl font-bold">Dobrodošli nazad</h2>
-                  <p className="text-primary-foreground/90">
+                  <h2 className="text-xl md:text-3xl font-bold">Dobrodošli nazad</h2>
+                  <p className="text-sm md:text-base text-primary-foreground/90">
                     Upravljajte vašim voznim parkom efikasno i profesionalno
                   </p>
                 </div>
                 {busImages.length > 0 && (
-                  <div className="hidden md:flex gap-2">
+                  <div className="flex gap-2 w-full md:w-auto justify-end">
                     {busImages.slice(0, 3).map((image, index) => (
-                      <div key={index} className="w-24 h-16 rounded-lg overflow-hidden">
+                      <div key={index} className="w-16 h-12 md:w-24 md:h-16 rounded-lg overflow-hidden flex-shrink-0">
                         <img 
                           src={image} 
                           alt={`Bus ${index + 1}`}
@@ -289,16 +299,17 @@ const Dashboard = () => {
             </div>
 
             {/* Stats Cards */}
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+            <div className="grid grid-cols-2 md:grid-cols-4 gap-3 md:gap-6">
               <Card>
-                <CardHeader className="pb-3">
-                  <CardTitle className="text-base flex items-center gap-2">
-                    <Bus className="h-4 w-4" />
-                    Vozila ukupno
+                <CardHeader className="pb-2 md:pb-3">
+                  <CardTitle className="text-xs md:text-base flex items-center gap-1 md:gap-2">
+                    <Bus className="h-3 w-3 md:h-4 md:w-4" />
+                    <span className="hidden sm:inline">Vozila ukupno</span>
+                    <span className="sm:hidden">Vozila</span>
                   </CardTitle>
                 </CardHeader>
                 <CardContent>
-                  <div className="text-2xl font-bold text-foreground">{stats.vehicles_total}</div>
+                  <div className="text-lg md:text-2xl font-bold text-foreground">{stats.vehicles_total}</div>
                   <p className="text-xs text-muted-foreground">
                     {stats.vehicles_active} aktivno
                   </p>
@@ -306,40 +317,49 @@ const Dashboard = () => {
               </Card>
 
               <Card>
-                <CardHeader className="pb-3">
-                  <CardTitle className="text-base">Završene vožnje danas</CardTitle>
+                <CardHeader className="pb-2 md:pb-3">
+                  <CardTitle className="text-xs md:text-base">
+                    <span className="hidden sm:inline">Završene vožnje danas</span>
+                    <span className="sm:hidden">Danas</span>
+                  </CardTitle>
                 </CardHeader>
                 <CardContent>
-                  <div className="text-2xl font-bold text-foreground">{stats.rides_today}</div>
-                  <p className="text-xs text-muted-foreground">završeno danas</p>
+                  <div className="text-lg md:text-2xl font-bold text-foreground">{stats.rides_today}</div>
+                  <p className="text-xs text-muted-foreground">završeno</p>
                 </CardContent>
               </Card>
 
               <Card>
-                <CardHeader className="pb-3">
-                  <CardTitle className="text-base">Prihod mjesečno</CardTitle>
+                <CardHeader className="pb-2 md:pb-3">
+                  <CardTitle className="text-xs md:text-base">
+                    <span className="hidden sm:inline">Prihod mjesečno</span>
+                    <span className="sm:hidden">Prihod</span>
+                  </CardTitle>
                 </CardHeader>
                 <CardContent>
-                  <div className="text-2xl font-bold text-foreground">
-                    {stats.revenue_monthly.toFixed(2)} KM
+                  <div className="text-sm md:text-2xl font-bold text-foreground">
+                    {stats.revenue_monthly.toFixed(0)} KM
                   </div>
-                  <p className="text-xs text-muted-foreground">tekući mjesec</p>
+                  <p className="text-xs text-muted-foreground">mjesec</p>
                 </CardContent>
               </Card>
 
               <Card>
-                <CardHeader className="pb-3">
-                  <CardTitle className="text-base">Vožnje mjesečno</CardTitle>
+                <CardHeader className="pb-2 md:pb-3">
+                  <CardTitle className="text-xs md:text-base">
+                    <span className="hidden sm:inline">Vožnje mjesečno</span>
+                    <span className="sm:hidden">Mjesec</span>
+                  </CardTitle>
                 </CardHeader>
                 <CardContent>
-                  <div className="text-2xl font-bold text-foreground">{stats.rides_monthly}</div>
-                  <p className="text-xs text-muted-foreground">tekući mjesec</p>
+                  <div className="text-lg md:text-2xl font-bold text-foreground">{stats.rides_monthly}</div>
+                  <p className="text-xs text-muted-foreground">vožnji</p>
                 </CardContent>
               </Card>
             </div>
 
             {/* Reminders and Tomorrow's Rides */}
-            <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+            <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 md:gap-6">
               {/* Reminders */}
               <Card>
                 <CardHeader>
@@ -353,17 +373,17 @@ const Dashboard = () => {
                 </CardHeader>
                 <CardContent>
                   {reminders.length > 0 ? (
-                    <div className="space-y-3 max-h-64 overflow-y-auto">
+                    <div className="space-y-2 md:space-y-3 max-h-64 overflow-y-auto">
                       {reminders.map((reminder, index) => (
-                        <div key={index} className="flex items-center justify-between p-3 border rounded-lg">
-                          <div>
-                            <p className="font-medium text-foreground text-sm">{reminder.title}</p>
+                        <div key={index} className="flex items-center justify-between p-2 md:p-3 border rounded-lg">
+                          <div className="flex-1 min-w-0">
+                            <p className="font-medium text-foreground text-xs md:text-sm truncate">{reminder.title}</p>
                             <p className="text-xs text-muted-foreground">
-                              Ističe: {new Date(reminder.expiry_date).toLocaleDateString('en-GB')}
+                              {new Date(reminder.expiry_date).toLocaleDateString('en-GB')}
                             </p>
                           </div>
-                          <Badge variant={reminder.days_left <= 7 ? "destructive" : "secondary"} className="text-xs">
-                            {reminder.days_left} dana
+                          <Badge variant={reminder.days_left <= 7 ? "destructive" : "secondary"} className="text-xs ml-2 flex-shrink-0">
+                            {reminder.days_left}d
                           </Badge>
                         </div>
                       ))}
@@ -387,16 +407,16 @@ const Dashboard = () => {
                 </CardHeader>
                 <CardContent>
                   {tomorrowRides.length > 0 ? (
-                    <div className="space-y-3 max-h-64 overflow-y-auto">
+                    <div className="space-y-2 md:space-y-3 max-h-64 overflow-y-auto">
                       {tomorrowRides.map((ride) => (
-                        <div key={ride.id} className="flex items-center justify-between p-3 border rounded-lg">
-                          <div>
-                            <p className="font-medium text-foreground text-sm">{ride.label}</p>
+                        <div key={ride.id} className="flex items-center justify-between p-2 md:p-3 border rounded-lg">
+                          <div className="flex-1 min-w-0">
+                            <p className="font-medium text-foreground text-xs md:text-sm truncate">{ride.label}</p>
                             <p className="text-xs text-muted-foreground">
                               {new Date(ride.start_date).toLocaleDateString('en-GB')}
                             </p>
                           </div>
-                          <Badge variant="outline" className="text-xs">
+                          <Badge variant="outline" className="text-xs ml-2 flex-shrink-0">
                             {ride.start_time}
                           </Badge>
                         </div>
