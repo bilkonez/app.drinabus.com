@@ -8,6 +8,7 @@ import AuthGuard from "@/components/auth/AuthGuard";
 import Home from "./pages/Home";
 import Login from "./pages/Login";
 import Dashboard from "./pages/Dashboard";
+import Calendar from "./pages/Calendar";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
@@ -27,6 +28,14 @@ const App = () => (
               element={
                 <AuthGuard requireAdmin>
                   <Dashboard />
+                </AuthGuard>
+              } 
+            />
+            <Route 
+              path="/calendar" 
+              element={
+                <AuthGuard requireAdmin>
+                  <Calendar />
                 </AuthGuard>
               } 
             />

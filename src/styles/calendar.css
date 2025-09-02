@@ -1,0 +1,173 @@
+/* Custom Calendar Styles */
+.rbc-calendar {
+  background: hsl(var(--background));
+  color: hsl(var(--foreground));
+  font-family: inherit;
+}
+
+.rbc-toolbar {
+  margin-bottom: 20px;
+  padding: 10px;
+  border-bottom: 1px solid hsl(var(--border));
+}
+
+.rbc-toolbar button {
+  background: hsl(var(--background));
+  border: 1px solid hsl(var(--border));
+  color: hsl(var(--foreground));
+  padding: 8px 16px;
+  border-radius: 6px;
+  margin: 0 2px;
+  transition: all 0.2s;
+}
+
+.rbc-toolbar button:hover {
+  background: hsl(var(--muted));
+}
+
+.rbc-toolbar button.rbc-active {
+  background: hsl(var(--primary));
+  color: hsl(var(--primary-foreground));
+  border-color: hsl(var(--primary));
+}
+
+.rbc-header {
+  background: hsl(var(--muted));
+  border-bottom: 1px solid hsl(var(--border));
+  padding: 10px 5px;
+  font-weight: 500;
+}
+
+.rbc-date-cell {
+  text-align: right;
+  padding: 5px 10px;
+}
+
+.rbc-today {
+  background-color: hsl(var(--primary) / 0.1);
+}
+
+.rbc-current-time-indicator {
+  background-color: hsl(var(--destructive));
+  height: 2px;
+}
+
+.rbc-timeslot-group {
+  border-bottom: 1px solid hsl(var(--border));
+}
+
+.rbc-time-slot {
+  border-top: 1px solid hsl(var(--border));
+}
+
+.rbc-day-slot .rbc-time-slot {
+  border-top: 1px solid hsl(var(--border) / 0.3);
+}
+
+.rbc-time-view .rbc-allday-cell {
+  border-bottom: 1px solid hsl(var(--border));
+}
+
+.rbc-month-view .rbc-date-cell {
+  border-right: 1px solid hsl(var(--border));
+}
+
+.rbc-month-view .rbc-date-cell.rbc-off-range {
+  color: hsl(var(--muted-foreground));
+}
+
+.rbc-time-header-content {
+  border-left: 1px solid hsl(var(--border));
+}
+
+.rbc-time-content {
+  border-left: 1px solid hsl(var(--border));
+}
+
+.rbc-event {
+  border-radius: 4px;
+  padding: 2px 4px;
+  font-size: 12px;
+  border: none !important;
+  cursor: pointer;
+}
+
+.rbc-event:hover {
+  opacity: 0.8;
+}
+
+.rbc-event.rbc-selected {
+  box-shadow: 0 0 0 2px hsl(var(--ring));
+}
+
+.rbc-show-more {
+  color: hsl(var(--primary));
+  background: hsl(var(--background));
+  border: 1px solid hsl(var(--border));
+  border-radius: 4px;
+  padding: 2px 6px;
+  font-size: 11px;
+}
+
+.rbc-show-more:hover {
+  background: hsl(var(--muted));
+}
+
+.rbc-day-bg + .rbc-day-bg {
+  border-left: 1px solid hsl(var(--border));
+}
+
+.rbc-time-view .rbc-day-bg {
+  border-left: 1px solid hsl(var(--border));
+}
+
+/* Dark mode adjustments */
+.dark .rbc-calendar {
+  background: hsl(var(--background));
+}
+
+.dark .rbc-header {
+  background: hsl(var(--muted));
+}
+
+.dark .rbc-today {
+  background-color: hsl(var(--primary) / 0.2);
+}
+
+/* Mobile responsiveness */
+@media (max-width: 768px) {
+  .rbc-toolbar {
+    flex-direction: column;
+    gap: 10px;
+  }
+  
+  .rbc-toolbar-label {
+    order: -1;
+    font-size: 18px;
+    font-weight: 600;
+  }
+  
+  .rbc-btn-group {
+    display: flex;
+    justify-content: center;
+  }
+  
+  .rbc-btn-group button {
+    font-size: 14px;
+    padding: 6px 12px;
+  }
+  
+  .rbc-event {
+    font-size: 10px;
+    padding: 1px 2px;
+  }
+  
+  .rbc-header {
+    font-size: 12px;
+    padding: 8px 3px;
+  }
+  
+  .rbc-time-slot {
+    min-height: 30px;
+  }
+}
