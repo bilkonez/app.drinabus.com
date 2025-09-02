@@ -271,6 +271,93 @@ const RideManagement = () => {
     return driver ? `${driver.first_name} ${driver.last_name}` : 'N/A';
   };
 
+  const generateRideReport = async (ride: Ride) => {
+    try {
+      // Fetch additional data for the report
+      const [costsRes, documentsRes] = await Promise.all([
+        supabase.from('costs').select('*').eq('ride_id', ride.id),
+        supabase.from('documents').select('*').eq('ride_id', ride.id)
+      ]);
+
+      const costs = costsRes.data || [];
+      const documents = documentsRes.data || [];
+      const totalCosts = costs.reduce((sum, cost) => sum + Number(cost.amount), 0);
+      const profit = (ride.total_price || 0) - totalCosts;
+
+      // Create report content
+      const reportData = {
+        id: ride.id,
+        ruta: `${ride.origin} → ${ride.destination}`,
+        tip: ride.ride_type === 'linijski' ? 'Linijski prevoz' : 'Vanlinijski prevoz',
+        datum: new Date(ride.start_at).toLocaleDateString('en-GB'),
+        vrijeme: new Date(ride.start_at).toLocaleTimeString('bs-BA', { 
+          hour: '2-digit', 
+          minute: '2-digit' 
+        }),
+        vozilo: getVehicleName(ride.vehicle_id),
+        vozac: getDriverName(ride.driver_id),
+        prihod: ride.total_price ? `${ride.total_price.toFixed(2)} KM` : 'N/A',
+        troskovi: `${totalCosts.toFixed(2)} KM`,
+        profit: `${profit.toFixed(2)} KM`,
+        status: ride.status === 'zavrseno' ? 'Završeno' : 'Planirano',
+        napomene: ride.notes || 'Nema napomena',
+        brojTroskova: costs.length,
+        brojDokumenata: documents.length
+      };
+
+      // Generate CSV content for download
+      const csvContent = [
+        'Polje,Vrijednost',
+        `ID vožnje,${reportData.id}`,
+        `Ruta,${reportData.ruta}`,
+        `Tip prevoza,${reportData.tip}`,
+        `Datum,${reportData.datum}`,
+        `Vrijeme,${reportData.vrijeme}`,
+        `Vozilo,${reportData.vozilo}`,
+        `Vozač,${reportData.vozac}`,
+        `Prihod,${reportData.prihod}`,
+        `Troškovi,${reportData.troskovi}`,
+        `Profit,${reportData.profit}`,
+        `Status,${reportData.status}`,
+        `Napomene,${reportData.napomene}`,
+        `Broj troškova,${reportData.brojTroskova}`,
+        `Broj dokumenata,${reportData.brojDokumenata}`,
+        '',
+        'TROŠKOVI PO STAVCI:',
+        'Tip,Iznos,Napomena'
+      ];
+
+      // Add cost details
+      costs.forEach(cost => {
+        csvContent.push(`${cost.cost_type},${cost.amount} KM,${cost.note || ''}`);
+      });
+
+      const csvString = csvContent.join('\n');
+      const blob = new Blob([csvString], { type: 'text/csv;charset=utf-8;' });
+      const link = document.createElement('a');
+      const url = URL.createObjectURL(blob);
+      link.setAttribute('href', url);
+      link.setAttribute('download', `voznja-izvjestaj-${ride.id.substring(0, 8)}-${reportData.datum.replace(/\//g, '-')}.csv`);
+      link.style.visibility = 'hidden';
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+      URL.revokeObjectURL(url);
+
+      toast({
+        title: "Uspjeh",
+        description: "Izvještaj za vožnju je uspješno generiran",
+      });
+    } catch (error) {
+      console.error('Error generating ride report:', error);
+      toast({
+        title: "Greška",
+        description: "Greška pri generiranju izvještaja",
+        variant: "destructive",
+      });
+    }
+  };
+
   return (
     <div className="space-y-6">
       <div className="flex items-center justify-between">
@@ -519,7 +606,8 @@ const RideManagement = () => {
                               <Button
                                 variant="outline"
                                 size="sm"
-                                title="Generiši PDF dokumente"
+                                onClick={() => generateRideReport(ride)}
+                                title="Generiši izvještaj za vožnju"
                               >
                                 <FileText className="h-4 w-4" />
                               </Button>
@@ -601,7 +689,8 @@ const RideManagement = () => {
                           <Button
                             variant="outline"
                             size="sm"
-                            title="Generiši PDF dokumente"
+                            onClick={() => generateRideReport(ride)}
+                            title="Generiši izvještaj za vožnju"
                             className="h-6 px-2 text-xs"
                           >
                             <FileText className="h-3 w-3" />
