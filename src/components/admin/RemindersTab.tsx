@@ -4,6 +4,7 @@ import { Badge } from "@/components/ui/badge";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { AlertTriangle, Calendar, Clock } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
+import { format } from "date-fns";
 
 interface Reminder {
   kind: string;
@@ -13,16 +14,26 @@ interface Reminder {
   ref_id: string;
 }
 
+interface UpcomingRide {
+  id: string;
+  label: string;
+  start_date: string;
+  start_time: string;
+  days_left: number;
+}
+
 const RemindersTab = () => {
   const [reminders, setReminders] = useState<Reminder[]>([]);
+  const [upcomingRides, setUpcomingRides] = useState<UpcomingRide[]>([]);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    fetchReminders();
+    fetchData();
   }, []);
 
-  const fetchReminders = async () => {
+  const fetchData = async () => {
     try {
+      setLoading(true);
       const { data, error } = await supabase
         .from('v_reminders_due')
         .select('*')
@@ -37,11 +48,45 @@ const RemindersTab = () => {
     }
   };
 
+  const formatDate = (dateString: string) => {
+    if (!dateString) return '';
+    return format(new Date(dateString), 'dd/MM/yyyy');
+  };
+
   const getReminderVariant = (daysLeft: number) => {
     if (daysLeft < 0) return "destructive";
     if (daysLeft <= 7) return "destructive";
     if (daysLeft <= 30) return "secondary";
     return "secondary";
+  };
+
+  const getReminderIcon = (kind: string) => {
+    switch (kind) {
+      case 'vozac_licenca':
+      case 'vozac_tahograf_kartica':
+        return '👤';
+      case 'vozilo_registracija':
+      case 'vozilo_tehnicki':
+      case 'vozilo_tehnicki_6m':
+      case 'vozilo_tahograf_bazdarenje':
+      case 'vozilo_pp_aparat':
+        return '🚌';
+      default:
+        return '📅';
+    }
+  };
+
+  const getKindLabel = (kind: string) => {
+    const labels: Record<string, string> = {
+      'vozac_licenca': 'Vozačka dozvola',
+      'vozac_tahograf_kartica': 'Tahograf kartica',
+      'vozilo_registracija': 'Registracija',
+      'vozilo_tehnicki': 'Tehnički pregled',
+      'vozilo_tehnicki_6m': 'Tehnički pregled (6m)',
+      'vozilo_tahograf_bazdarenje': 'Baždarenje tahografa',
+      'vozilo_pp_aparat': 'PP aparat'
+    };
+    return labels[kind] || kind;
   };
 
   if (loading) {
@@ -61,16 +106,20 @@ const RemindersTab = () => {
         <div>
           <h2 className="text-2xl font-bold">Reminderi</h2>
           <p className="text-muted-foreground">
-            Pregled svih nadolazećih rokova (30 dana unaprijed)
+            Pregled svih nadolazećih rokova i vožnji (30 dana unaprijed)
           </p>
         </div>
       </div>
 
+      {/* Rokovi */}
       <Card>
         <CardHeader>
-          <CardTitle>Svi reminderi</CardTitle>
+          <CardTitle className="flex items-center gap-2">
+            <AlertTriangle className="h-5 w-5" />
+            Rokovi (30 dana)
+          </CardTitle>
           <CardDescription>
-            Kompletan pregled nadolazećih rokova
+            Nadolazeći rokovi za vozače i vozila
           </CardDescription>
         </CardHeader>
         <CardContent>
@@ -80,10 +129,46 @@ const RemindersTab = () => {
               <p>Nema nadolazećih rokova u narednih 30 dana</p>
             </div>
           ) : (
+            <div className="space-y-3">
+              {reminders.map((reminder, index) => (
+                <div key={index} className="flex items-center justify-between p-3 bg-muted/50 rounded-lg">
+                  <div className="flex items-center gap-3">
+                    <span className="text-xl">{getReminderIcon(reminder.kind)}</span>
+                    <div>
+                      <p className="font-medium text-sm">{reminder.title}</p>
+                      <p className="text-xs text-muted-foreground">
+                        {getKindLabel(reminder.kind)}
+                      </p>
+                    </div>
+                  </div>
+                  <div className="text-right">
+                    <p className="text-sm font-medium">{formatDate(reminder.expiry_date)}</p>
+                    <Badge variant={getReminderVariant(reminder.days_left)} className="text-xs">
+                      {reminder.days_left >= 0 ? `${reminder.days_left} dana` : `Prošao ${Math.abs(reminder.days_left)} dana`}
+                    </Badge>
+                  </div>
+                </div>
+              ))}
+            </div>
+          )}
+        </CardContent>
+      </Card>
+
+      {/* Kompletna tabela remindara */}
+      {reminders.length > 0 && (
+        <Card>
+          <CardHeader>
+            <CardTitle>Kompletan pregled rokova</CardTitle>
+            <CardDescription>
+              Detaljni prikaz svih nadolazećih rokova
+            </CardDescription>
+          </CardHeader>
+          <CardContent>
             <div className="overflow-x-auto">
               <Table>
                 <TableHeader>
                   <TableRow>
+                    <TableHead>Tip</TableHead>
                     <TableHead>Naziv</TableHead>
                     <TableHead>Datum isteka</TableHead>
                     <TableHead>Status</TableHead>
@@ -92,15 +177,21 @@ const RemindersTab = () => {
                 <TableBody>
                   {reminders.map((reminder, index) => (
                     <TableRow key={index}>
+                      <TableCell>
+                        <div className="flex items-center gap-2">
+                          <span>{getReminderIcon(reminder.kind)}</span>
+                          <span className="text-sm">{getKindLabel(reminder.kind)}</span>
+                        </div>
+                      </TableCell>
                       <TableCell className="font-medium">
                         {reminder.title}
                       </TableCell>
                       <TableCell>
-                        {new Date(reminder.expiry_date).toLocaleDateString('bs-BA')}
+                        {formatDate(reminder.expiry_date)}
                       </TableCell>
                       <TableCell>
                         <Badge variant={getReminderVariant(reminder.days_left)}>
-                          {reminder.days_left} dana
+                          {reminder.days_left >= 0 ? `${reminder.days_left} dana` : `Prošao ${Math.abs(reminder.days_left)} dana`}
                         </Badge>
                       </TableCell>
                     </TableRow>
@@ -108,9 +199,9 @@ const RemindersTab = () => {
                 </TableBody>
               </Table>
             </div>
-          )}
-        </CardContent>
-      </Card>
+          </CardContent>
+        </Card>
+      )}
     </div>
   );
 };
