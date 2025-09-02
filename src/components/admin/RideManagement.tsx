@@ -41,15 +41,6 @@ interface Employee {
   last_name: string;
 }
 
-interface RideSegment {
-  id?: string;
-  start_time: string; // samo vrijeme (HH:MM)
-  origin: string;
-  destination: string;
-  vehicle_id: string | null;
-  segment_price: number | null;
-  notes?: string;
-}
 
 const RideManagement = () => {
   const [rides, setRides] = useState<Ride[]>([]);
@@ -70,7 +61,7 @@ const RideManagement = () => {
     notes: "",
     status: "planirano",
   });
-  const [segments, setSegments] = useState<RideSegment[]>([]);
+  
 
   useEffect(() => {
     fetchAllData();
@@ -191,33 +182,6 @@ const RideManagement = () => {
         if (error) throw error;
         rideId = editingRide.id;
 
-        // Handle segments for lokal rides
-        if (formData.ride_type === 'lokal') {
-          // Delete existing segments
-          await supabase.from('ride_segments').delete().eq('ride_id', rideId);
-          
-          // Insert new segments
-          if (segments.length > 0) {
-            const rideDate = formData.ride_date || new Date().toISOString().split('T')[0];
-            
-            const segmentData = segments.map(segment => ({
-              ride_id: rideId,
-              segment_start: `${rideDate}T${segment.start_time}:00`,
-              segment_end: null,
-              origin: segment.origin,
-              destination: segment.destination,
-              vehicle_id: segment.vehicle_id || null,
-              segment_price: segment.segment_price || null,
-              notes: segment.notes || null,
-            }));
-
-            const { error: segmentError } = await supabase
-              .from('ride_segments')
-              .insert(segmentData);
-
-            if (segmentError) throw segmentError;
-          }
-        }
 
         toast({
           title: "Uspjeh",
@@ -233,54 +197,6 @@ const RideManagement = () => {
         if (error) throw error;
         rideId = newRideData.id;
 
-        // Handle segments for lokal rides
-        if (formData.ride_type === 'lokal' && segments.length > 0) {
-          // Validate segments before inserting
-          const validSegments = segments.filter(segment => 
-            segment.start_time && 
-            segment.origin && 
-            segment.destination
-          );
-
-          console.log('Total segments:', segments.length);
-          console.log('Valid segments:', validSegments.length);
-          console.log('Segments data:', segments);
-
-          if (validSegments.length === 0) {
-            toast({
-              title: "Greška",
-              description: "Morate dodati barem jedan valjan segment sa vremenom početka, polazištem i odredištem",
-              variant: "destructive",
-            });
-            setLoading(false);
-            return;
-          }
-
-          // Combine ride date with segment start time
-          const rideDate = formData.ride_date || new Date().toISOString().split('T')[0];
-          
-          const segmentData = validSegments.map(segment => ({
-            ride_id: rideId,
-            segment_start: `${rideDate}T${segment.start_time}:00`,
-            segment_end: null, // Ne koristimo više end time
-            origin: segment.origin,
-            destination: segment.destination,
-            vehicle_id: segment.vehicle_id || null,
-            segment_price: segment.segment_price ? parseFloat(segment.segment_price.toString()) : null,
-            notes: segment.notes || null,
-          }));
-
-          console.log('Inserting segment data:', segmentData);
-
-          const { error: segmentError } = await supabase
-            .from('ride_segments')
-            .insert(segmentData);
-
-          if (segmentError) {
-            console.error('Segment error:', segmentError);
-            throw segmentError;
-          }
-        }
 
         toast({
           title: "Uspjeh",
@@ -346,26 +262,10 @@ const RideManagement = () => {
         status: ride.status,
       });
 
-      // Load segments for lokal rides
+      // Set ride date for lokal rides
       if (ride.ride_type === 'lokal') {
-        const rideSegments = await fetchRideSegments(ride.id);
-        setSegments(rideSegments.map(segment => ({
-          id: segment.id,
-          start_time: new Date(segment.segment_start).toTimeString().slice(0, 5), // Extract HH:MM
-          origin: segment.origin,
-          destination: segment.destination,
-          vehicle_id: segment.vehicle_id,
-          segment_price: segment.segment_price,
-          notes: segment.notes || "",
-        })));
-        
-        // Set ride date from first segment
-        if (rideSegments.length > 0) {
-          const rideDate = new Date(rideSegments[0].segment_start).toISOString().split('T')[0];
-          setFormData(prev => ({ ...prev, ride_date: rideDate }));
-        }
-      } else {
-        setSegments([]);
+        const rideDate = new Date(ride.start_at).toISOString().split('T')[0];
+        setFormData(prev => ({ ...prev, ride_date: rideDate }));
       }
     } else {
       setEditingRide(null);
@@ -387,31 +287,10 @@ const RideManagement = () => {
       notes: "",
       status: "planirano",
     });
-    setSegments([]);
+    
     setEditingRide(null);
   };
 
-  const addSegment = () => {
-    setSegments([...segments, {
-      start_time: "",
-      origin: "",
-      destination: "",
-      vehicle_id: null,
-      segment_price: null,
-      notes: "",
-    }]);
-  };
-
-  const updateSegment = (index: number, field: keyof RideSegment, value: any) => {
-    const newSegments = [...segments];
-    newSegments[index] = { ...newSegments[index], [field]: value };
-    setSegments(newSegments);
-  };
-
-  const removeSegment = (index: number) => {
-    const newSegments = segments.filter((_, i) => i !== index);
-    setSegments(newSegments);
-  };
 
   const getStatusBadge = (status: string) => {
     const variants = {
@@ -439,12 +318,12 @@ const RideManagement = () => {
       const [costsRes, documentsRes, segmentsRes] = await Promise.all([
         supabase.from('costs').select('*').eq('ride_id', ride.id),
         supabase.from('documents').select('*').eq('ride_id', ride.id),
-        ride.ride_type === 'lokal' ? supabase.from('ride_segments').select('*').eq('ride_id', ride.id).order('segment_start') : Promise.resolve({ data: [] })
+        Promise.resolve({ data: [] })
       ]);
 
       const costs = costsRes.data || [];
       const documents = documentsRes.data || [];
-      const segments = segmentsRes.data || [];
+      
       const totalCosts = costs.reduce((sum, cost) => sum + Number(cost.amount), 0);
       const profit = (ride.total_price || 0) - totalCosts;
 
@@ -454,13 +333,9 @@ const RideManagement = () => {
         ruta: `${ride.origin} → ${ride.destination}`,
         tip: ride.ride_type === 'linijski' ? 'Linijski prevoz' : 
              ride.ride_type === 'vanlinijski' ? 'Vanlinijski prevoz' : 'Lokal prevoz',
-        datum: ride.ride_type === 'lokal' && segments.length > 0 ? 
-               new Date(segments[0].segment_start).toLocaleDateString('en-GB') : 
-               new Date(ride.start_at).toLocaleDateString('en-GB'),
-        vrijeme: ride.ride_type === 'lokal' && segments.length > 0 ?
-                 new Date(segments[0].segment_start).toLocaleTimeString('en-GB', { hour: '2-digit', minute: '2-digit', hour12: false }) :
-                 new Date(ride.start_at).toLocaleTimeString('en-GB', { hour: '2-digit', minute: '2-digit', hour12: false }),
-        vozilo: ride.ride_type === 'lokal' ? 'Više vozila' : getVehicleName(ride.vehicle_id),
+        datum: new Date(ride.start_at).toLocaleDateString('en-GB'),
+        vrijeme: new Date(ride.start_at).toLocaleTimeString('en-GB', { hour: '2-digit', minute: '2-digit', hour12: false }),
+        vozilo: ride.ride_type === 'lokal' ? 'Lokal prevoz' : getVehicleName(ride.vehicle_id),
         vozac: getDriverName(ride.driver_id),
         prihod: ride.total_price ? `${ride.total_price.toFixed(2)} KM` : 'N/A',
         troskovi: `${totalCosts.toFixed(2)} KM`,
@@ -469,7 +344,7 @@ const RideManagement = () => {
         napomene: ride.notes || 'Nema napomena',
         brojTroskova: costs.length,
         brojDokumenata: documents.length,
-        brojSegmenata: segments.length
+        
       };
 
       // Generate CSV content for download
@@ -489,7 +364,7 @@ const RideManagement = () => {
         `Napomene,${reportData.napomene}`,
         `Broj troškova,${reportData.brojTroskova}`,
         `Broj dokumenata,${reportData.brojDokumenata}`,
-        ride.ride_type === 'lokal' ? `Broj segmenata,${reportData.brojSegmenata}` : '',
+        
         '',
         'TROŠKOVI PO STAVCI:',
         'Tip,Iznos,Napomena'
@@ -500,25 +375,6 @@ const RideManagement = () => {
         csvContent.push(`${cost.cost_type},${cost.amount} KM,${cost.note || ''}`);
       });
 
-      // Add segments for lokal rides
-      if (ride.ride_type === 'lokal' && segments.length > 0) {
-        csvContent.push('');
-        csvContent.push('SEGMENTI VOŽNJE:');
-        csvContent.push('Redni broj,Polazak,Završetak,Polazište,Odredište,Vozilo,Cijena,Napomene');
-        segments.forEach((segment: any, index: number) => {
-          const vehicleName = getVehicleName(segment.vehicle_id);
-          csvContent.push([
-            index + 1,
-            new Date(segment.segment_start).toLocaleString('bs-BA'),
-            segment.segment_end ? new Date(segment.segment_end).toLocaleString('bs-BA') : 'N/A',
-            segment.origin,
-            segment.destination,
-            vehicleName,
-            segment.segment_price ? `${segment.segment_price} KM` : 'N/A',
-            segment.notes || ''
-          ].join(','));
-        });
-      }
 
       const csvString = csvContent.join('\n');
       const blob = new Blob([csvString], { type: 'text/csv;charset=utf-8;' });
@@ -640,116 +496,17 @@ const RideManagement = () => {
               )}
 
               {formData.ride_type === 'lokal' && (
-                <>
-                  <div className="space-y-2">
-                    <Label htmlFor="ride_date">Datum vožnje *</Label>
-                    <Input
-                      id="ride_date"
-                      type="date"
-                      value={formData.ride_date}
-                      onChange={(e) => setFormData({...formData, ride_date: e.target.value})}
-                      required
-                    />
-                  </div>
-
-                  <div className="space-y-4">
-                    <div className="flex items-center justify-between">
-                      <Label className="text-base font-semibold">Segmenti vožnje</Label>
-                      <Button type="button" onClick={addSegment} size="sm">
-                        <Plus className="h-4 w-4 mr-1" />
-                        Dodaj segment
-                      </Button>
-                    </div>
-                    
-                    {segments.map((segment, index) => (
-                      <div key={index} className="border rounded-lg p-4 space-y-3 bg-muted/30">
-                        <div className="flex items-center justify-between">
-                          <span className="text-sm font-medium">Segment {index + 1}</span>
-                          <Button
-                            type="button"
-                            variant="ghost"
-                            size="sm"
-                            onClick={() => removeSegment(index)}
-                          >
-                            <X className="h-4 w-4" />
-                          </Button>
-                        </div>
-                        
-                        <div>
-                          <Label className="text-xs">Vrijeme početka *</Label>
-                          <Input
-                            type="time"
-                            value={segment.start_time}
-                            onChange={(e) => updateSegment(index, 'start_time', e.target.value)}
-                            required
-                          />
-                        </div>
-                        
-                        <div className="grid grid-cols-2 gap-2">
-                          <div>
-                            <Label className="text-xs">Polazište *</Label>
-                            <Input
-                              value={segment.origin}
-                              onChange={(e) => updateSegment(index, 'origin', e.target.value)}
-                              placeholder="Sarajevo"
-                              required
-                            />
-                          </div>
-                          <div>
-                            <Label className="text-xs">Odredište *</Label>
-                            <Input
-                              value={segment.destination}
-                              onChange={(e) => updateSegment(index, 'destination', e.target.value)}
-                              placeholder="Beograd"
-                              required
-                            />
-                          </div>
-                        </div>
-                      
-                      <div className="grid grid-cols-2 gap-2">
-                        <div>
-                          <Label className="text-xs">Vozilo</Label>
-                          <Select 
-                            value={segment.vehicle_id || ""} 
-                            onValueChange={(value) => updateSegment(index, 'vehicle_id', value || null)}
-                          >
-                            <SelectTrigger>
-                              <SelectValue placeholder="Odaberite vozilo" />
-                            </SelectTrigger>
-                            <SelectContent>
-                              {vehicles.map((vehicle) => (
-                                <SelectItem key={vehicle.id} value={vehicle.id}>
-                                  {vehicle.brand} {vehicle.model} ({vehicle.registration})
-                                </SelectItem>
-                              ))}
-                            </SelectContent>
-                          </Select>
-                        </div>
-                        <div>
-                          <Label className="text-xs">Cijena (KM)</Label>
-                          <Input
-                            type="number"
-                            step="0.01"
-                            value={segment.segment_price || ""}
-                            onChange={(e) => updateSegment(index, 'segment_price', e.target.value ? parseFloat(e.target.value) : null)}
-                            placeholder="0.00"
-                          />
-                        </div>
-                      </div>
-                      
-                      <div>
-                        <Label className="text-xs">Napomene</Label>
-                        <Input
-                          value={segment.notes || ""}
-                          onChange={(e) => updateSegment(index, 'notes', e.target.value)}
-                          placeholder="Napomene za segment..."
-                        />
-                      </div>
-                       </div>
-                     ))}
-                   </div>
-                 </>
-               )}
+                <div className="space-y-2">
+                  <Label htmlFor="ride_date">Datum vožnje *</Label>
+                  <Input
+                    id="ride_date"
+                    type="date"
+                    value={formData.ride_date}
+                    onChange={(e) => setFormData({...formData, ride_date: e.target.value})}
+                    required
+                  />
+                </div>
+              )}
 
               <div className="space-y-2">
                 <Label htmlFor="driver_id">Vozač</Label>
@@ -868,27 +625,21 @@ const RideManagement = () => {
                                ride.ride_type === 'vanlinijski' ? 'Vanlinijski' : 'Lokal'}
                             </Badge>
                           </TableCell>
-                          <TableCell>
-                            {ride.ride_type === 'lokal' ? (
-                              <div className="text-sm">
-                                <span className="text-muted-foreground">Više segmenata</span>
-                              </div>
-                            ) : (
-                              <div className="text-sm">
-                                {rideDate.toLocaleDateString('en-GB')}
-                                <div className="text-muted-foreground">
-                                   {rideDate.toLocaleTimeString('en-GB', { 
-                                     hour: '2-digit', 
-                                     minute: '2-digit',
-                                     hour12: false 
-                                   })}
-                                </div>
-                              </div>
-                            )}
-                          </TableCell>
-                          <TableCell className="text-sm">
-                            {ride.ride_type === 'lokal' ? 'Više vozila' : getVehicleName(ride.vehicle_id)}
-                          </TableCell>
+                           <TableCell>
+                             <div className="text-sm">
+                               {rideDate.toLocaleDateString('en-GB')}
+                               <div className="text-muted-foreground">
+                                  {rideDate.toLocaleTimeString('en-GB', { 
+                                    hour: '2-digit', 
+                                    minute: '2-digit',
+                                    hour12: false 
+                                  })}
+                               </div>
+                             </div>
+                           </TableCell>
+                           <TableCell className="text-sm">
+                             {ride.ride_type === 'lokal' ? 'Lokal prevoz' : getVehicleName(ride.vehicle_id)}
+                           </TableCell>
                           <TableCell className="text-sm">
                             {getDriverName(ride.driver_id)}
                           </TableCell>
