@@ -305,23 +305,23 @@ const WorkLogTab = () => {
   }, [selectedDriverId, selectedMonth, fetchWorkLogEntries]);
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-4 p-2 sm:p-4">
       {/* Filter Bar */}
       <Card className="border-2 shadow-sm">
-        <CardHeader className="pb-4">
-          <CardTitle className="flex items-center gap-3 text-xl">
-            <div className="p-2 bg-primary/10 rounded-lg">
-              <Clock className="h-5 w-5 text-primary" />
+        <CardHeader className="pb-3 px-3 sm:px-6">
+          <CardTitle className="flex items-center gap-2 text-lg sm:text-xl">
+            <div className="p-1.5 sm:p-2 bg-primary/10 rounded-lg">
+              <Clock className="h-4 w-4 sm:h-5 sm:w-5 text-primary" />
             </div>
-            Evidencija rada vozača
+            <span className="text-sm sm:text-xl">Evidencija rada vozača</span>
           </CardTitle>
         </CardHeader>
-        <CardContent className="pt-0">
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-            <div className="space-y-3">
-              <Label className="text-sm font-semibold">Vozač</Label>
+        <CardContent className="pt-0 px-3 sm:px-6">
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+            <div className="space-y-2">
+              <Label className="text-xs sm:text-sm font-semibold">Vozač</Label>
               <Select value={selectedDriverId} onValueChange={setSelectedDriverId}>
-                <SelectTrigger className="h-11 shadow-sm">
+                <SelectTrigger className="h-10 sm:h-11 shadow-sm text-sm">
                   <SelectValue placeholder="Izaberite vozača" />
                 </SelectTrigger>
                 <SelectContent>
@@ -335,12 +335,12 @@ const WorkLogTab = () => {
               </Select>
             </div>
 
-            <div className="space-y-3">
-              <Label className="text-sm font-semibold">Mjesec</Label>
+            <div className="space-y-2">
+              <Label className="text-xs sm:text-sm font-semibold">Mjesec</Label>
               <Popover>
                 <PopoverTrigger asChild>
-                  <Button variant="outline" className="h-11 w-full justify-start text-left font-normal shadow-sm">
-                    <CalendarIcon className="mr-3 h-5 w-5" />
+                  <Button variant="outline" className="h-10 sm:h-11 w-full justify-start text-left font-normal shadow-sm text-sm">
+                    <CalendarIcon className="mr-2 h-4 w-4" />
                     {format(selectedMonth, "MMMM yyyy")}
                   </Button>
                 </PopoverTrigger>
@@ -356,34 +356,28 @@ const WorkLogTab = () => {
               </Popover>
             </div>
 
-            <div className="space-y-3">
-              <Label className="text-sm font-semibold">Brze akcije</Label>
-              <div className="flex gap-2">
+            <div className="space-y-2 sm:col-span-2">
+              <Label className="text-xs sm:text-sm font-semibold">Akcije</Label>
+              <div className="flex flex-col sm:flex-row gap-2">
                 <Button 
                   variant="outline" 
                   size="sm"
                   onClick={fillWorkingDays}
                   disabled={!selectedDriverId || selectedDriverId === 'svi'}
-                  className="flex-1 h-11"
+                  className="flex-1 h-10 sm:h-11 text-xs sm:text-sm"
                 >
                   <Plus className="h-4 w-4 mr-1" />
                   Radni dani
                 </Button>
-              </div>
-            </div>
-
-            <div className="space-y-3">
-              <Label className="text-sm font-semibold">Export</Label>
-              <div className="flex gap-2">
                 <Button 
                   variant="outline" 
                   size="sm"
                   onClick={exportToCSV}
                   disabled={!selectedDriverId || selectedDriverId === 'svi' || monthlyEntries.length === 0}
-                  className="flex-1 h-11"
+                  className="flex-1 h-10 sm:h-11 text-xs sm:text-sm"
                 >
                   <FileDown className="h-4 w-4 mr-1" />
-                  CSV
+                  CSV Export
                 </Button>
               </div>
             </div>
@@ -394,97 +388,173 @@ const WorkLogTab = () => {
       {/* Work Log Grid */}
       {selectedDriverId && selectedDriverId !== 'svi' && (
         <Card className="border-2 shadow-lg">
-          <CardHeader className="bg-gradient-to-r from-primary/5 to-primary/10 border-b">
-            <div className="flex items-center justify-between">
-              <CardTitle className="text-xl font-semibold">
-                Mjesečni pregled - {drivers.find(d => d.id === selectedDriverId)?.first_name} {drivers.find(d => d.id === selectedDriverId)?.last_name}
+          <CardHeader className="bg-gradient-to-r from-primary/5 to-primary/10 border-b px-3 sm:px-6 py-3 sm:py-4">
+            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+              <CardTitle className="text-base sm:text-xl font-semibold">
+                <span className="hidden sm:inline">Mjesečni pregled - </span>
+                {drivers.find(d => d.id === selectedDriverId)?.first_name} {drivers.find(d => d.id === selectedDriverId)?.last_name}
               </CardTitle>
-              <div className="flex items-center gap-4">
-                <Badge variant="secondary" className="text-lg font-semibold">
-                  <Clock className="h-4 w-4 mr-2" />
+              <div className="flex flex-col sm:flex-row items-start sm:items-center gap-2 sm:gap-4">
+                <Badge variant="secondary" className="text-sm sm:text-lg font-semibold w-fit">
+                  <Clock className="h-3 w-3 sm:h-4 sm:w-4 mr-1 sm:mr-2" />
                   Ukupno: {totalHours.toFixed(2)}h
                 </Badge>
-                <Button onClick={saveAllEntries} disabled={saving} className="shadow-sm">
-                  <Save className="h-4 w-4 mr-2" />
+                <Button 
+                  onClick={saveAllEntries} 
+                  disabled={saving} 
+                  className="shadow-sm w-full sm:w-auto text-sm"
+                  size="sm"
+                >
+                  <Save className="h-4 w-4 mr-1 sm:mr-2" />
                   {saving ? 'Čuvanje...' : 'Sačuvaj sve'}
                 </Button>
               </div>
             </div>
           </CardHeader>
           <CardContent className="p-0">
-            <div className="max-h-[60vh] overflow-auto">
-              <Table>
-                <TableHeader className="sticky top-0 bg-background z-10">
-                  <TableRow>
-                    <TableHead className="w-32 font-semibold">Datum</TableHead>
-                    <TableHead className="w-32 font-semibold">Dan</TableHead>
-                    <TableHead className="w-40 font-semibold">Sati</TableHead>
-                    <TableHead className="font-semibold">Napomena</TableHead>
-                    <TableHead className="w-20 font-semibold">Akcije</TableHead>
-                  </TableRow>
-                </TableHeader>
-                <TableBody>
-                  {loading ? (
+            <div className="max-h-[70vh] overflow-auto">
+              {/* Mobile Card View */}
+              <div className="block sm:hidden">
+                {loading ? (
+                  <div className="text-center py-8 px-4">
+                    <div className="text-sm text-muted-foreground">Učitavanje...</div>
+                  </div>
+                ) : (
+                  <div className="space-y-2 p-3">
+                    {monthlyEntries.map((entry) => {
+                      const date = new Date(entry.date);
+                      const dayName = format(date, 'EEE');
+                      const isWeekend = date.getDay() === 0 || date.getDay() === 6;
+                      
+                      return (
+                        <Card key={entry.date} className={`p-3 ${isWeekend ? 'bg-muted/30' : ''}`}>
+                          <div className="flex items-center justify-between mb-2">
+                            <div className="flex items-center gap-2">
+                              <span className="font-medium text-sm">{format(date, 'dd/MM')}</span>
+                              <Badge variant={isWeekend ? 'secondary' : 'outline'} className="text-xs">
+                                {dayName}
+                              </Badge>
+                            </div>
+                            {entry.hasExistingRecord && entry.id && (
+                              <Button
+                                variant="outline"
+                                size="sm"
+                                onClick={() => entry.id && deleteEntry(entry.id, entry.date)}
+                                className="h-7 w-7 p-0"
+                              >
+                                <Trash2 className="h-3 w-3" />
+                              </Button>
+                            )}
+                          </div>
+                          <div className="space-y-2">
+                            <div>
+                              <Label className="text-xs text-muted-foreground">Sati</Label>
+                              <Input
+                                type="number"
+                                step="0.25"
+                                min="0"
+                                max="24"
+                                value={entry.hours === null ? '' : entry.hours}
+                                onChange={(e) => {
+                                  const value = e.target.value;
+                                  updateHours(entry.date, value === '' ? null : parseFloat(value));
+                                }}
+                                className="text-sm h-9"
+                                placeholder="0.00"
+                              />
+                            </div>
+                            <div>
+                              <Label className="text-xs text-muted-foreground">Napomena</Label>
+                              <Input
+                                value={entry.note}
+                                onChange={(e) => updateNote(entry.date, e.target.value)}
+                                placeholder="Opcionalna napomena..."
+                                className="text-sm h-9"
+                              />
+                            </div>
+                          </div>
+                        </Card>
+                      );
+                    })}
+                  </div>
+                )}
+              </div>
+
+              {/* Desktop Table View */}
+              <div className="hidden sm:block">
+                <Table>
+                  <TableHeader className="sticky top-0 bg-background z-10">
                     <TableRow>
-                      <TableCell colSpan={5} className="text-center py-8">
-                        Učitavanje...
-                      </TableCell>
+                      <TableHead className="w-32 font-semibold">Datum</TableHead>
+                      <TableHead className="w-32 font-semibold">Dan</TableHead>
+                      <TableHead className="w-40 font-semibold">Sati</TableHead>
+                      <TableHead className="font-semibold">Napomena</TableHead>
+                      <TableHead className="w-20 font-semibold">Akcije</TableHead>
                     </TableRow>
-                  ) : monthlyEntries.map((entry) => {
-                    const date = new Date(entry.date);
-                    const dayName = format(date, 'EEE');
-                    const isWeekend = date.getDay() === 0 || date.getDay() === 6;
-                    
-                    return (
-                      <TableRow key={entry.date} className={isWeekend ? 'bg-muted/30' : ''}>
-                        <TableCell className="font-medium">
-                          {format(date, 'dd/MM/yyyy')}
-                        </TableCell>
-                        <TableCell>
-                          <Badge variant={isWeekend ? 'secondary' : 'outline'}>
-                            {dayName}
-                          </Badge>
-                        </TableCell>
-                        <TableCell>
-                          <Input
-                            type="number"
-                            step="0.25"
-                            min="0"
-                            max="24"
-                            value={entry.hours === null ? '' : entry.hours}
-                            onChange={(e) => {
-                              const value = e.target.value;
-                              updateHours(entry.date, value === '' ? null : parseFloat(value));
-                            }}
-                            className="w-32"
-                            placeholder="0.00"
-                          />
-                        </TableCell>
-                        <TableCell>
-                          <Input
-                            value={entry.note}
-                            onChange={(e) => updateNote(entry.date, e.target.value)}
-                            placeholder="Opcionalna napomena..."
-                            className="min-w-[300px]"
-                          />
-                        </TableCell>
-                        <TableCell>
-                          {entry.hasExistingRecord && entry.id && (
-                            <Button
-                              variant="outline"
-                              size="sm"
-                              onClick={() => entry.id && deleteEntry(entry.id, entry.date)}
-                              className="h-8 w-8 p-0"
-                            >
-                              <Trash2 className="h-4 w-4" />
-                            </Button>
-                          )}
+                  </TableHeader>
+                  <TableBody>
+                    {loading ? (
+                      <TableRow>
+                        <TableCell colSpan={5} className="text-center py-8">
+                          Učitavanje...
                         </TableCell>
                       </TableRow>
-                    );
-                  })}
-                </TableBody>
-              </Table>
+                    ) : monthlyEntries.map((entry) => {
+                      const date = new Date(entry.date);
+                      const dayName = format(date, 'EEE');
+                      const isWeekend = date.getDay() === 0 || date.getDay() === 6;
+                      
+                      return (
+                        <TableRow key={entry.date} className={isWeekend ? 'bg-muted/30' : ''}>
+                          <TableCell className="font-medium">
+                            {format(date, 'dd/MM/yyyy')}
+                          </TableCell>
+                          <TableCell>
+                            <Badge variant={isWeekend ? 'secondary' : 'outline'}>
+                              {dayName}
+                            </Badge>
+                          </TableCell>
+                          <TableCell>
+                            <Input
+                              type="number"
+                              step="0.25"
+                              min="0"
+                              max="24"
+                              value={entry.hours === null ? '' : entry.hours}
+                              onChange={(e) => {
+                                const value = e.target.value;
+                                updateHours(entry.date, value === '' ? null : parseFloat(value));
+                              }}
+                              className="w-32"
+                              placeholder="0.00"
+                            />
+                          </TableCell>
+                          <TableCell>
+                            <Input
+                              value={entry.note}
+                              onChange={(e) => updateNote(entry.date, e.target.value)}
+                              placeholder="Opcionalna napomena..."
+                              className="min-w-[300px]"
+                            />
+                          </TableCell>
+                          <TableCell>
+                            {entry.hasExistingRecord && entry.id && (
+                              <Button
+                                variant="outline"
+                                size="sm"
+                                onClick={() => entry.id && deleteEntry(entry.id, entry.date)}
+                                className="h-8 w-8 p-0"
+                              >
+                                <Trash2 className="h-4 w-4" />
+                              </Button>
+                            )}
+                          </TableCell>
+                        </TableRow>
+                      );
+                    })}
+                  </TableBody>
+                </Table>
+              </div>
             </div>
           </CardContent>
         </Card>
