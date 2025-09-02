@@ -229,22 +229,48 @@ const RideManagement = () => {
 
         // Handle segments for lokal rides
         if (formData.ride_type === 'lokal' && segments.length > 0) {
-          const segmentData = segments.map(segment => ({
+          // Validate segments before inserting
+          const validSegments = segments.filter(segment => 
+            segment.segment_start && 
+            segment.origin && 
+            segment.destination
+          );
+
+          console.log('Total segments:', segments.length);
+          console.log('Valid segments:', validSegments.length);
+          console.log('Segments data:', segments);
+
+          if (validSegments.length === 0) {
+            toast({
+              title: "Greška",
+              description: "Morate dodati barem jedan valjan segment sa datumom početka, polazištem i odredištem",
+              variant: "destructive",
+            });
+            setLoading(false);
+            return;
+          }
+
+          const segmentData = validSegments.map(segment => ({
             ride_id: rideId,
             segment_start: segment.segment_start,
             segment_end: segment.segment_end || null,
             origin: segment.origin,
             destination: segment.destination,
             vehicle_id: segment.vehicle_id || null,
-            segment_price: segment.segment_price || null,
+            segment_price: segment.segment_price ? parseFloat(segment.segment_price.toString()) : null,
             notes: segment.notes || null,
           }));
+
+          console.log('Inserting segment data:', segmentData);
 
           const { error: segmentError } = await supabase
             .from('ride_segments')
             .insert(segmentData);
 
-          if (segmentError) throw segmentError;
+          if (segmentError) {
+            console.error('Segment error:', segmentError);
+            throw segmentError;
+          }
         }
 
         toast({
