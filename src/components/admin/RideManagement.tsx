@@ -682,13 +682,19 @@ const RideManagement = () => {
                         <div>
                           <Label className="text-xs">Vrijeme početka *</Label>
                           <Input
-                            type="time"
-                            step="60"
+                            type="text"
+                            pattern="[0-9]{2}:[0-9]{2}"
+                            placeholder="14:30"
                             value={segment.start_time}
-                            onChange={(e) => updateSegment(index, 'start_time', e.target.value)}
+                            onChange={(e) => {
+                              // Allow only HH:MM format
+                              const value = e.target.value;
+                              if (value.match(/^([0-1]?[0-9]|2[0-3]):[0-5][0-9]$/) || value === '') {
+                                updateSegment(index, 'start_time', value);
+                              }
+                            }}
+                            maxLength={5}
                             required
-                            style={{ colorScheme: 'light' }}
-                            lang="en-GB"
                           />
                         </div>
                         
