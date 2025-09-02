@@ -458,8 +458,8 @@ const RideManagement = () => {
                new Date(segments[0].segment_start).toLocaleDateString('en-GB') : 
                new Date(ride.start_at).toLocaleDateString('en-GB'),
         vrijeme: ride.ride_type === 'lokal' && segments.length > 0 ?
-                 new Date(segments[0].segment_start).toLocaleTimeString('bs-BA', { hour: '2-digit', minute: '2-digit' }) :
-                 new Date(ride.start_at).toLocaleTimeString('bs-BA', { hour: '2-digit', minute: '2-digit' }),
+                 new Date(segments[0].segment_start).toLocaleTimeString('en-GB', { hour: '2-digit', minute: '2-digit', hour12: false }) :
+                 new Date(ride.start_at).toLocaleTimeString('en-GB', { hour: '2-digit', minute: '2-digit', hour12: false }),
         vozilo: ride.ride_type === 'lokal' ? 'Više vozila' : getVehicleName(ride.vehicle_id),
         vozac: getDriverName(ride.driver_id),
         prihod: ride.total_price ? `${ride.total_price.toFixed(2)} KM` : 'N/A',
@@ -877,10 +877,11 @@ const RideManagement = () => {
                               <div className="text-sm">
                                 {rideDate.toLocaleDateString('en-GB')}
                                 <div className="text-muted-foreground">
-                                  {rideDate.toLocaleTimeString('bs-BA', { 
-                                    hour: '2-digit', 
-                                    minute: '2-digit' 
-                                  })}
+                                   {rideDate.toLocaleTimeString('en-GB', { 
+                                     hour: '2-digit', 
+                                     minute: '2-digit',
+                                     hour12: false 
+                                   })}
                                 </div>
                               </div>
                             )}
@@ -977,10 +978,11 @@ const RideManagement = () => {
                             <span className="font-medium">Datum:</span> {rideDate.toLocaleDateString('en-GB')}
                           </div>
                           <div>
-                            <span className="font-medium">Sat:</span> {rideDate.toLocaleTimeString('bs-BA', { 
-                              hour: '2-digit', 
-                              minute: '2-digit' 
-                            })}
+                             <span className="font-medium">Sat:</span> {rideDate.toLocaleTimeString('en-GB', { 
+                               hour: '2-digit', 
+                               minute: '2-digit',
+                               hour12: false 
+                             })}
                           </div>
                           <div>
                             <span className="font-medium">Vozilo:</span> {getVehicleName(ride.vehicle_id)}
