@@ -683,9 +683,12 @@ const RideManagement = () => {
                           <Label className="text-xs">Vrijeme početka *</Label>
                           <Input
                             type="time"
+                            step="60"
                             value={segment.start_time}
                             onChange={(e) => updateSegment(index, 'start_time', e.target.value)}
                             required
+                            style={{ colorScheme: 'light' }}
+                            lang="en-GB"
                           />
                         </div>
                         
