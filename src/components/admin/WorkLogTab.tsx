@@ -111,7 +111,7 @@ const WorkLogTab = () => {
           return {
             ...entry,
             id: existingEntry.id,
-            hours: parseFloat(existingEntry.hours?.toString() || '0'),
+            hours: existingEntry.hours ? parseFloat(existingEntry.hours.toString()) : 0,
             note: existingEntry.note || '',
             hasExistingRecord: true
           };
@@ -179,10 +179,13 @@ const WorkLogTab = () => {
         const hasNote = entry.note && entry.note.trim().length > 0;
         
         if (shouldSave || hasNote) {
+          // Ensure we have a valid hours value when saving
+          const hoursValue = entry.hours && entry.hours > 0 ? entry.hours : 0;
+          
           entriesToUpsert.push({
             employee_id: selectedDriverId,
             work_date: entry.date,
-            hours: entry.hours || 0,
+            hours: hoursValue,
             note: entry.note || null
           });
         } else if (entry.hasExistingRecord && entry.id) {
@@ -200,12 +203,13 @@ const WorkLogTab = () => {
         if (deleteError) throw deleteError;
       }
 
-      // Upsert new/updated entries
+      // Upsert new/updated entries  
       if (entriesToUpsert.length > 0) {
         const { error: upsertError } = await supabase
           .from('driver_work_log')
           .upsert(entriesToUpsert, { 
-            onConflict: 'employee_id,work_date'
+            onConflict: 'employee_id,work_date',
+            ignoreDuplicates: false
           });
 
         if (upsertError) throw upsertError;
@@ -454,10 +458,17 @@ const WorkLogTab = () => {
                                 step="0.25"
                                 min="0"
                                 max="24"
-                                value={entry.hours === null ? '' : entry.hours}
+                                value={entry.hours === null ? '' : entry.hours.toString()}
                                 onChange={(e) => {
                                   const value = e.target.value;
-                                  updateHours(entry.date, value === '' ? null : parseFloat(value));
+                                  if (value === '') {
+                                    updateHours(entry.date, null);
+                                  } else {
+                                    const numValue = parseFloat(value);
+                                    if (!isNaN(numValue) && numValue >= 0 && numValue <= 24) {
+                                      updateHours(entry.date, numValue);
+                                    }
+                                  }
                                 }}
                                 className="text-sm h-9"
                                 placeholder="0.00"
@@ -520,10 +531,17 @@ const WorkLogTab = () => {
                               step="0.25"
                               min="0"
                               max="24"
-                              value={entry.hours === null ? '' : entry.hours}
+                              value={entry.hours === null ? '' : entry.hours.toString()}
                               onChange={(e) => {
                                 const value = e.target.value;
-                                updateHours(entry.date, value === '' ? null : parseFloat(value));
+                                if (value === '') {
+                                  updateHours(entry.date, null);
+                                } else {
+                                  const numValue = parseFloat(value);
+                                  if (!isNaN(numValue) && numValue >= 0 && numValue <= 24) {
+                                    updateHours(entry.date, numValue);
+                                  }
+                                }
                               }}
                               className="w-32"
                               placeholder="0.00"
