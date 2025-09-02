@@ -196,6 +196,77 @@ export type Database = {
         }
         Relationships: []
       }
+      ride_segments: {
+        Row: {
+          created_at: string | null
+          destination: string
+          id: string
+          notes: string | null
+          origin: string
+          ride_id: string
+          segment_end: string | null
+          segment_price: number | null
+          segment_start: string
+          updated_at: string | null
+          vehicle_id: string | null
+        }
+        Insert: {
+          created_at?: string | null
+          destination: string
+          id?: string
+          notes?: string | null
+          origin: string
+          ride_id: string
+          segment_end?: string | null
+          segment_price?: number | null
+          segment_start: string
+          updated_at?: string | null
+          vehicle_id?: string | null
+        }
+        Update: {
+          created_at?: string | null
+          destination?: string
+          id?: string
+          notes?: string | null
+          origin?: string
+          ride_id?: string
+          segment_end?: string | null
+          segment_price?: number | null
+          segment_start?: string
+          updated_at?: string | null
+          vehicle_id?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "ride_segments_ride_id_fkey"
+            columns: ["ride_id"]
+            isOneToOne: false
+            referencedRelation: "rides"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "ride_segments_ride_id_fkey"
+            columns: ["ride_id"]
+            isOneToOne: false
+            referencedRelation: "v_tomorrow_rides"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "ride_segments_vehicle_id_fkey"
+            columns: ["vehicle_id"]
+            isOneToOne: false
+            referencedRelation: "v_vehicle_monthly_costs"
+            referencedColumns: ["vehicle_id"]
+          },
+          {
+            foreignKeyName: "ride_segments_vehicle_id_fkey"
+            columns: ["vehicle_id"]
+            isOneToOne: false
+            referencedRelation: "vehicles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       rides: {
         Row: {
           created_at: string | null
@@ -436,18 +507,6 @@ export type Database = {
           label: string | null
           start_date: string | null
           start_time: string | null
-        }
-        Insert: {
-          id?: string | null
-          label?: never
-          start_date?: never
-          start_time?: never
-        }
-        Update: {
-          id?: string | null
-          label?: never
-          start_date?: never
-          start_time?: never
         }
         Relationships: []
       }
