@@ -262,80 +262,6 @@ const Dashboard = () => {
           </TabsList>
 
           <TabsContent value="overview" className="space-y-6">
-            {/* Reminders and Tomorrow's Rides */}
-            <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-              {/* Reminders */}
-              <Card>
-                <CardHeader>
-                  <CardTitle className="flex items-center gap-2">
-                    <AlertTriangle className="h-5 w-5 text-warning" />
-                    Reminderi
-                  </CardTitle>
-                  <CardDescription>
-                    Nadolazeći rokovi u narednih 30 dana
-                  </CardDescription>
-                </CardHeader>
-                <CardContent>
-                  {reminders.length > 0 ? (
-                    <div className="space-y-3 max-h-64 overflow-y-auto">
-                      {reminders.map((reminder, index) => (
-                        <div key={index} className="flex items-center justify-between p-3 border rounded-lg">
-                          <div>
-                            <p className="font-medium text-foreground text-sm">{reminder.title}</p>
-                            <p className="text-xs text-muted-foreground">
-                              Ističe: {new Date(reminder.expiry_date).toLocaleDateString('en-GB')}
-                            </p>
-                          </div>
-                          <Badge variant={reminder.days_left <= 7 ? "destructive" : "secondary"} className="text-xs">
-                            {reminder.days_left} dana
-                          </Badge>
-                        </div>
-                      ))}
-                    </div>
-                  ) : (
-                    <p className="text-muted-foreground text-sm">Nema nadolazećih rokova</p>
-                  )}
-                </CardContent>
-              </Card>
-
-              {/* Tomorrow's Rides */}
-              <Card>
-                <CardHeader>
-                  <CardTitle className="flex items-center gap-2">
-                    <Route className="h-5 w-5 text-primary" />
-                    Vožnje sutra
-                  </CardTitle>
-                  <CardDescription>
-                    Sve vožnje zakazane za sutra
-                  </CardDescription>
-                </CardHeader>
-                <CardContent>
-                  {tomorrowRides.length > 0 ? (
-                    <div className="space-y-3 max-h-64 overflow-y-auto">
-                      {tomorrowRides.map((ride) => (
-                        <div key={ride.id} className="flex items-center justify-between p-3 border rounded-lg">
-                          <div>
-                            <p className="font-medium text-foreground text-sm">{ride.label}</p>
-                            <p className="text-xs text-muted-foreground">
-                              {new Date(ride.start_date).toLocaleDateString('en-GB')}
-                            </p>
-                          </div>
-                          <Badge variant="outline" className="text-xs">
-                            {ride.start_time}
-                          </Badge>
-                        </div>
-                      ))}
-                    </div>
-                  ) : (
-                    <div className="text-center py-4 text-muted-foreground">
-                      <span className="text-2xl mb-2 block">🚍</span>
-                      <p className="text-sm">Nema vožnji za sutra</p>
-                    </div>
-                  )}
-                </CardContent>
-              </Card>
-            </div>
-
             {/* Hero with Bus Images */}
             <div className="relative rounded-lg overflow-hidden bg-gradient-to-r from-primary to-primary/80 text-primary-foreground p-8">
               <div className="flex items-center justify-between">
@@ -407,6 +333,80 @@ const Dashboard = () => {
                 <CardContent>
                   <div className="text-2xl font-bold text-foreground">{stats.rides_monthly}</div>
                   <p className="text-xs text-muted-foreground">tekući mjesec</p>
+                </CardContent>
+              </Card>
+            </div>
+
+            {/* Reminders and Tomorrow's Rides */}
+            <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+              {/* Reminders */}
+              <Card>
+                <CardHeader>
+                  <CardTitle className="flex items-center gap-2">
+                    <AlertTriangle className="h-5 w-5 text-warning" />
+                    Reminderi
+                  </CardTitle>
+                  <CardDescription>
+                    Nadolazeći rokovi u narednih 30 dana
+                  </CardDescription>
+                </CardHeader>
+                <CardContent>
+                  {reminders.length > 0 ? (
+                    <div className="space-y-3 max-h-64 overflow-y-auto">
+                      {reminders.map((reminder, index) => (
+                        <div key={index} className="flex items-center justify-between p-3 border rounded-lg">
+                          <div>
+                            <p className="font-medium text-foreground text-sm">{reminder.title}</p>
+                            <p className="text-xs text-muted-foreground">
+                              Ističe: {new Date(reminder.expiry_date).toLocaleDateString('en-GB')}
+                            </p>
+                          </div>
+                          <Badge variant={reminder.days_left <= 7 ? "destructive" : "secondary"} className="text-xs">
+                            {reminder.days_left} dana
+                          </Badge>
+                        </div>
+                      ))}
+                    </div>
+                  ) : (
+                    <p className="text-muted-foreground text-sm">Nema nadolazećih rokova</p>
+                  )}
+                </CardContent>
+              </Card>
+
+              {/* Tomorrow's Rides */}
+              <Card>
+                <CardHeader>
+                  <CardTitle className="flex items-center gap-2">
+                    <Route className="h-5 w-5 text-primary" />
+                    Vožnje sutra
+                  </CardTitle>
+                  <CardDescription>
+                    Sve vožnje zakazane za sutra
+                  </CardDescription>
+                </CardHeader>
+                <CardContent>
+                  {tomorrowRides.length > 0 ? (
+                    <div className="space-y-3 max-h-64 overflow-y-auto">
+                      {tomorrowRides.map((ride) => (
+                        <div key={ride.id} className="flex items-center justify-between p-3 border rounded-lg">
+                          <div>
+                            <p className="font-medium text-foreground text-sm">{ride.label}</p>
+                            <p className="text-xs text-muted-foreground">
+                              {new Date(ride.start_date).toLocaleDateString('en-GB')}
+                            </p>
+                          </div>
+                          <Badge variant="outline" className="text-xs">
+                            {ride.start_time}
+                          </Badge>
+                        </div>
+                      ))}
+                    </div>
+                  ) : (
+                    <div className="text-center py-4 text-muted-foreground">
+                      <span className="text-2xl mb-2 block">🚍</span>
+                      <p className="text-sm">Nema vožnji za sutra</p>
+                    </div>
+                  )}
                 </CardContent>
               </Card>
             </div>
