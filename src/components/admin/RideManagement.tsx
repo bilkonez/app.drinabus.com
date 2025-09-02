@@ -351,7 +351,7 @@ const RideManagement = () => {
         const rideSegments = await fetchRideSegments(ride.id);
         setSegments(rideSegments.map(segment => ({
           id: segment.id,
-          start_time: new Date(segment.segment_start).toTimeString().slice(0, 5), // Extract HH:MM
+          start_time: new Date(segment.segment_start).toLocaleTimeString('en-GB', { hour: '2-digit', minute: '2-digit', hour12: false }),
           origin: segment.origin,
           destination: segment.destination,
           vehicle_id: segment.vehicle_id,
