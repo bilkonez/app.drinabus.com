@@ -167,8 +167,12 @@ const RideManagement = () => {
         ride_type: formData.ride_type,
         origin: formData.origin,
         destination: formData.destination,
-        start_at: formData.ride_type === 'lokal' ? null : formData.start_at,
-        end_at: formData.ride_type === 'lokal' ? null : formData.start_at,
+        start_at: formData.ride_type === 'lokal' ? 
+          (formData.ride_date ? `${formData.ride_date}T00:00:00` : new Date().toISOString()) : 
+          formData.start_at,
+        end_at: formData.ride_type === 'lokal' ? 
+          (formData.ride_date ? `${formData.ride_date}T23:59:59` : new Date().toISOString()) : 
+          formData.start_at,
         vehicle_id: formData.ride_type === 'lokal' ? null : (formData.vehicle_id || null),
         driver_id: formData.driver_id || null,
         total_price: formData.total_price ? parseFloat(formData.total_price) : null,
