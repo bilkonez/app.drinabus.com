@@ -517,6 +517,7 @@ export type Database = {
           description: string | null
           id: string
           invoice_url: string | null
+          mileage: number | null
           service_date: string
           service_type: string | null
           vehicle_id: string | null
@@ -527,6 +528,7 @@ export type Database = {
           description?: string | null
           id?: string
           invoice_url?: string | null
+          mileage?: number | null
           service_date: string
           service_type?: string | null
           vehicle_id?: string | null
@@ -537,6 +539,7 @@ export type Database = {
           description?: string | null
           id?: string
           invoice_url?: string | null
+          mileage?: number | null
           service_date?: string
           service_type?: string | null
           vehicle_id?: string | null

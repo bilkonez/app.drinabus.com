@@ -164,6 +164,7 @@ const MaintenanceManagement = () => {
       description: formData.get('description') as string,
       service_date: formData.get('service_date') as string,
       cost: formData.get('cost') ? parseFloat(formData.get('cost') as string) : null,
+      mileage: formData.get('mileage') ? parseInt(formData.get('mileage') as string) : null,
       invoice_url: invoiceUrl,
     };
 
@@ -467,6 +468,16 @@ const MaintenanceManagement = () => {
                       </div>
 
                       <div className="space-y-2">
+                        <Label htmlFor="mileage">Kilometraža</Label>
+                        <Input
+                          id="mileage"
+                          name="mileage"
+                          type="number"
+                          placeholder="Unesite kilometražu..."
+                        />
+                      </div>
+
+                      <div className="space-y-2">
                         <Label htmlFor="invoice">Račun (PDF/slika)</Label>
                         <Input
                           id="invoice"
@@ -500,6 +511,7 @@ const MaintenanceManagement = () => {
                     <TableHead>Datum</TableHead>
                     <TableHead>Tip</TableHead>
                     <TableHead>Opis</TableHead>
+                    <TableHead>Kilometraža</TableHead>
                     <TableHead>Cijena</TableHead>
                     <TableHead>Račun</TableHead>
                   </TableRow>
@@ -517,6 +529,7 @@ const MaintenanceManagement = () => {
                         </Badge>
                       </TableCell>
                       <TableCell>{service.description}</TableCell>
+                      <TableCell>{service.mileage ? `${service.mileage.toLocaleString()} km` : '-'}</TableCell>
                       <TableCell>{service.cost ? `${service.cost} KM` : '-'}</TableCell>
                       <TableCell>
                         {service.invoice_url ? (
