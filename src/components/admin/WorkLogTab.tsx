@@ -339,7 +339,7 @@ const WorkLogTab = () => {
               <Label className="text-sm font-semibold">Mjesec</Label>
               <Popover>
                 <PopoverTrigger asChild>
-                  <Button variant="outline" className="h-11 justify-start text-left font-normal shadow-sm">
+                  <Button variant="outline" className="h-11 w-full justify-start text-left font-normal shadow-sm">
                     <CalendarIcon className="mr-3 h-5 w-5" />
                     {format(selectedMonth, "MMMM yyyy")}
                   </Button>
@@ -364,7 +364,7 @@ const WorkLogTab = () => {
                   size="sm"
                   onClick={fillWorkingDays}
                   disabled={!selectedDriverId || selectedDriverId === 'svi'}
-                  className="flex-1"
+                  className="flex-1 h-11"
                 >
                   <Plus className="h-4 w-4 mr-1" />
                   Radni dani
@@ -380,7 +380,7 @@ const WorkLogTab = () => {
                   size="sm"
                   onClick={exportToCSV}
                   disabled={!selectedDriverId || selectedDriverId === 'svi' || monthlyEntries.length === 0}
-                  className="flex-1"
+                  className="flex-1 h-11"
                 >
                   <FileDown className="h-4 w-4 mr-1" />
                   CSV
