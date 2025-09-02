@@ -590,15 +590,39 @@ const RideManagement = () => {
 
               {formData.ride_type !== 'lokal' && (
                 <>
-                  <div className="space-y-2">
-                    <Label htmlFor="start_at">Polazak *</Label>
-                    <Input
-                      id="start_at"
-                      type="datetime-local"
-                      value={formData.start_at}
-                      onChange={(e) => setFormData({...formData, start_at: e.target.value})}
-                      required
-                    />
+                  <div className="grid grid-cols-2 gap-2">
+                    <div className="space-y-2">
+                      <Label htmlFor="start_date">Datum polaska *</Label>
+                      <Input
+                        id="start_date"
+                        type="date"
+                        value={formData.start_at ? formData.start_at.split('T')[0] : ''}
+                        onChange={(e) => {
+                          const timepart = formData.start_at ? formData.start_at.split('T')[1] || '08:00' : '08:00';
+                          setFormData({...formData, start_at: `${e.target.value}T${timepart}`});
+                        }}
+                        required
+                      />
+                    </div>
+                    <div className="space-y-2">
+                      <Label htmlFor="start_time">Vrijeme polaska *</Label>
+                      <Input
+                        id="start_time"
+                        type="text"
+                        pattern="[0-9]{2}:[0-9]{2}"
+                        placeholder="14:30"
+                        value={formData.start_at ? (formData.start_at.split('T')[1] || '').slice(0, 5) : ''}
+                        onChange={(e) => {
+                          const value = e.target.value;
+                          if (value.match(/^([0-1]?[0-9]|2[0-3]):[0-5][0-9]$/) || value === '') {
+                            const datepart = formData.start_at ? formData.start_at.split('T')[0] : new Date().toISOString().split('T')[0];
+                            setFormData({...formData, start_at: `${datepart}T${value}:00`});
+                          }
+                        }}
+                        maxLength={5}
+                        required
+                      />
+                    </div>
                   </div>
 
                   <div className="space-y-2">
