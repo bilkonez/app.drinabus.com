@@ -87,7 +87,7 @@ const WorkLogTab = () => {
 
   // Fetch work log entries for selected driver and month
   const fetchWorkLogEntries = useCallback(async () => {
-    if (!selectedDriverId || !selectedMonth) return;
+    if (!selectedDriverId || selectedDriverId === 'svi' || !selectedMonth) return;
 
     setLoading(true);
     try {
@@ -167,7 +167,7 @@ const WorkLogTab = () => {
 
   // Save all entries
   const saveAllEntries = useCallback(async () => {
-    if (!selectedDriverId) return;
+    if (!selectedDriverId || selectedDriverId === 'svi') return;
 
     setSaving(true);
     try {
@@ -263,7 +263,7 @@ const WorkLogTab = () => {
 
   // Export to CSV
   const exportToCSV = useCallback(() => {
-    if (!selectedDriverId || monthlyEntries.length === 0) return;
+    if (!selectedDriverId || selectedDriverId === 'svi' || monthlyEntries.length === 0) return;
 
     const driverName = drivers.find(d => d.id === selectedDriverId);
     const monthYear = format(selectedMonth, 'MM/yyyy');
@@ -297,7 +297,7 @@ const WorkLogTab = () => {
   }, [fetchDrivers]);
 
   useEffect(() => {
-    if (selectedDriverId && selectedMonth) {
+    if (selectedDriverId && selectedDriverId !== 'svi' && selectedMonth) {
       fetchWorkLogEntries();
     } else {
       setMonthlyEntries([]);
@@ -325,7 +325,7 @@ const WorkLogTab = () => {
                   <SelectValue placeholder="Izaberite vozača" />
                 </SelectTrigger>
                 <SelectContent>
-                  <SelectItem value="">🚗 Svi vozači</SelectItem>
+                  <SelectItem value="svi">🚗 Svi vozači</SelectItem>
                   {drivers.map(driver => (
                     <SelectItem key={driver.id} value={driver.id}>
                       👤 {driver.first_name} {driver.last_name}
@@ -363,7 +363,7 @@ const WorkLogTab = () => {
                   variant="outline" 
                   size="sm"
                   onClick={fillWorkingDays}
-                  disabled={!selectedDriverId}
+                  disabled={!selectedDriverId || selectedDriverId === 'svi'}
                   className="flex-1"
                 >
                   <Plus className="h-4 w-4 mr-1" />
@@ -379,7 +379,7 @@ const WorkLogTab = () => {
                   variant="outline" 
                   size="sm"
                   onClick={exportToCSV}
-                  disabled={!selectedDriverId || monthlyEntries.length === 0}
+                  disabled={!selectedDriverId || selectedDriverId === 'svi' || monthlyEntries.length === 0}
                   className="flex-1"
                 >
                   <FileDown className="h-4 w-4 mr-1" />
@@ -392,7 +392,7 @@ const WorkLogTab = () => {
       </Card>
 
       {/* Work Log Grid */}
-      {selectedDriverId && (
+      {selectedDriverId && selectedDriverId !== 'svi' && (
         <Card className="border-2 shadow-lg">
           <CardHeader className="bg-gradient-to-r from-primary/5 to-primary/10 border-b">
             <div className="flex items-center justify-between">
@@ -490,7 +490,7 @@ const WorkLogTab = () => {
         </Card>
       )}
 
-      {!selectedDriverId && (
+      {(!selectedDriverId || selectedDriverId === 'svi') && (
         <Card className="border-2 border-dashed">
           <CardContent className="flex flex-col items-center justify-center py-16">
             <Users className="h-16 w-16 text-muted-foreground mb-4" />
