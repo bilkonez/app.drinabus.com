@@ -8,9 +8,13 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 import { Badge } from "@/components/ui/badge";
-import { Plus, Edit, Trash2, Route, FileText, X } from "lucide-react";
+import { Calendar } from "@/components/ui/calendar";
+import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
+import { Plus, Edit, Trash2, Route, FileText, X, CalendarIcon } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "@/hooks/use-toast";
+import { format } from "date-fns";
+import { cn } from "@/lib/utils";
 
 interface Ride {
   id: string;
@@ -619,13 +623,37 @@ const RideManagement = () => {
                 <>
                   <div className="space-y-2">
                     <Label htmlFor="ride_date">Datum vožnje (isti za sve segmente) *</Label>
-                    <Input
-                      id="ride_date"
-                      type="date"
-                      value={formData.ride_date}
-                      onChange={(e) => setFormData({...formData, ride_date: e.target.value})}
-                      required
-                    />
+                    <Popover>
+                      <PopoverTrigger asChild>
+                        <Button
+                          variant="outline"
+                          className={cn(
+                            "w-full justify-start text-left font-normal",
+                            !formData.ride_date && "text-muted-foreground"
+                          )}
+                        >
+                          <CalendarIcon className="mr-2 h-4 w-4" />
+                          {formData.ride_date ? 
+                            format(new Date(formData.ride_date), "dd/MM/yyyy") : 
+                            "Odaberite datum"
+                          }
+                        </Button>
+                      </PopoverTrigger>
+                      <PopoverContent className="w-auto p-0" align="start">
+                        <Calendar
+                          mode="single"
+                          selected={formData.ride_date ? new Date(formData.ride_date) : undefined}
+                          onSelect={(date) => {
+                            if (date) {
+                              const formattedDate = format(date, "yyyy-MM-dd");
+                              setFormData({...formData, ride_date: formattedDate});
+                            }
+                          }}
+                          initialFocus
+                          className={cn("p-3 pointer-events-auto")}
+                        />
+                      </PopoverContent>
+                    </Popover>
                   </div>
 
                   <div className="space-y-4">
