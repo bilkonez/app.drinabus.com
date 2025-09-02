@@ -322,17 +322,17 @@ const Calendar = () => {
     <div className="min-h-screen bg-background p-4 md:p-6">
       <div className="max-w-7xl mx-auto space-y-6">
         {/* Header */}
-        <div className="flex flex-col md:flex-row items-start md:items-center justify-between gap-4">
-          <div>
-            <h1 className="text-2xl md:text-3xl font-bold text-foreground">Kalendar vožnji</h1>
-            <p className="text-muted-foreground">Pregled i upravljanje vožnjama po datumu</p>
+        <div className="flex flex-col lg:flex-row items-start lg:items-center justify-between gap-6 mb-6">
+          <div className="space-y-2">
+            <h1 className="text-3xl lg:text-4xl font-bold text-foreground tracking-tight">Kalendar vožnji</h1>
+            <p className="text-lg text-muted-foreground">Pregled i upravljanje vožnjama po datumu</p>
           </div>
           
-          <div className="flex items-center gap-2">
+          <div className="flex items-center gap-3">
             <Popover>
               <PopoverTrigger asChild>
-                <Button variant="outline" className="w-auto justify-start text-left font-normal">
-                  <CalendarIcon className="mr-2 h-4 w-4" />
+                <Button variant="outline" size="lg" className="min-w-[180px] justify-start text-left font-medium shadow-sm">
+                  <CalendarIcon className="mr-3 h-5 w-5" />
                   {moment(currentDate).format("DD/MM/YYYY")}
                 </Button>
               </PopoverTrigger>
@@ -350,72 +350,74 @@ const Calendar = () => {
         </div>
 
         {/* Filters */}
-        <Card>
-          <CardHeader>
-            <CardTitle className="flex items-center gap-2">
-              <Filter className="h-5 w-5" />
-              Filtri
+        <Card className="border-2 shadow-sm">
+          <CardHeader className="pb-4">
+            <CardTitle className="flex items-center gap-3 text-xl">
+              <div className="p-2 bg-primary/10 rounded-lg">
+                <Filter className="h-5 w-5 text-primary" />
+              </div>
+              Filtri za pretragu
             </CardTitle>
           </CardHeader>
-          <CardContent>
-            <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-              <div className="space-y-2">
-                <label className="text-sm font-medium">Tip vožnje</label>
+          <CardContent className="pt-0">
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+              <div className="space-y-3">
+                <label className="text-sm font-semibold text-foreground">Tip vožnje</label>
                 <Select value={typeFilter} onValueChange={setTypeFilter}>
-                  <SelectTrigger>
+                  <SelectTrigger className="h-11 shadow-sm">
                     <SelectValue placeholder="Svi tipovi" />
                   </SelectTrigger>
                   <SelectContent>
-                    <SelectItem value="svi">Svi tipovi</SelectItem>
-                    <SelectItem value="linijski">Linijski</SelectItem>
-                    <SelectItem value="vanlinijski">Vanlinijski</SelectItem>
-                    <SelectItem value="lokal">Lokal</SelectItem>
+                    <SelectItem value="svi">🚌 Svi tipovi</SelectItem>
+                    <SelectItem value="linijski">🛣️ Linijski</SelectItem>
+                    <SelectItem value="vanlinijski">🌍 Vanlinijski</SelectItem>
+                    <SelectItem value="lokal">🏠 Lokal</SelectItem>
                   </SelectContent>
                 </Select>
               </div>
 
-              <div className="space-y-2">
-                <label className="text-sm font-medium">Status</label>
+              <div className="space-y-3">
+                <label className="text-sm font-semibold text-foreground">Status</label>
                 <Select value={statusFilter} onValueChange={setStatusFilter}>
-                  <SelectTrigger>
+                  <SelectTrigger className="h-11 shadow-sm">
                     <SelectValue placeholder="Svi statusi" />
                   </SelectTrigger>
                   <SelectContent>
-                    <SelectItem value="svi">Svi statusi</SelectItem>
-                    <SelectItem value="planirano">Planirano</SelectItem>
-                    <SelectItem value="zavrseno">Završeno</SelectItem>
+                    <SelectItem value="svi">📋 Svi statusi</SelectItem>
+                    <SelectItem value="planirano">⏰ Planirano</SelectItem>
+                    <SelectItem value="zavrseno">✅ Završeno</SelectItem>
                   </SelectContent>
                 </Select>
               </div>
 
-              <div className="space-y-2">
-                <label className="text-sm font-medium">Vozač</label>
+              <div className="space-y-3">
+                <label className="text-sm font-semibold text-foreground">Vozač</label>
                 <Select value={driverFilter} onValueChange={setDriverFilter}>
-                  <SelectTrigger>
+                  <SelectTrigger className="h-11 shadow-sm">
                     <SelectValue placeholder="Svi vozači" />
                   </SelectTrigger>
                   <SelectContent>
-                    <SelectItem value="svi">Svi vozači</SelectItem>
+                    <SelectItem value="svi">👥 Svi vozači</SelectItem>
                     {employees.map(emp => (
                       <SelectItem key={emp.id} value={emp.id}>
-                        {emp.first_name} {emp.last_name}
+                        🚗 {emp.first_name} {emp.last_name}
                       </SelectItem>
                     ))}
                   </SelectContent>
                 </Select>
               </div>
 
-              <div className="space-y-2">
-                <label className="text-sm font-medium">Vozilo</label>
+              <div className="space-y-3">
+                <label className="text-sm font-semibold text-foreground">Vozilo</label>
                 <Select value={vehicleFilter} onValueChange={setVehicleFilter}>
-                  <SelectTrigger>
+                  <SelectTrigger className="h-11 shadow-sm">
                     <SelectValue placeholder="Sva vozila" />
                   </SelectTrigger>
                   <SelectContent>
-                    <SelectItem value="svi">Sva vozila</SelectItem>
+                    <SelectItem value="svi">🚛 Sva vozila</SelectItem>
                     {vehicles.map(veh => (
                       <SelectItem key={veh.id} value={veh.id}>
-                        {veh.registration}
+                        🚐 {veh.registration}
                       </SelectItem>
                     ))}
                   </SelectContent>
@@ -426,9 +428,18 @@ const Calendar = () => {
         </Card>
 
         {/* Calendar */}
-        <Card>
-          <CardContent className="p-6">
-            <div style={{ height: '70vh' }}>
+        <Card className="border-2 shadow-lg overflow-hidden">
+          <CardHeader className="bg-gradient-to-r from-primary/5 to-primary/10 border-b">
+            <CardTitle className="flex items-center justify-between">
+              <span className="text-xl font-semibold">Kalendarski pregled</span>
+              <div className="flex items-center gap-2 text-sm text-muted-foreground">
+                <span>📅</span>
+                <span>{filteredEvents.length} događaja</span>
+              </div>
+            </CardTitle>
+          </CardHeader>
+          <CardContent className="p-0">
+            <div style={{ height: '75vh' }} className="bg-background">
               <BigCalendar
                 localizer={localizer}
                 events={filteredEvents}
