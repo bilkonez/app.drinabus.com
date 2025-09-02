@@ -14,6 +14,9 @@ dayjs.extend(timezone);
 dayjs.extend(isBetween);
 dayjs.extend(duration);
 dayjs.locale('bs');
+
+// Set default timezone to Europe/Sarajevo
+dayjs.tz.setDefault('Europe/Sarajevo');
 import { useAuth } from '@/contexts/AuthContext';
 import { supabase } from '@/integrations/supabase/client';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
@@ -135,7 +138,7 @@ const Calendar = () => {
       filtered = filtered.filter(event => event.vehicle_id === vehicleFilter);
     }
 
-    // Convert to calendar format
+    // Convert to calendar format - times are already in local timezone from the view
     const calendarEvents = filtered.map(event => ({
       ...event,
       id: event.segment_id || event.ride_id,
@@ -217,27 +220,27 @@ const Calendar = () => {
 
     try {
       if (eventData.segment_id) {
-        // Update segment
+        // Update segment - convert local time to UTC for storage
         const durationMinutes = eventData.event_end 
           ? dayjs(eventData.event_end).diff(dayjs(eventData.event_start), 'minute')
           : 60;
         
-        const newEnd = dayjs(start).add(durationMinutes, 'minute').toISOString();
+        const newEnd = dayjs(start).add(durationMinutes, 'minute');
         
         const { error } = await supabase
           .from('ride_segments')
           .update({
-            segment_start: start.toISOString(),
-            segment_end: newEnd
+            segment_start: dayjs(start).utc().toISOString(),
+            segment_end: newEnd.utc().toISOString()
           })
           .eq('id', eventData.segment_id);
 
         if (error) throw error;
       } else {
-        // Update ride
+        // Update ride - convert local time to UTC for storage
         const { error } = await supabase
           .from('rides')
-          .update({ start_at: start.toISOString() })
+          .update({ start_at: dayjs(start).utc().toISOString() })
           .eq('id', eventData.ride_id);
 
         if (error) throw error;
