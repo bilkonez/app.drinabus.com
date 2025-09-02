@@ -593,17 +593,38 @@ const RideManagement = () => {
                   <div className="grid grid-cols-2 gap-2">
                     <div className="space-y-2">
                       <Label htmlFor="start_date">Datum polaska *</Label>
-                      <Input
-                        id="start_date"
-                        type="date"
-                        value={formData.start_at ? formData.start_at.split('T')[0] : ''}
-                        onChange={(e) => {
-                          const timepart = formData.start_at ? formData.start_at.split('T')[1] || '08:00' : '08:00';
-                          setFormData({...formData, start_at: `${e.target.value}T${timepart}`});
-                        }}
-                        required
-                        lang="en-GB"
-                      />
+                      <Popover>
+                        <PopoverTrigger asChild>
+                          <Button
+                            variant="outline"
+                            className={cn(
+                              "w-full justify-start text-left font-normal",
+                              !formData.start_at && "text-muted-foreground"
+                            )}
+                          >
+                            <CalendarIcon className="mr-2 h-4 w-4" />
+                            {formData.start_at ? 
+                              new Date(formData.start_at.split('T')[0]).toLocaleDateString('en-GB', { day: '2-digit', month: '2-digit', year: 'numeric' }) : 
+                              <span>Odaberite datum</span>
+                            }
+                          </Button>
+                        </PopoverTrigger>
+                        <PopoverContent className="w-auto p-0" align="start">
+                          <Calendar
+                            mode="single"
+                            selected={formData.start_at ? new Date(formData.start_at.split('T')[0]) : undefined}
+                            onSelect={(date) => {
+                              if (date) {
+                                const timepart = formData.start_at ? formData.start_at.split('T')[1] || '08:00:00' : '08:00:00';
+                                const dateString = date.toISOString().split('T')[0];
+                                setFormData({...formData, start_at: `${dateString}T${timepart}`});
+                              }
+                            }}
+                            initialFocus
+                            className={cn("p-3 pointer-events-auto")}
+                          />
+                        </PopoverContent>
+                      </Popover>
                     </div>
                     <div className="space-y-2">
                       <Label htmlFor="start_time">Vrijeme polaska *</Label>
