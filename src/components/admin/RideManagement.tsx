@@ -42,6 +42,16 @@ interface Employee {
 }
 
 
+interface RideSegment {
+  id?: string;
+  start_time: string; // samo vrijeme (HH:MM)
+  origin: string;
+  destination: string;
+  vehicle_id: string | null;
+  segment_price: number | null;
+  notes?: string;
+}
+
 const RideManagement = () => {
   const [rides, setRides] = useState<Ride[]>([]);
   const [vehicles, setVehicles] = useState<Vehicle[]>([]);
@@ -49,6 +59,7 @@ const RideManagement = () => {
   const [loading, setLoading] = useState(true);
   const [dialogOpen, setDialogOpen] = useState(false);
   const [editingRide, setEditingRide] = useState<Ride | null>(null);
+  const [segments, setSegments] = useState<RideSegment[]>([]);
   const [formData, setFormData] = useState({
     ride_type: "linijski",
     origin: "",
@@ -182,6 +193,33 @@ const RideManagement = () => {
         if (error) throw error;
         rideId = editingRide.id;
 
+        // Handle segments for lokal rides
+        if (formData.ride_type === 'lokal') {
+          // Delete existing segments
+          await supabase.from('ride_segments').delete().eq('ride_id', rideId);
+          
+          // Insert new segments using the same date
+          if (segments.length > 0) {
+            const rideDate = formData.ride_date || new Date().toISOString().split('T')[0];
+            
+            const segmentData = segments.map(segment => ({
+              ride_id: rideId,
+              segment_start: `${rideDate}T${segment.start_time}:00`,
+              segment_end: null,
+              origin: segment.origin,
+              destination: segment.destination,
+              vehicle_id: segment.vehicle_id || null,
+              segment_price: segment.segment_price || null,
+              notes: segment.notes || null,
+            }));
+
+            const { error: segmentError } = await supabase
+              .from('ride_segments')
+              .insert(segmentData);
+
+            if (segmentError) throw segmentError;
+          }
+        }
 
         toast({
           title: "Uspjeh",
@@ -197,6 +235,48 @@ const RideManagement = () => {
         if (error) throw error;
         rideId = newRideData.id;
 
+        // Handle segments for lokal rides
+        if (formData.ride_type === 'lokal' && segments.length > 0) {
+          // Validate segments before inserting
+          const validSegments = segments.filter(segment => 
+            segment.start_time && 
+            segment.origin && 
+            segment.destination
+          );
+
+          if (validSegments.length === 0) {
+            toast({
+              title: "Greška",
+              description: "Morate dodati barem jedan valjan segment sa vremenom početka, polazištem i odredištem",
+              variant: "destructive",
+            });
+            setLoading(false);
+            return;
+          }
+
+          // Use the same date for all segments
+          const rideDate = formData.ride_date || new Date().toISOString().split('T')[0];
+          
+          const segmentData = validSegments.map(segment => ({
+            ride_id: rideId,
+            segment_start: `${rideDate}T${segment.start_time}:00`,
+            segment_end: null,
+            origin: segment.origin,
+            destination: segment.destination,
+            vehicle_id: segment.vehicle_id || null,
+            segment_price: segment.segment_price ? parseFloat(segment.segment_price.toString()) : null,
+            notes: segment.notes || null,
+          }));
+
+          const { error: segmentError } = await supabase
+            .from('ride_segments')
+            .insert(segmentData);
+
+          if (segmentError) {
+            console.error('Segment error:', segmentError);
+            throw segmentError;
+          }
+        }
 
         toast({
           title: "Uspjeh",
@@ -262,10 +342,26 @@ const RideManagement = () => {
         status: ride.status,
       });
 
-      // Set ride date for lokal rides
+      // Load segments for lokal rides
       if (ride.ride_type === 'lokal') {
-        const rideDate = new Date(ride.start_at).toISOString().split('T')[0];
-        setFormData(prev => ({ ...prev, ride_date: rideDate }));
+        const rideSegments = await fetchRideSegments(ride.id);
+        setSegments(rideSegments.map(segment => ({
+          id: segment.id,
+          start_time: new Date(segment.segment_start).toTimeString().slice(0, 5), // Extract HH:MM
+          origin: segment.origin,
+          destination: segment.destination,
+          vehicle_id: segment.vehicle_id,
+          segment_price: segment.segment_price,
+          notes: segment.notes || "",
+        })));
+        
+        // Set ride date from first segment (all segments have same date)
+        if (rideSegments.length > 0) {
+          const rideDate = new Date(rideSegments[0].segment_start).toISOString().split('T')[0];
+          setFormData(prev => ({ ...prev, ride_date: rideDate }));
+        }
+      } else {
+        setSegments([]);
       }
     } else {
       setEditingRide(null);
@@ -288,7 +384,30 @@ const RideManagement = () => {
       status: "planirano",
     });
     
+    setSegments([]);
     setEditingRide(null);
+  };
+
+  const addSegment = () => {
+    setSegments([...segments, {
+      start_time: "",
+      origin: "",
+      destination: "",
+      vehicle_id: null,
+      segment_price: null,
+      notes: "",
+    }]);
+  };
+
+  const updateSegment = (index: number, field: keyof RideSegment, value: any) => {
+    const newSegments = [...segments];
+    newSegments[index] = { ...newSegments[index], [field]: value };
+    setSegments(newSegments);
+  };
+
+  const removeSegment = (index: number) => {
+    const newSegments = segments.filter((_, i) => i !== index);
+    setSegments(newSegments);
   };
 
 
@@ -318,7 +437,7 @@ const RideManagement = () => {
       const [costsRes, documentsRes, segmentsRes] = await Promise.all([
         supabase.from('costs').select('*').eq('ride_id', ride.id),
         supabase.from('documents').select('*').eq('ride_id', ride.id),
-        Promise.resolve({ data: [] })
+        ride.ride_type === 'lokal' ? supabase.from('ride_segments').select('*').eq('ride_id', ride.id).order('segment_start') : Promise.resolve({ data: [] })
       ]);
 
       const costs = costsRes.data || [];
@@ -496,17 +615,116 @@ const RideManagement = () => {
               )}
 
               {formData.ride_type === 'lokal' && (
-                <div className="space-y-2">
-                  <Label htmlFor="ride_date">Datum vožnje *</Label>
-                  <Input
-                    id="ride_date"
-                    type="date"
-                    value={formData.ride_date}
-                    onChange={(e) => setFormData({...formData, ride_date: e.target.value})}
-                    required
-                  />
-                </div>
-              )}
+                <>
+                  <div className="space-y-2">
+                    <Label htmlFor="ride_date">Datum vožnje (isti za sve segmente) *</Label>
+                    <Input
+                      id="ride_date"
+                      type="date"
+                      value={formData.ride_date}
+                      onChange={(e) => setFormData({...formData, ride_date: e.target.value})}
+                      required
+                    />
+                  </div>
+
+                  <div className="space-y-4">
+                    <div className="flex items-center justify-between">
+                      <Label className="text-base font-semibold">Segmenti vožnje</Label>
+                      <Button type="button" onClick={addSegment} size="sm">
+                        <Plus className="h-4 w-4 mr-1" />
+                        Dodaj segment
+                      </Button>
+                    </div>
+                    
+                    {segments.map((segment, index) => (
+                      <div key={index} className="border rounded-lg p-4 space-y-3 bg-muted/30">
+                        <div className="flex items-center justify-between">
+                          <span className="text-sm font-medium">Segment {index + 1}</span>
+                          <Button
+                            type="button"
+                            variant="ghost"
+                            size="sm"
+                            onClick={() => removeSegment(index)}
+                          >
+                            <X className="h-4 w-4" />
+                          </Button>
+                        </div>
+                        
+                        <div>
+                          <Label className="text-xs">Vrijeme početka *</Label>
+                          <Input
+                            type="time"
+                            value={segment.start_time}
+                            onChange={(e) => updateSegment(index, 'start_time', e.target.value)}
+                            required
+                          />
+                        </div>
+                        
+                        <div className="grid grid-cols-2 gap-2">
+                          <div>
+                            <Label className="text-xs">Polazište *</Label>
+                            <Input
+                              value={segment.origin}
+                              onChange={(e) => updateSegment(index, 'origin', e.target.value)}
+                              placeholder="Sarajevo"
+                              required
+                            />
+                          </div>
+                          <div>
+                            <Label className="text-xs">Odredište *</Label>
+                            <Input
+                              value={segment.destination}
+                              onChange={(e) => updateSegment(index, 'destination', e.target.value)}
+                              placeholder="Beograd"
+                              required
+                            />
+                          </div>
+                        </div>
+                      
+                      <div className="grid grid-cols-2 gap-2">
+                        <div>
+                          <Label className="text-xs">Vozilo</Label>
+                          <Select 
+                            value={segment.vehicle_id || ""} 
+                            onValueChange={(value) => updateSegment(index, 'vehicle_id', value || null)}
+                          >
+                            <SelectTrigger>
+                              <SelectValue placeholder="Odaberite vozilo" />
+                            </SelectTrigger>
+                            <SelectContent>
+                              {vehicles.map((vehicle) => (
+                                <SelectItem key={vehicle.id} value={vehicle.id}>
+                                  {vehicle.brand} {vehicle.model} ({vehicle.registration})
+                                </SelectItem>
+                              ))}
+                            </SelectContent>
+                          </Select>
+                        </div>
+                        <div>
+                          <Label className="text-xs">Cijena (KM)</Label>
+                          <Input
+                            type="number"
+                            step="0.01"
+                            value={segment.segment_price || ""}
+                            onChange={(e) => updateSegment(index, 'segment_price', e.target.value ? parseFloat(e.target.value) : null)}
+                            placeholder="0.00"
+                          />
+                        </div>
+                      </div>
+                      
+                      <div>
+                        <Label className="text-xs">Napomene</Label>
+                        <Input
+                          value={segment.notes || ""}
+                          onChange={(e) => updateSegment(index, 'notes', e.target.value)}
+                          placeholder="Napomene za segment..."
+                        />
+                      </div>
+                       </div>
+                     ))}
+                   </div>
+                 </>
+               )}
 
               <div className="space-y-2">
                 <Label htmlFor="driver_id">Vozač</Label>
