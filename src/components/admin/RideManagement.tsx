@@ -602,6 +602,7 @@ const RideManagement = () => {
                           setFormData({...formData, start_at: `${e.target.value}T${timepart}`});
                         }}
                         required
+                        lang="en-GB"
                       />
                     </div>
                     <div className="space-y-2">
