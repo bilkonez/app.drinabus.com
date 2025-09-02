@@ -53,7 +53,6 @@ const RideManagement = () => {
     origin: "",
     destination: "",
     start_at: "",
-    end_at: "",
     vehicle_id: "",
     driver_id: "",
     total_price: "",
@@ -85,6 +84,7 @@ const RideManagement = () => {
       const { data, error } = await supabase
         .from('rides')
         .select('*')
+        .in('status', ['planirano', 'zavrseno'])
         .order('start_at', { ascending: false });
 
       if (error) throw error;
@@ -140,7 +140,7 @@ const RideManagement = () => {
         origin: formData.origin,
         destination: formData.destination,
         start_at: formData.start_at,
-        end_at: formData.end_at,
+        end_at: formData.start_at, // Use start_at for both start and end
         vehicle_id: formData.vehicle_id || null,
         driver_id: formData.driver_id || null,
         total_price: formData.total_price ? parseFloat(formData.total_price) : null,
@@ -223,7 +223,6 @@ const RideManagement = () => {
         origin: ride.origin,
         destination: ride.destination,
         start_at: ride.start_at,
-        end_at: ride.end_at,
         vehicle_id: ride.vehicle_id || "",
         driver_id: ride.driver_id || "",
         total_price: ride.total_price?.toString() || "",
@@ -243,7 +242,6 @@ const RideManagement = () => {
       origin: "",
       destination: "",
       start_at: "",
-      end_at: "",
       vehicle_id: "",
       driver_id: "",
       total_price: "",
@@ -256,9 +254,7 @@ const RideManagement = () => {
   const getStatusBadge = (status: string) => {
     const variants = {
       planirano: { variant: "outline" as const, label: "Planirano" },
-      "u toku": { variant: "default" as const, label: "U toku" },
       zavrseno: { variant: "secondary" as const, label: "Završeno" },
-      otkazano: { variant: "destructive" as const, label: "Otkazano" },
     };
     return variants[status as keyof typeof variants] || { variant: "outline" as const, label: status };
   };
@@ -336,28 +332,15 @@ const RideManagement = () => {
                 </div>
               </div>
 
-              <div className="grid grid-cols-2 gap-4">
-                <div className="space-y-2">
-                  <Label htmlFor="start_at">Polazak *</Label>
-                  <Input
-                    id="start_at"
-                    type="datetime-local"
-                    value={formData.start_at}
-                    onChange={(e) => setFormData({...formData, start_at: e.target.value})}
-                    required
-                  />
-                </div>
-
-                <div className="space-y-2">
-                  <Label htmlFor="end_at">Dolazak *</Label>
-                  <Input
-                    id="end_at"
-                    type="datetime-local"
-                    value={formData.end_at}
-                    onChange={(e) => setFormData({...formData, end_at: e.target.value})}
-                    required
-                  />
-                </div>
+              <div className="space-y-2">
+                <Label htmlFor="start_at">Polazak *</Label>
+                <Input
+                  id="start_at"
+                  type="datetime-local"
+                  value={formData.start_at}
+                  onChange={(e) => setFormData({...formData, start_at: e.target.value})}
+                  required
+                />
               </div>
 
               <div className="space-y-2">
@@ -412,9 +395,7 @@ const RideManagement = () => {
                   </SelectTrigger>
                   <SelectContent>
                     <SelectItem value="planirano">Planirano</SelectItem>
-                    <SelectItem value="u toku">U toku</SelectItem>
                     <SelectItem value="zavrseno">Završeno</SelectItem>
-                    <SelectItem value="otkazano">Otkazano</SelectItem>
                   </SelectContent>
                 </Select>
               </div>
@@ -443,114 +424,197 @@ const RideManagement = () => {
         </Dialog>
       </div>
 
-      <Card>
-        <CardHeader>
-          <CardTitle className="flex items-center gap-2">
-            <Route className="h-5 w-5" />
-            Lista vožnji
-          </CardTitle>
-          <CardDescription>
-            {rides.length} vožnji u sistemu
-          </CardDescription>
-        </CardHeader>
-        <CardContent>
-          {loading ? (
-            <div className="text-center py-8">
-              <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary mx-auto mb-4"></div>
-              <p className="text-muted-foreground">Učitavanje vožnji...</p>
-            </div>
-          ) : rides.length === 0 ? (
-            <div className="text-center py-8 text-muted-foreground">
-              <Route className="h-12 w-12 mx-auto mb-4 opacity-50" />
-              <p>Nema vožnji u bazi</p>
-            </div>
-          ) : (
-            <div className="overflow-x-auto">
-              <Table>
-                <TableHeader>
-                  <TableRow>
-                    <TableHead>Relacija</TableHead>
-                    <TableHead>Tip</TableHead>
-                    <TableHead>Polazak</TableHead>
-                    <TableHead>Vozilo</TableHead>
-                    <TableHead>Vozač</TableHead>
-                    <TableHead>Cijena</TableHead>
-                    <TableHead>Status</TableHead>
-                    <TableHead>Akcije</TableHead>
-                  </TableRow>
-                </TableHeader>
-                <TableBody>
-                  {rides.map((ride) => {
-                    const statusInfo = getStatusBadge(ride.status);
-                    return (
-                      <TableRow key={ride.id}>
-                        <TableCell className="font-medium">
-                          {ride.origin} → {ride.destination}
-                        </TableCell>
-                        <TableCell>
-                          <Badge variant="outline">
-                            {ride.ride_type === 'linijski' ? 'Linijski' : 'Vanlinijski'}
-                          </Badge>
-                        </TableCell>
-                        <TableCell>
-                          <div className="text-sm">
-                            {new Date(ride.start_at).toLocaleDateString('bs-BA')}
-                            <div className="text-muted-foreground">
-                              {new Date(ride.start_at).toLocaleTimeString('bs-BA', { 
-                                hour: '2-digit', 
-                                minute: '2-digit' 
-                              })}
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+        <Card>
+          <CardHeader>
+            <CardTitle className="flex items-center gap-2">
+              <Route className="h-5 w-5" />
+              Sve vožnje
+            </CardTitle>
+            <CardDescription>
+              {rides.length} vožnji u sistemu
+            </CardDescription>
+          </CardHeader>
+          <CardContent>
+            {loading ? (
+              <div className="text-center py-8">
+                <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary mx-auto mb-4"></div>
+                <p className="text-muted-foreground">Učitavanje vožnji...</p>
+              </div>
+            ) : rides.length === 0 ? (
+              <div className="text-center py-8 text-muted-foreground">
+                <Route className="h-12 w-12 mx-auto mb-4 opacity-50" />
+                <p>Nema vožnji u bazi</p>
+              </div>
+            ) : (
+              <div className="overflow-x-auto">
+                <Table>
+                  <TableHeader>
+                    <TableRow>
+                      <TableHead>Relacija</TableHead>
+                      <TableHead>Tip</TableHead>
+                      <TableHead>Datum/Sat</TableHead>
+                      <TableHead>Vozilo</TableHead>
+                      <TableHead>Vozač</TableHead>
+                      <TableHead>Cijena</TableHead>
+                      <TableHead>Status</TableHead>
+                      <TableHead>Akcije</TableHead>
+                    </TableRow>
+                  </TableHeader>
+                  <TableBody>
+                    {rides.map((ride) => {
+                      const statusInfo = getStatusBadge(ride.status);
+                      const rideDate = new Date(ride.start_at);
+                      return (
+                        <TableRow key={ride.id}>
+                          <TableCell className="font-medium">
+                            {ride.origin} → {ride.destination}
+                          </TableCell>
+                          <TableCell>
+                            <Badge variant="outline">
+                              {ride.ride_type === 'linijski' ? 'Linijski' : 'Vanlinijski'}
+                            </Badge>
+                          </TableCell>
+                          <TableCell>
+                            <div className="text-sm">
+                              {rideDate.toLocaleDateString('en-GB')}
+                              <div className="text-muted-foreground">
+                                {rideDate.toLocaleTimeString('bs-BA', { 
+                                  hour: '2-digit', 
+                                  minute: '2-digit' 
+                                })}
+                              </div>
                             </div>
+                          </TableCell>
+                          <TableCell className="text-sm">
+                            {getVehicleName(ride.vehicle_id)}
+                          </TableCell>
+                          <TableCell className="text-sm">
+                            {getDriverName(ride.driver_id)}
+                          </TableCell>
+                          <TableCell>
+                            {ride.total_price ? `${ride.total_price.toFixed(2)} KM` : 'N/A'}
+                          </TableCell>
+                          <TableCell>
+                            <Badge variant={statusInfo.variant}>
+                              {statusInfo.label}
+                            </Badge>
+                          </TableCell>
+                          <TableCell>
+                            <div className="flex items-center gap-2">
+                              <Button
+                                variant="outline"
+                                size="sm"
+                                onClick={() => openDialog(ride)}
+                              >
+                                <Edit className="h-4 w-4" />
+                              </Button>
+                              <Button
+                                variant="outline"
+                                size="sm"
+                                onClick={() => handleDelete(ride.id)}
+                              >
+                                <Trash2 className="h-4 w-4" />
+                              </Button>
+                              <Button
+                                variant="outline"
+                                size="sm"
+                                title="Generiši PDF dokumente"
+                              >
+                                <FileText className="h-4 w-4" />
+                              </Button>
+                            </div>
+                          </TableCell>
+                        </TableRow>
+                      );
+                    })}
+                  </TableBody>
+                </Table>
+              </div>
+            )}
+          </CardContent>
+        </Card>
+
+        <Card>
+          <CardHeader>
+            <CardTitle className="flex items-center gap-2">
+              <Route className="h-5 w-5" />
+              Završene vožnje
+            </CardTitle>
+            <CardDescription>
+              {rides.filter(ride => ride.status === 'zavrseno').length} završenih vožnji
+            </CardDescription>
+          </CardHeader>
+          <CardContent>
+            {loading ? (
+              <div className="text-center py-8">
+                <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary mx-auto mb-4"></div>
+                <p className="text-muted-foreground">Učitavanje...</p>
+              </div>
+            ) : rides.filter(ride => ride.status === 'zavrseno').length === 0 ? (
+              <div className="text-center py-8 text-muted-foreground">
+                <Route className="h-12 w-12 mx-auto mb-4 opacity-50" />
+                <p>Nema završenih vožnji</p>
+              </div>
+            ) : (
+              <div className="space-y-3 max-h-96 overflow-y-auto">
+                {rides
+                  .filter(ride => ride.status === 'zavrseno')
+                  .map((ride) => {
+                    const rideDate = new Date(ride.start_at);
+                    return (
+                      <div key={ride.id} className="border rounded-lg p-3 hover:bg-muted/50 transition-colors">
+                        <div className="flex justify-between items-start mb-2">
+                          <div className="font-medium text-sm">
+                            {ride.origin} → {ride.destination}
                           </div>
-                        </TableCell>
-                        <TableCell className="text-sm">
-                          {getVehicleName(ride.vehicle_id)}
-                        </TableCell>
-                        <TableCell className="text-sm">
-                          {getDriverName(ride.driver_id)}
-                        </TableCell>
-                        <TableCell>
-                          {ride.total_price ? `${ride.total_price.toFixed(2)} KM` : 'N/A'}
-                        </TableCell>
-                        <TableCell>
-                          <Badge variant={statusInfo.variant}>
-                            {statusInfo.label}
+                          <Badge variant="secondary" className="text-xs">
+                            Završeno
                           </Badge>
-                        </TableCell>
-                        <TableCell>
-                          <div className="flex items-center gap-2">
-                            <Button
-                              variant="outline"
-                              size="sm"
-                              onClick={() => openDialog(ride)}
-                            >
-                              <Edit className="h-4 w-4" />
-                            </Button>
-                            <Button
-                              variant="outline"
-                              size="sm"
-                              onClick={() => handleDelete(ride.id)}
-                            >
-                              <Trash2 className="h-4 w-4" />
-                            </Button>
-                            <Button
-                              variant="outline"
-                              size="sm"
-                              title="Generiši PDF dokumente"
-                            >
-                              <FileText className="h-4 w-4" />
-                            </Button>
+                        </div>
+                        <div className="grid grid-cols-2 gap-2 text-xs text-muted-foreground">
+                          <div>
+                            <span className="font-medium">Datum:</span> {rideDate.toLocaleDateString('en-GB')}
                           </div>
-                        </TableCell>
-                      </TableRow>
+                          <div>
+                            <span className="font-medium">Sat:</span> {rideDate.toLocaleTimeString('bs-BA', { 
+                              hour: '2-digit', 
+                              minute: '2-digit' 
+                            })}
+                          </div>
+                          <div>
+                            <span className="font-medium">Vozilo:</span> {getVehicleName(ride.vehicle_id)}
+                          </div>
+                          <div>
+                            <span className="font-medium">Cijena:</span> {ride.total_price ? `${ride.total_price.toFixed(2)} KM` : 'N/A'}
+                          </div>
+                        </div>
+                        <div className="flex justify-end gap-1 mt-2">
+                          <Button
+                            variant="outline"
+                            size="sm"
+                            onClick={() => openDialog(ride)}
+                            className="h-6 px-2 text-xs"
+                          >
+                            <Edit className="h-3 w-3" />
+                          </Button>
+                          <Button
+                            variant="outline"
+                            size="sm"
+                            title="Generiši PDF dokumente"
+                            className="h-6 px-2 text-xs"
+                          >
+                            <FileText className="h-3 w-3" />
+                          </Button>
+                        </div>
+                      </div>
                     );
                   })}
-                </TableBody>
-              </Table>
-            </div>
-          )}
-        </CardContent>
-      </Card>
+              </div>
+            )}
+          </CardContent>
+        </Card>
+      </div>
     </div>
   );
 };
