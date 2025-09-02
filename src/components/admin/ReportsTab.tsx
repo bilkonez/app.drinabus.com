@@ -109,6 +109,37 @@ const ReportsTab = () => {
     }
   };
 
+  const exportToCSV = () => {
+    const csvData = dailyStats.map(stat => ({
+      Datum: formatDate(stat.day),
+      'Broj vožnji': stat.rides_count,
+      'Prihodi (KM)': stat.revenue_total.toFixed(2),
+      'Troškovi (KM)': stat.costs_total.toFixed(2),
+      'Profit (KM)': stat.profit_total.toFixed(2)
+    }));
+
+    const csvContent = [
+      Object.keys(csvData[0] || {}).join(','),
+      ...csvData.map(row => Object.values(row).join(','))
+    ].join('\n');
+
+    const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+    const link = document.createElement('a');
+    const url = URL.createObjectURL(blob);
+    link.setAttribute('href', url);
+    link.setAttribute('download', `drina-bus-izvjestaj-${format(new Date(), 'yyyy-MM-dd')}.csv`);
+    link.style.visibility = 'hidden';
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+    URL.revokeObjectURL(url);
+
+    toast({
+      title: "Uspjeh",
+      description: "Izvještaj je uspješno izvezen",
+    });
+  };
+
   const formatDate = (dateString: string) => {
     if (!dateString) return '';
     return format(new Date(dateString), 'dd/MM/yyyy');
@@ -159,7 +190,7 @@ const ReportsTab = () => {
             <Lightbulb className="w-4 h-4 mr-2" />
             Generiši insights
           </Button>
-          <Button variant="outline">
+          <Button onClick={exportToCSV} variant="outline">
             <FileDown className="w-4 h-4 mr-2" />
             Export CSV
           </Button>
