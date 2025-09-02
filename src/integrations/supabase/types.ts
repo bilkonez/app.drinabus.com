@@ -471,6 +471,24 @@ export type Database = {
       }
     }
     Views: {
+      v_calendar_events: {
+        Row: {
+          driver_id: string | null
+          event_date: string | null
+          event_end: string | null
+          event_start: string | null
+          ride_id: string | null
+          ride_type: string | null
+          segment_id: string | null
+          start_hour: number | null
+          start_minute: number | null
+          status: string | null
+          title: string | null
+          total_price: number | null
+          vehicle_id: string | null
+        }
+        Relationships: []
+      }
       v_daily_stats: {
         Row: {
           costs_total: number | null
