@@ -612,11 +612,14 @@ const RideManagement = () => {
                         <PopoverContent className="w-auto p-0" align="start">
                           <Calendar
                             mode="single"
-                            selected={formData.start_at ? new Date(formData.start_at.split('T')[0]) : undefined}
+                            selected={formData.start_at ? new Date(formData.start_at.split('T')[0] + 'T12:00:00') : undefined}
                             onSelect={(date) => {
                               if (date) {
                                 const timepart = formData.start_at ? formData.start_at.split('T')[1] || '08:00:00' : '08:00:00';
-                                const dateString = date.toISOString().split('T')[0];
+                                const year = date.getFullYear();
+                                const month = String(date.getMonth() + 1).padStart(2, '0');
+                                const day = String(date.getDate()).padStart(2, '0');
+                                const dateString = `${year}-${month}-${day}`;
                                 setFormData({...formData, start_at: `${dateString}T${timepart}`});
                               }
                             }}
