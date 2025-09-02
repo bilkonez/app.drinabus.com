@@ -23,7 +23,7 @@ import RideManagement from "@/components/admin/RideManagement";
 import MaintenanceManagement from "@/components/admin/MaintenanceManagement";
 import RemindersTab from "@/components/admin/RemindersTab";
 import ReportsTab from "@/components/admin/ReportsTab";
-import logoImage from "@/assets/logo.jpg";
+const logoImage = "/lovable-uploads/6dd2d576-8aab-4bef-bf5a-0c7d8a00f49f.png";
 
 interface Reminder {
   kind: string;
