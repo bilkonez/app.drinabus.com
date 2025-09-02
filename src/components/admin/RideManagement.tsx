@@ -357,7 +357,8 @@ const RideManagement = () => {
         
         // Set ride date from first segment (all segments have same date)
         if (rideSegments.length > 0) {
-          const rideDate = new Date(rideSegments[0].segment_start).toISOString().split('T')[0];
+          const segmentDate = new Date(rideSegments[0].segment_start);
+          const rideDate = segmentDate.toLocaleDateString('en-CA'); // YYYY-MM-DD format for input[type="date"]
           setFormData(prev => ({ ...prev, ride_date: rideDate }));
         }
       } else {
