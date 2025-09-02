@@ -392,7 +392,7 @@ const Dashboard = () => {
                           <div className="flex-1 min-w-0">
                             <p className="font-medium text-foreground text-xs md:text-sm truncate">{reminder.title}</p>
                             <p className="text-xs text-muted-foreground">
-                              {new Date(reminder.expiry_date).toLocaleDateString('en-GB')}
+                              {new Date(reminder.expiry_date).toLocaleDateString('en-GB', { day: '2-digit', month: '2-digit', year: 'numeric' })}
                             </p>
                           </div>
                           <Badge variant={reminder.days_left <= 7 ? "destructive" : "secondary"} className="text-xs ml-2 flex-shrink-0">
@@ -426,7 +426,7 @@ const Dashboard = () => {
                           <div className="flex-1 min-w-0">
                             <p className="font-medium text-foreground text-xs md:text-sm truncate">{ride.label}</p>
                             <p className="text-xs text-muted-foreground">
-                              {new Date(ride.start_date).toLocaleDateString('en-GB')}
+                              {new Date(ride.start_date).toLocaleDateString('en-GB', { day: '2-digit', month: '2-digit', year: 'numeric' })}
                             </p>
                           </div>
                           <Badge variant="outline" className="text-xs ml-2 flex-shrink-0">

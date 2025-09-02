@@ -452,7 +452,7 @@ const RideManagement = () => {
         ruta: `${ride.origin} → ${ride.destination}`,
         tip: ride.ride_type === 'linijski' ? 'Linijski prevoz' : 
              ride.ride_type === 'vanlinijski' ? 'Vanlinijski prevoz' : 'Lokal prevoz',
-        datum: new Date(ride.start_at).toLocaleDateString('en-GB'),
+        datum: new Date(ride.start_at).toLocaleDateString('en-GB', { day: '2-digit', month: '2-digit', year: 'numeric' }),
         vrijeme: new Date(ride.start_at).toLocaleTimeString('en-GB', { hour: '2-digit', minute: '2-digit', hour12: false }),
         vozilo: ride.ride_type === 'lokal' ? 'Lokal prevoz' : getVehicleName(ride.vehicle_id),
         vozac: getDriverName(ride.driver_id),
@@ -845,7 +845,7 @@ const RideManagement = () => {
                           </TableCell>
                            <TableCell>
                              <div className="text-sm">
-                               {rideDate.toLocaleDateString('en-GB')}
+                                {rideDate.toLocaleDateString('en-GB', { day: '2-digit', month: '2-digit', year: 'numeric' })}
                                <div className="text-muted-foreground">
                                   {rideDate.toLocaleTimeString('en-GB', { 
                                     hour: '2-digit', 
@@ -944,7 +944,7 @@ const RideManagement = () => {
                         </div>
                         <div className="grid grid-cols-2 gap-2 text-xs text-muted-foreground">
                           <div>
-                            <span className="font-medium">Datum:</span> {rideDate.toLocaleDateString('en-GB')}
+                            <span className="font-medium">Datum:</span> {rideDate.toLocaleDateString('en-GB', { day: '2-digit', month: '2-digit', year: 'numeric' })}
                           </div>
                           <div>
                              <span className="font-medium">Sat:</span> {rideDate.toLocaleTimeString('en-GB', { 
