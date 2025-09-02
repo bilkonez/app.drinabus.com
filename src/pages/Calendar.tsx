@@ -1,8 +1,19 @@
 import React, { useState, useEffect, useCallback, useMemo } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { Calendar as BigCalendar, momentLocalizer, Views } from 'react-big-calendar';
-import moment from 'moment';
-import 'moment/locale/bs'; // Bosnian locale
+import { Calendar as BigCalendar, dayjsLocalizer, Views } from 'react-big-calendar';
+import dayjs from 'dayjs';
+import 'dayjs/locale/bs'; // Bosnian locale
+import utc from 'dayjs/plugin/utc';
+import timezone from 'dayjs/plugin/timezone';
+import isBetween from 'dayjs/plugin/isBetween';
+import duration from 'dayjs/plugin/duration';
+
+// Configure dayjs plugins
+dayjs.extend(utc);
+dayjs.extend(timezone);
+dayjs.extend(isBetween);
+dayjs.extend(duration);
+dayjs.locale('bs');
 import { useAuth } from '@/contexts/AuthContext';
 import { supabase } from '@/integrations/supabase/client';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
@@ -19,10 +30,7 @@ import { format } from 'date-fns';
 import 'react-big-calendar/lib/css/react-big-calendar.css';
 import '../styles/calendar.css';
 
-// Set moment locale to Bosnian and configure timezone
-moment.locale('bs');
-
-const localizer = momentLocalizer(moment);
+const localizer = dayjsLocalizer(dayjs);
 
 interface CalendarEvent {
   ride_id: string;
@@ -131,8 +139,8 @@ const Calendar = () => {
     const calendarEvents = filtered.map(event => ({
       ...event,
       id: event.segment_id || event.ride_id,
-      start: new Date(event.event_start),
-      end: event.event_end ? new Date(event.event_end) : new Date(moment(event.event_start).add(1, 'hour').toISOString()),
+      start: dayjs(event.event_start).toDate(),
+      end: event.event_end ? dayjs(event.event_end).toDate() : dayjs(event.event_start).add(1, 'hour').toDate(),
       resource: event
     }));
 
@@ -210,11 +218,11 @@ const Calendar = () => {
     try {
       if (eventData.segment_id) {
         // Update segment
-        const duration = eventData.event_end 
-          ? moment(eventData.event_end).diff(moment(eventData.event_start), 'minutes')
+        const durationMinutes = eventData.event_end 
+          ? dayjs(eventData.event_end).diff(dayjs(eventData.event_start), 'minute')
           : 60;
         
-        const newEnd = moment(start).add(duration, 'minutes').toISOString();
+        const newEnd = dayjs(start).add(durationMinutes, 'minute').toISOString();
         
         const { error } = await supabase
           .from('ride_segments')
@@ -348,7 +356,7 @@ const Calendar = () => {
               <PopoverTrigger asChild>
                 <Button variant="outline" size="lg" className="min-w-[180px] justify-start text-left font-medium shadow-sm">
                   <CalendarIcon className="mr-3 h-5 w-5" />
-                  {moment(currentDate).format("DD/MM/YYYY")}
+                  {dayjs(currentDate).format("DD/MM/YYYY")}
                 </Button>
               </PopoverTrigger>
               <PopoverContent className="w-auto p-0" align="start">
@@ -469,16 +477,16 @@ const Calendar = () => {
                 onView={setCurrentView}
                 onNavigate={setCurrentDate}
                 messages={messages}
-                  formats={{
+                formats={{
                   timeGutterFormat: 'HH:mm',
                   eventTimeRangeFormat: ({ start, end }, culture, localizer) =>
-                    moment(start).format('HH:mm') + ' - ' + moment(end).format('HH:mm'),
+                    dayjs(start).format('HH:mm') + ' - ' + dayjs(end).format('HH:mm'),
                   dayFormat: (date, culture, localizer) =>
-                    moment(date).format('DD/MM'),
+                    dayjs(date).format('DD/MM'),
                   dayHeaderFormat: (date, culture, localizer) =>
-                    moment(date).format('dddd DD/MM'),
+                    dayjs(date).format('dddd DD/MM'),
                   monthHeaderFormat: (date, culture, localizer) =>
-                    moment(date).format('MMMM YYYY'),
+                    dayjs(date).format('MMMM YYYY'),
                 }}
                 draggableAccessor={(event: any) => event.resource.status === 'planirano'}
               />
@@ -501,8 +509,8 @@ const Calendar = () => {
                 <div>
                   <h3 className="font-semibold text-lg">{selectedEvent.title}</h3>
                   <p className="text-sm text-muted-foreground">
-                    {moment(selectedEvent.event_start).format("DD/MM/YYYY [u] HH:mm")}
-                    {selectedEvent.event_end && ` - ${moment(selectedEvent.event_end).format("HH:mm")}`}
+                    {dayjs(selectedEvent.event_start).format("DD/MM/YYYY [u] HH:mm")}
+                    {selectedEvent.event_end && ` - ${dayjs(selectedEvent.event_end).format("HH:mm")}`}
                   </p>
                 </div>
 
