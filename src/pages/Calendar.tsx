@@ -1,4 +1,5 @@
 import React, { useState, useEffect, useCallback, useMemo } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { Calendar as BigCalendar, momentLocalizer, Views } from 'react-big-calendar';
 import moment from 'moment';
 import 'moment/locale/bs'; // Bosnian locale
@@ -10,7 +11,7 @@ import { Badge } from '@/components/ui/badge';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { toast } from '@/hooks/use-toast';
-import { Calendar as CalendarIcon, Filter, Plus, ChevronLeft, ChevronRight } from 'lucide-react';
+import { Calendar as CalendarIcon, Filter, Plus, ChevronLeft, ChevronRight, ArrowLeft } from 'lucide-react';
 import { Calendar as DatePicker } from '@/components/ui/calendar';
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
 import { cn } from '@/lib/utils';
@@ -51,6 +52,7 @@ interface Vehicle {
 
 const Calendar = () => {
   const { user } = useAuth();
+  const navigate = useNavigate();
   const [events, setEvents] = useState<CalendarEvent[]>([]);
   const [filteredEvents, setFilteredEvents] = useState<any[]>([]);
   const [employees, setEmployees] = useState<Employee[]>([]);
@@ -324,8 +326,21 @@ const Calendar = () => {
         {/* Header */}
         <div className="flex flex-col lg:flex-row items-start lg:items-center justify-between gap-6 mb-6">
           <div className="space-y-2">
-            <h1 className="text-3xl lg:text-4xl font-bold text-foreground tracking-tight">Kalendar vožnji</h1>
-            <p className="text-lg text-muted-foreground">Pregled i upravljanje vožnjama po datumu</p>
+            <div className="flex items-center gap-4">
+              <Button 
+                variant="outline" 
+                size="lg"
+                onClick={() => navigate('/dashboard')}
+                className="flex items-center gap-2 shadow-sm"
+              >
+                <ArrowLeft className="h-5 w-5" />
+                Nazad na Dashboard
+              </Button>
+              <div>
+                <h1 className="text-3xl lg:text-4xl font-bold text-foreground tracking-tight">Kalendar vožnji</h1>
+                <p className="text-lg text-muted-foreground">Pregled i upravljanje vožnjama po datumu</p>
+              </div>
+            </div>
           </div>
           
           <div className="flex items-center gap-3">
