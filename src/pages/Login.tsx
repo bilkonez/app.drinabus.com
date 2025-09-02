@@ -1,5 +1,6 @@
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
+import { useAuth } from "@/contexts/AuthContext";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -16,33 +17,20 @@ const Login = () => {
   const [showPassword, setShowPassword] = useState(false);
   const [rememberMe, setRememberMe] = useState(false);
   const [loading, setLoading] = useState(false);
+  const { user, loading: authLoading } = useAuth();
   const navigate = useNavigate();
 
   useEffect(() => {
-    // Check if user is already logged in
-    supabase.auth.getSession().then(({ data: { session } }) => {
-      if (session) {
-        navigate("/dashboard");
-      }
-    });
-
-    const { data: { subscription } } = supabase.auth.onAuthStateChange((event, session) => {
-      if (session) {
-        navigate("/dashboard");
-      }
-    });
-
-    return () => subscription.unsubscribe();
-  }, [navigate]);
+    if (!authLoading && user) {
+      navigate("/dashboard");
+    }
+  }, [user, authLoading, navigate]);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setLoading(true);
 
     try {
-      // Configure persistence based on remember me checkbox
-      const persistSession = rememberMe;
-      
       const { error } = await supabase.auth.signInWithPassword({
         email,
         password,
@@ -71,6 +59,17 @@ const Login = () => {
     }
   };
 
+  if (authLoading) {
+    return (
+      <div className="min-h-screen bg-background flex items-center justify-center">
+        <div className="text-center space-y-4">
+          <img src={logoImage} alt="Drina Bus Logo" className="h-16 w-auto mx-auto" />
+          <p className="text-muted-foreground">Učitavanje...</p>
+        </div>
+      </div>
+    );
+  }
+
   return (
     <div className="min-h-screen bg-gradient-to-br from-background via-background to-muted flex items-center justify-center p-4">
       <div className="w-full max-w-6xl grid grid-cols-1 lg:grid-cols-2 gap-8 items-center">
@@ -84,7 +83,7 @@ const Login = () => {
             />
           </div>
           <div className="space-y-4">
-            <h1 className="text-4xl font-bold bg-gradient-to-r from-primary to-accent bg-clip-text text-transparent">
+            <h1 className="text-4xl font-bold text-foreground">
               Drina Bus
             </h1>
             <p className="text-xl text-muted-foreground">
@@ -99,7 +98,7 @@ const Login = () => {
 
         {/* Login Form */}
         <div className="w-full max-w-md mx-auto">
-          <Card className="shadow-elegant">
+          <Card className="shadow-elegant border-border">
             <CardHeader className="text-center">
               <div className="lg:hidden mb-4">
                 <img 
@@ -108,7 +107,7 @@ const Login = () => {
                   className="h-20 w-auto object-contain mx-auto"
                 />
               </div>
-              <CardTitle className="text-2xl font-bold">Prijava</CardTitle>
+              <CardTitle className="text-2xl font-bold text-foreground">Prijava</CardTitle>
               <CardDescription>
                 Unesite vaše podatke za pristup sistemu
               </CardDescription>

@@ -1,7 +1,6 @@
 import { useState, useEffect } from "react";
-import { useNavigate } from "react-router-dom";
+import { useAuth } from "@/contexts/AuthContext";
 import { supabase } from "@/integrations/supabase/client";
-import { User } from "@supabase/supabase-js";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
@@ -18,48 +17,61 @@ import {
   FileText
 } from "lucide-react";
 import { toast } from "@/hooks/use-toast";
-import VehicleManagement from "@/components/fleet/VehicleManagement";
-import DriverManagement from "@/components/fleet/DriverManagement";
-import RouteManagement from "@/components/routes/RouteManagement";
-import MaintenanceManagement from "@/components/maintenance/MaintenanceManagement";
-import RemindersTab from "@/components/reminders/RemindersTab";
-import ReportsTab from "@/components/reports/ReportsTab";
+import VehicleManagement from "@/components/admin/VehicleManagement";
+import EmployeeManagement from "@/components/admin/EmployeeManagement";
+import RideManagement from "@/components/admin/RideManagement";
+import MaintenanceManagement from "@/components/admin/MaintenanceManagement";
+import RemindersTab from "@/components/admin/RemindersTab";
+import ReportsTab from "@/components/admin/ReportsTab";
 import logoImage from "@/assets/logo.jpg";
 
+interface Reminder {
+  kind: string;
+  title: string;
+  expiry_date: string;
+  days_left: number;
+}
+
+interface DashboardStats {
+  vehicles_total: number;
+  vehicles_active: number;
+  rides_today: number;
+  rides_monthly: number;
+  revenue_monthly: number;
+}
+
 const Dashboard = () => {
-  const [user, setUser] = useState<User | null>(null);
-  const [loading, setLoading] = useState(true);
+  const { user } = useAuth();
   const [activeTab, setActiveTab] = useState("overview");
-  const [reminders, setReminders] = useState<any[]>([]);
-  const navigate = useNavigate();
+  const [reminders, setReminders] = useState<Reminder[]>([]);
+  const [stats, setStats] = useState<DashboardStats>({
+    vehicles_total: 0,
+    vehicles_active: 0,
+    rides_today: 0,
+    rides_monthly: 0,
+    revenue_monthly: 0,
+  });
+  const [busImages, setBusImages] = useState<string[]>([]);
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    // Check authentication
-    supabase.auth.getSession().then(({ data: { session } }) => {
-      if (session) {
-        setUser(session.user);
-      } else {
-        navigate("/login");
-      }
+    fetchDashboardData();
+  }, []);
+
+  const fetchDashboardData = async () => {
+    setLoading(true);
+    try {
+      await Promise.all([
+        fetchReminders(),
+        fetchStats(),
+        fetchBusImages(),
+      ]);
+    } catch (error) {
+      console.error('Error fetching dashboard data:', error);
+    } finally {
       setLoading(false);
-    });
-
-    const { data: { subscription } } = supabase.auth.onAuthStateChange((event, session) => {
-      if (session) {
-        setUser(session.user);
-      } else {
-        navigate("/login");
-      }
-    });
-
-    return () => subscription.unsubscribe();
-  }, [navigate]);
-
-  useEffect(() => {
-    if (user) {
-      fetchReminders();
     }
-  }, [user]);
+  };
 
   const fetchReminders = async () => {
     try {
@@ -76,6 +88,72 @@ const Dashboard = () => {
     }
   };
 
+  const fetchStats = async () => {
+    try {
+      // Fetch vehicle stats
+      const { data: vehicles, error: vehiclesError } = await supabase
+        .from('vehicles')
+        .select('status');
+
+      if (vehiclesError) throw vehiclesError;
+
+      // Fetch today's rides
+      const today = new Date().toISOString().split('T')[0];
+      const { data: ridesToday, error: ridesTodayError } = await supabase
+        .from('rides')
+        .select('id')
+        .gte('start_at', today)
+        .lt('start_at', new Date(Date.now() + 24 * 60 * 60 * 1000).toISOString().split('T')[0]);
+
+      if (ridesTodayError) throw ridesTodayError;
+
+      // Fetch monthly stats
+      const thisMonth = new Date().toISOString().substring(0, 7);
+      const { data: monthlyStats, error: monthlyError } = await supabase
+        .from('v_monthly_stats')
+        .select('*')
+        .eq('month', thisMonth)
+        .single();
+
+      if (monthlyError && monthlyError.code !== 'PGRST116') throw monthlyError;
+
+      setStats({
+        vehicles_total: vehicles?.length || 0,
+        vehicles_active: vehicles?.filter(v => v.status === 'dostupno').length || 0,
+        rides_today: ridesToday?.length || 0,
+        rides_monthly: monthlyStats?.rides_count || 0,
+        revenue_monthly: monthlyStats?.revenue_total || 0,
+      });
+    } catch (error) {
+      console.error('Error fetching stats:', error);
+    }
+  };
+
+  const fetchBusImages = async () => {
+    try {
+      const { data, error } = await supabase.storage
+        .from('media')
+        .list('buses', { limit: 3 });
+
+      if (error || !data || data.length === 0) {
+        setBusImages([]);
+        return;
+      }
+
+      const imageUrls = data.map(file => {
+        const { data: urlData } = supabase.storage
+          .from('media')
+          .getPublicUrl(`buses/${file.name}`);
+        return urlData.publicUrl;
+      });
+
+      setBusImages(imageUrls);
+    } catch (error) {
+      console.error('Error loading bus images:', error);
+      setBusImages([]);
+    }
+  };
+
   const handleLogout = async () => {
     try {
       await supabase.auth.signOut();
@@ -83,7 +161,6 @@ const Dashboard = () => {
         title: "Uspješna odjava",
         description: "Hvala vam što ste koristili naš sistem",
       });
-      navigate("/login");
     } catch (error) {
       toast({
         title: "Greška",
@@ -98,7 +175,7 @@ const Dashboard = () => {
       <div className="min-h-screen bg-background flex items-center justify-center">
         <div className="text-center space-y-4">
           <img src={logoImage} alt="Drina Bus Logo" className="h-16 w-auto mx-auto" />
-          <p className="text-muted-foreground">Učitavanje...</p>
+          <p className="text-muted-foreground">Učitavanje dashboard-a...</p>
         </div>
       </div>
     );
@@ -112,7 +189,7 @@ const Dashboard = () => {
           <div className="flex items-center gap-3">
             <img src={logoImage} alt="Drina Bus Logo" className="h-10 w-auto" />
             <div>
-              <h1 className="text-xl font-bold">Drina Bus</h1>
+              <h1 className="text-xl font-bold text-foreground">Drina Bus</h1>
               <p className="text-sm text-muted-foreground">Upravljanje voznim parkom</p>
             </div>
           </div>
@@ -144,7 +221,7 @@ const Dashboard = () => {
               <Users className="h-4 w-4" />
               Uposlenici
             </TabsTrigger>
-            <TabsTrigger value="routes" className="flex items-center gap-2">
+            <TabsTrigger value="rides" className="flex items-center gap-2">
               <Route className="h-4 w-4" />
               Vožnje
             </TabsTrigger>
@@ -163,15 +240,45 @@ const Dashboard = () => {
           </TabsList>
 
           <TabsContent value="overview" className="space-y-6">
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-              {/* Quick Stats */}
+            {/* Hero with Bus Images */}
+            <div className="relative rounded-lg overflow-hidden bg-gradient-to-r from-primary to-primary/80 text-primary-foreground p-8">
+              <div className="flex items-center justify-between">
+                <div className="space-y-2">
+                  <h2 className="text-3xl font-bold">Dobrodošli nazad</h2>
+                  <p className="text-primary-foreground/90">
+                    Upravljajte vašim voznim parkom efikasno i profesionalno
+                  </p>
+                </div>
+                {busImages.length > 0 && (
+                  <div className="hidden md:flex gap-2">
+                    {busImages.slice(0, 3).map((image, index) => (
+                      <div key={index} className="w-24 h-16 rounded-lg overflow-hidden">
+                        <img 
+                          src={image} 
+                          alt={`Bus ${index + 1}`}
+                          className="w-full h-full object-cover"
+                        />
+                      </div>
+                    ))}
+                  </div>
+                )}
+              </div>
+            </div>
+
+            {/* Stats Cards */}
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
               <Card>
                 <CardHeader className="pb-3">
-                  <CardTitle className="text-base">Vozila ukupno</CardTitle>
+                  <CardTitle className="text-base flex items-center gap-2">
+                    <Bus className="h-4 w-4" />
+                    Vozila ukupno
+                  </CardTitle>
                 </CardHeader>
                 <CardContent>
-                  <div className="text-2xl font-bold">--</div>
-                  <p className="text-xs text-muted-foreground">aktivno u floti</p>
+                  <div className="text-2xl font-bold text-foreground">{stats.vehicles_total}</div>
+                  <p className="text-xs text-muted-foreground">
+                    {stats.vehicles_active} aktivno
+                  </p>
                 </CardContent>
               </Card>
 
@@ -180,7 +287,7 @@ const Dashboard = () => {
                   <CardTitle className="text-base">Vožnje danas</CardTitle>
                 </CardHeader>
                 <CardContent>
-                  <div className="text-2xl font-bold">--</div>
+                  <div className="text-2xl font-bold text-foreground">{stats.rides_today}</div>
                   <p className="text-xs text-muted-foreground">zakazano/završeno</p>
                 </CardContent>
               </Card>
@@ -190,8 +297,20 @@ const Dashboard = () => {
                   <CardTitle className="text-base">Prihod mjesečno</CardTitle>
                 </CardHeader>
                 <CardContent>
-                  <div className="text-2xl font-bold">--</div>
-                  <p className="text-xs text-muted-foreground">ukupno KM</p>
+                  <div className="text-2xl font-bold text-foreground">
+                    {stats.revenue_monthly.toFixed(2)} KM
+                  </div>
+                  <p className="text-xs text-muted-foreground">tekući mjesec</p>
+                </CardContent>
+              </Card>
+
+              <Card>
+                <CardHeader className="pb-3">
+                  <CardTitle className="text-base">Vožnje mjesečno</CardTitle>
+                </CardHeader>
+                <CardContent>
+                  <div className="text-2xl font-bold text-foreground">{stats.rides_monthly}</div>
+                  <p className="text-xs text-muted-foreground">tekući mjesec</p>
                 </CardContent>
               </Card>
             </div>
@@ -213,12 +332,12 @@ const Dashboard = () => {
                     {reminders.map((reminder, index) => (
                       <div key={index} className="flex items-center justify-between p-3 border rounded-lg">
                         <div>
-                          <p className="font-medium">{reminder.title}</p>
+                          <p className="font-medium text-foreground">{reminder.title}</p>
                           <p className="text-sm text-muted-foreground">
                             Ističe: {new Date(reminder.expiry_date).toLocaleDateString('bs-BA')}
                           </p>
                         </div>
-                        <Badge variant={reminder.days_left <= 7 ? "destructive" : "warning"}>
+                        <Badge variant={reminder.days_left <= 7 ? "destructive" : "secondary"}>
                           {reminder.days_left} dana
                         </Badge>
                       </div>
@@ -236,11 +355,11 @@ const Dashboard = () => {
           </TabsContent>
 
           <TabsContent value="employees">
-            <DriverManagement />
+            <EmployeeManagement />
           </TabsContent>
 
-          <TabsContent value="routes">
-            <RouteManagement />
+          <TabsContent value="rides">
+            <RideManagement />
           </TabsContent>
 
           <TabsContent value="maintenance">
