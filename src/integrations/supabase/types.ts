@@ -130,6 +130,58 @@ export type Database = {
           },
         ]
       }
+      driver_work_log: {
+        Row: {
+          created_at: string | null
+          employee_id: string
+          hours: number
+          id: string
+          note: string | null
+          updated_at: string | null
+          work_date: string
+        }
+        Insert: {
+          created_at?: string | null
+          employee_id: string
+          hours: number
+          id?: string
+          note?: string | null
+          updated_at?: string | null
+          work_date: string
+        }
+        Update: {
+          created_at?: string | null
+          employee_id?: string
+          hours?: number
+          id?: string
+          note?: string | null
+          updated_at?: string | null
+          work_date?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "driver_work_log_employee_id_fkey"
+            columns: ["employee_id"]
+            isOneToOne: false
+            referencedRelation: "employees"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "driver_work_log_employee_id_fkey"
+            columns: ["employee_id"]
+            isOneToOne: false
+            referencedRelation: "v_driver_monthly_hours"
+            referencedColumns: ["employee_id"]
+          },
+          {
+            foreignKeyName: "driver_work_log_employee_id_fkey"
+            columns: ["employee_id"]
+            isOneToOne: false
+            referencedRelation: "v_employees_with_roles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       employee_roles: {
         Row: {
           created_at: string | null
@@ -153,6 +205,13 @@ export type Database = {
             isOneToOne: false
             referencedRelation: "employees"
             referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "employee_roles_employee_id_fkey"
+            columns: ["employee_id"]
+            isOneToOne: false
+            referencedRelation: "v_driver_monthly_hours"
+            referencedColumns: ["employee_id"]
           },
           {
             foreignKeyName: "employee_roles_employee_id_fkey"
@@ -365,6 +424,13 @@ export type Database = {
             foreignKeyName: "rides_driver_id_fkey"
             columns: ["driver_id"]
             isOneToOne: false
+            referencedRelation: "v_driver_monthly_hours"
+            referencedColumns: ["employee_id"]
+          },
+          {
+            foreignKeyName: "rides_driver_id_fkey"
+            columns: ["driver_id"]
+            isOneToOne: false
             referencedRelation: "v_employees_with_roles"
             referencedColumns: ["id"]
           },
@@ -555,6 +621,16 @@ export type Database = {
           profit_total: number | null
           revenue_total: number | null
           rides_count: number | null
+        }
+        Relationships: []
+      }
+      v_driver_monthly_hours: {
+        Row: {
+          days_filled: number | null
+          driver_name: string | null
+          employee_id: string | null
+          month_start: string | null
+          total_hours: number | null
         }
         Relationships: []
       }

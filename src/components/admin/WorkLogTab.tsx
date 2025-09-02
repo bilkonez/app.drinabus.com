@@ -1,0 +1,508 @@
+import React, { useState, useEffect, useCallback } from 'react';
+import { supabase } from '@/integrations/supabase/client';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { Button } from '@/components/ui/button';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+import { Input } from '@/components/ui/input';
+import { Label } from '@/components/ui/label';
+import { Calendar } from '@/components/ui/calendar';
+import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
+import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
+import { Badge } from '@/components/ui/badge';
+import { toast } from '@/hooks/use-toast';
+import { Calendar as CalendarIcon, Download, Save, Trash2, Clock, Users, FileDown, Plus } from 'lucide-react';
+import { cn } from '@/lib/utils';
+import { format, getDaysInMonth, startOfMonth, addMonths, isValid } from 'date-fns';
+
+interface Driver {
+  id: string;
+  first_name: string;
+  last_name: string;
+}
+
+interface WorkLogEntry {
+  id?: string;
+  employee_id: string;
+  work_date: string;
+  hours: number;
+  note?: string;
+}
+
+interface MonthlyEntry {
+  date: string;
+  hours: number | null;
+  note: string;
+  hasExistingRecord: boolean;
+  id?: string;
+}
+
+const WorkLogTab = () => {
+  const [drivers, setDrivers] = useState<Driver[]>([]);
+  const [selectedDriverId, setSelectedDriverId] = useState<string>('');
+  const [selectedMonth, setSelectedMonth] = useState<Date>(new Date());
+  const [monthlyEntries, setMonthlyEntries] = useState<MonthlyEntry[]>([]);
+  const [loading, setLoading] = useState(false);
+  const [saving, setSaving] = useState(false);
+
+  // Fetch drivers with driver role
+  const fetchDrivers = useCallback(async () => {
+    try {
+      const { data, error } = await supabase
+        .from('v_employees_with_roles')
+        .select('id, first_name, last_name')
+        .eq('is_vozac', true)
+        .eq('active', true)
+        .order('first_name');
+
+      if (error) throw error;
+      setDrivers(data || []);
+    } catch (error) {
+      console.error('Error fetching drivers:', error);
+      toast({
+        title: "Greška",
+        description: "Neuspješno učitavanje vozača",
+        variant: "destructive",
+      });
+    }
+  }, []);
+
+  // Generate monthly template (1-31 days)
+  const generateMonthlyTemplate = useCallback((date: Date): MonthlyEntry[] => {
+    const year = date.getFullYear();
+    const month = date.getMonth();
+    const daysInMonth = getDaysInMonth(date);
+    
+    return Array.from({ length: daysInMonth }, (_, i) => {
+      const day = i + 1;
+      const dateStr = `${year}-${String(month + 1).padStart(2, '0')}-${String(day).padStart(2, '0')}`;
+      
+      return {
+        date: dateStr,
+        hours: null,
+        note: '',
+        hasExistingRecord: false
+      };
+    });
+  }, []);
+
+  // Fetch work log entries for selected driver and month
+  const fetchWorkLogEntries = useCallback(async () => {
+    if (!selectedDriverId || !selectedMonth) return;
+
+    setLoading(true);
+    try {
+      const startDate = startOfMonth(selectedMonth);
+      const endDate = new Date(selectedMonth.getFullYear(), selectedMonth.getMonth() + 1, 0);
+      
+      const { data, error } = await supabase
+        .from('driver_work_log')
+        .select('*')
+        .eq('employee_id', selectedDriverId)
+        .gte('work_date', format(startDate, 'yyyy-MM-dd'))
+        .lte('work_date', format(endDate, 'yyyy-MM-dd'));
+
+      if (error) throw error;
+
+      // Generate template and populate with existing data
+      const template = generateMonthlyTemplate(selectedMonth);
+      const populatedEntries = template.map(entry => {
+        const existingEntry = data?.find(d => d.work_date === entry.date);
+        if (existingEntry) {
+          return {
+            ...entry,
+            id: existingEntry.id,
+            hours: parseFloat(existingEntry.hours?.toString() || '0'),
+            note: existingEntry.note || '',
+            hasExistingRecord: true
+          };
+        }
+        return entry;
+      });
+
+      setMonthlyEntries(populatedEntries);
+    } catch (error) {
+      console.error('Error fetching work log entries:', error);
+      toast({
+        title: "Greška",
+        description: "Neuspješno učitavanje evidencije rada",
+        variant: "destructive",
+      });
+    } finally {
+      setLoading(false);
+    }
+  }, [selectedDriverId, selectedMonth, generateMonthlyTemplate]);
+
+  // Update hours for a specific date
+  const updateHours = useCallback((date: string, hours: number | null) => {
+    setMonthlyEntries(prev => prev.map(entry => 
+      entry.date === date ? { ...entry, hours } : entry
+    ));
+  }, []);
+
+  // Update note for a specific date
+  const updateNote = useCallback((date: string, note: string) => {
+    setMonthlyEntries(prev => prev.map(entry => 
+      entry.date === date ? { ...entry, note } : entry
+    ));
+  }, []);
+
+  // Fill month with working days (Mon-Fri with 8 hours)
+  const fillWorkingDays = useCallback(() => {
+    setMonthlyEntries(prev => prev.map(entry => {
+      const date = new Date(entry.date);
+      const dayOfWeek = date.getDay(); // 0 = Sunday, 1 = Monday, ..., 6 = Saturday
+      
+      if (dayOfWeek >= 1 && dayOfWeek <= 5) { // Monday to Friday
+        return { ...entry, hours: entry.hours || 8 };
+      } else {
+        return { ...entry, hours: entry.hours || 0 };
+      }
+    }));
+    
+    toast({
+      title: "Uspjeh",
+      description: "Popunjeni radni dani (pon-pet sa 8h)",
+    });
+  }, []);
+
+  // Save all entries
+  const saveAllEntries = useCallback(async () => {
+    if (!selectedDriverId) return;
+
+    setSaving(true);
+    try {
+      const entriesToUpsert: Omit<WorkLogEntry, 'id'>[] = [];
+      const entriesToDelete: string[] = [];
+
+      for (const entry of monthlyEntries) {
+        const shouldSave = entry.hours !== null && entry.hours > 0;
+        const hasNote = entry.note && entry.note.trim().length > 0;
+        
+        if (shouldSave || hasNote) {
+          entriesToUpsert.push({
+            employee_id: selectedDriverId,
+            work_date: entry.date,
+            hours: entry.hours || 0,
+            note: entry.note || null
+          });
+        } else if (entry.hasExistingRecord && entry.id) {
+          entriesToDelete.push(entry.id);
+        }
+      }
+
+      // Delete entries that should be removed
+      if (entriesToDelete.length > 0) {
+        const { error: deleteError } = await supabase
+          .from('driver_work_log')
+          .delete()
+          .in('id', entriesToDelete);
+
+        if (deleteError) throw deleteError;
+      }
+
+      // Upsert new/updated entries
+      if (entriesToUpsert.length > 0) {
+        const { error: upsertError } = await supabase
+          .from('driver_work_log')
+          .upsert(entriesToUpsert, { 
+            onConflict: 'employee_id,work_date'
+          });
+
+        if (upsertError) throw upsertError;
+      }
+
+      // Refresh data
+      await fetchWorkLogEntries();
+      
+      toast({
+        title: "Uspjeh",
+        description: "Evidencija rada je uspješno sačuvana",
+      });
+    } catch (error) {
+      console.error('Error saving work log:', error);
+      toast({
+        title: "Greška",
+        description: "Neuspješno čuvanje evidencije rada",
+        variant: "destructive",
+      });
+    } finally {
+      setSaving(false);
+    }
+  }, [selectedDriverId, monthlyEntries, fetchWorkLogEntries]);
+
+  // Delete specific entry
+  const deleteEntry = useCallback(async (entryId: string, date: string) => {
+    try {
+      const { error } = await supabase
+        .from('driver_work_log')
+        .delete()
+        .eq('id', entryId);
+
+      if (error) throw error;
+
+      // Update local state
+      setMonthlyEntries(prev => prev.map(entry => 
+        entry.date === date 
+          ? { ...entry, hours: null, note: '', hasExistingRecord: false, id: undefined }
+          : entry
+      ));
+
+      toast({
+        title: "Uspjeh",
+        description: "Zapis je uspješno obrisan",
+      });
+    } catch (error) {
+      console.error('Error deleting entry:', error);
+      toast({
+        title: "Greška",
+        description: "Neuspješno brisanje zapisa",
+        variant: "destructive",
+      });
+    }
+  }, []);
+
+  // Export to CSV
+  const exportToCSV = useCallback(() => {
+    if (!selectedDriverId || monthlyEntries.length === 0) return;
+
+    const driverName = drivers.find(d => d.id === selectedDriverId);
+    const monthYear = format(selectedMonth, 'MM/yyyy');
+    
+    const csvContent = [
+      ['driver_name', 'date', 'hours', 'note'],
+      ...monthlyEntries
+        .filter(entry => entry.hours !== null && entry.hours > 0)
+        .map(entry => [
+          `${driverName?.first_name} ${driverName?.last_name}`,
+          entry.date,
+          entry.hours?.toString() || '0',
+          entry.note || ''
+        ])
+    ].map(row => row.map(cell => `"${cell}"`).join(',')).join('\n');
+
+    const blob = new Blob([csvContent], { type: 'text/csv' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = `evidencija_rada_${driverName?.first_name}_${driverName?.last_name}_${monthYear}.csv`;
+    a.click();
+    URL.revokeObjectURL(url);
+  }, [selectedDriverId, monthlyEntries, drivers, selectedMonth]);
+
+  // Calculate total hours
+  const totalHours = monthlyEntries.reduce((sum, entry) => sum + (entry.hours || 0), 0);
+
+  useEffect(() => {
+    fetchDrivers();
+  }, [fetchDrivers]);
+
+  useEffect(() => {
+    if (selectedDriverId && selectedMonth) {
+      fetchWorkLogEntries();
+    } else {
+      setMonthlyEntries([]);
+    }
+  }, [selectedDriverId, selectedMonth, fetchWorkLogEntries]);
+
+  return (
+    <div className="space-y-6">
+      {/* Filter Bar */}
+      <Card className="border-2 shadow-sm">
+        <CardHeader className="pb-4">
+          <CardTitle className="flex items-center gap-3 text-xl">
+            <div className="p-2 bg-primary/10 rounded-lg">
+              <Clock className="h-5 w-5 text-primary" />
+            </div>
+            Evidencija rada vozača
+          </CardTitle>
+        </CardHeader>
+        <CardContent className="pt-0">
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+            <div className="space-y-3">
+              <Label className="text-sm font-semibold">Vozač</Label>
+              <Select value={selectedDriverId} onValueChange={setSelectedDriverId}>
+                <SelectTrigger className="h-11 shadow-sm">
+                  <SelectValue placeholder="Izaberite vozača" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="">🚗 Svi vozači</SelectItem>
+                  {drivers.map(driver => (
+                    <SelectItem key={driver.id} value={driver.id}>
+                      👤 {driver.first_name} {driver.last_name}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            </div>
+
+            <div className="space-y-3">
+              <Label className="text-sm font-semibold">Mjesec</Label>
+              <Popover>
+                <PopoverTrigger asChild>
+                  <Button variant="outline" className="h-11 justify-start text-left font-normal shadow-sm">
+                    <CalendarIcon className="mr-3 h-5 w-5" />
+                    {format(selectedMonth, "MMMM yyyy")}
+                  </Button>
+                </PopoverTrigger>
+                <PopoverContent className="w-auto p-0" align="start">
+                  <Calendar
+                    mode="single"
+                    selected={selectedMonth}
+                    onSelect={(date) => date && setSelectedMonth(date)}
+                    initialFocus
+                    className={cn("p-3 pointer-events-auto")}
+                  />
+                </PopoverContent>
+              </Popover>
+            </div>
+
+            <div className="space-y-3">
+              <Label className="text-sm font-semibold">Brze akcije</Label>
+              <div className="flex gap-2">
+                <Button 
+                  variant="outline" 
+                  size="sm"
+                  onClick={fillWorkingDays}
+                  disabled={!selectedDriverId}
+                  className="flex-1"
+                >
+                  <Plus className="h-4 w-4 mr-1" />
+                  Radni dani
+                </Button>
+              </div>
+            </div>
+
+            <div className="space-y-3">
+              <Label className="text-sm font-semibold">Export</Label>
+              <div className="flex gap-2">
+                <Button 
+                  variant="outline" 
+                  size="sm"
+                  onClick={exportToCSV}
+                  disabled={!selectedDriverId || monthlyEntries.length === 0}
+                  className="flex-1"
+                >
+                  <FileDown className="h-4 w-4 mr-1" />
+                  CSV
+                </Button>
+              </div>
+            </div>
+          </div>
+        </CardContent>
+      </Card>
+
+      {/* Work Log Grid */}
+      {selectedDriverId && (
+        <Card className="border-2 shadow-lg">
+          <CardHeader className="bg-gradient-to-r from-primary/5 to-primary/10 border-b">
+            <div className="flex items-center justify-between">
+              <CardTitle className="text-xl font-semibold">
+                Mjesečni pregled - {drivers.find(d => d.id === selectedDriverId)?.first_name} {drivers.find(d => d.id === selectedDriverId)?.last_name}
+              </CardTitle>
+              <div className="flex items-center gap-4">
+                <Badge variant="secondary" className="text-lg font-semibold">
+                  <Clock className="h-4 w-4 mr-2" />
+                  Ukupno: {totalHours.toFixed(2)}h
+                </Badge>
+                <Button onClick={saveAllEntries} disabled={saving} className="shadow-sm">
+                  <Save className="h-4 w-4 mr-2" />
+                  {saving ? 'Čuvanje...' : 'Sačuvaj sve'}
+                </Button>
+              </div>
+            </div>
+          </CardHeader>
+          <CardContent className="p-0">
+            <div className="max-h-[60vh] overflow-auto">
+              <Table>
+                <TableHeader className="sticky top-0 bg-background z-10">
+                  <TableRow>
+                    <TableHead className="w-32 font-semibold">Datum</TableHead>
+                    <TableHead className="w-32 font-semibold">Dan</TableHead>
+                    <TableHead className="w-40 font-semibold">Sati</TableHead>
+                    <TableHead className="font-semibold">Napomena</TableHead>
+                    <TableHead className="w-20 font-semibold">Akcije</TableHead>
+                  </TableRow>
+                </TableHeader>
+                <TableBody>
+                  {loading ? (
+                    <TableRow>
+                      <TableCell colSpan={5} className="text-center py-8">
+                        Učitavanje...
+                      </TableCell>
+                    </TableRow>
+                  ) : monthlyEntries.map((entry) => {
+                    const date = new Date(entry.date);
+                    const dayName = format(date, 'EEE');
+                    const isWeekend = date.getDay() === 0 || date.getDay() === 6;
+                    
+                    return (
+                      <TableRow key={entry.date} className={isWeekend ? 'bg-muted/30' : ''}>
+                        <TableCell className="font-medium">
+                          {format(date, 'dd/MM/yyyy')}
+                        </TableCell>
+                        <TableCell>
+                          <Badge variant={isWeekend ? 'secondary' : 'outline'}>
+                            {dayName}
+                          </Badge>
+                        </TableCell>
+                        <TableCell>
+                          <Input
+                            type="number"
+                            step="0.25"
+                            min="0"
+                            max="24"
+                            value={entry.hours === null ? '' : entry.hours}
+                            onChange={(e) => {
+                              const value = e.target.value;
+                              updateHours(entry.date, value === '' ? null : parseFloat(value));
+                            }}
+                            className="w-32"
+                            placeholder="0.00"
+                          />
+                        </TableCell>
+                        <TableCell>
+                          <Input
+                            value={entry.note}
+                            onChange={(e) => updateNote(entry.date, e.target.value)}
+                            placeholder="Opcionalna napomena..."
+                            className="min-w-[300px]"
+                          />
+                        </TableCell>
+                        <TableCell>
+                          {entry.hasExistingRecord && entry.id && (
+                            <Button
+                              variant="outline"
+                              size="sm"
+                              onClick={() => entry.id && deleteEntry(entry.id, entry.date)}
+                              className="h-8 w-8 p-0"
+                            >
+                              <Trash2 className="h-4 w-4" />
+                            </Button>
+                          )}
+                        </TableCell>
+                      </TableRow>
+                    );
+                  })}
+                </TableBody>
+              </Table>
+            </div>
+          </CardContent>
+        </Card>
+      )}
+
+      {!selectedDriverId && (
+        <Card className="border-2 border-dashed">
+          <CardContent className="flex flex-col items-center justify-center py-16">
+            <Users className="h-16 w-16 text-muted-foreground mb-4" />
+            <h3 className="text-lg font-semibold text-muted-foreground mb-2">Nema odabranog vozača</h3>
+            <p className="text-muted-foreground text-center">
+              Izaberite vozača iz dropdown liste da biste vidjeli evidenciju rada
+            </p>
+          </CardContent>
+        </Card>
+      )}
+    </div>
+  );
+};
+
+export default WorkLogTab;

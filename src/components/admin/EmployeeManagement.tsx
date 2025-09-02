@@ -9,12 +9,14 @@ import { Checkbox } from "@/components/ui/checkbox";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Calendar } from "@/components/ui/calendar";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import { toast } from "@/hooks/use-toast";
-import { Plus, Edit, Trash2, Calendar as CalendarIcon, Filter } from "lucide-react";
+import { Plus, Edit, Trash2, Calendar as CalendarIcon, Filter, Clock, Users } from "lucide-react";
 import { format } from "date-fns";
 import { cn } from "@/lib/utils";
+import WorkLogTab from './WorkLogTab';
 
 // Define available roles
 const AVAILABLE_ROLES = [
@@ -249,155 +251,174 @@ const EmployeeManagement = () => {
         </Button>
       </div>
 
-      {/* Filters */}
-      <Card>
-        <CardHeader>
-          <CardTitle className="flex items-center gap-2">
-            <Filter className="h-5 w-5" />
-            Filtri
-          </CardTitle>
-        </CardHeader>
-        <CardContent>
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-            <div className="space-y-2">
-              <Label>Status</Label>
-              <Select value={activeFilter} onValueChange={setActiveFilter}>
-                <SelectTrigger>
-                  <SelectValue />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="svi">Svi</SelectItem>
-                  <SelectItem value="aktivni">Aktivni</SelectItem>
-                  <SelectItem value="neaktivni">Neaktivni</SelectItem>
-                </SelectContent>
-              </Select>
-            </div>
+      <Tabs defaultValue="employees" className="w-full">
+        <TabsList className="grid w-full grid-cols-2">
+          <TabsTrigger value="employees" className="flex items-center gap-2">
+            <Users className="h-4 w-4" />
+            Lista uposlenika
+          </TabsTrigger>
+          <TabsTrigger value="worklog" className="flex items-center gap-2">
+            <Clock className="h-4 w-4" />
+            Evidencija rada
+          </TabsTrigger>
+        </TabsList>
 
-            <div className="space-y-2">
-              <Label>Uloga</Label>
-              <Select value={roleFilter} onValueChange={setRoleFilter}>
-                <SelectTrigger>
-                  <SelectValue />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="svi">Sve uloge</SelectItem>
-                  {AVAILABLE_ROLES.map(role => (
-                    <SelectItem key={role.id} value={role.id}>
-                      {role.label}
-                    </SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
-            </div>
-          </div>
-        </CardContent>
-      </Card>
+        <TabsContent value="employees" className="space-y-6">
+          {/* Filters */}
+          <Card>
+            <CardHeader>
+              <CardTitle className="flex items-center gap-2">
+                <Filter className="h-5 w-5" />
+                Filtri
+              </CardTitle>
+            </CardHeader>
+            <CardContent>
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div className="space-y-2">
+                  <Label>Status</Label>
+                  <Select value={activeFilter} onValueChange={setActiveFilter}>
+                    <SelectTrigger>
+                      <SelectValue />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="svi">Svi</SelectItem>
+                      <SelectItem value="aktivni">Aktivni</SelectItem>
+                      <SelectItem value="neaktivni">Neaktivni</SelectItem>
+                    </SelectContent>
+                  </Select>
+                </div>
 
-      {/* Employees Table */}
-      <Card>
-        <CardHeader>
-          <CardTitle>Lista uposlenika</CardTitle>
-          <CardDescription>
-            {filteredEmployees.length} od {employees.length} uposlenika
-          </CardDescription>
-        </CardHeader>
-        <CardContent>
-          {loading ? (
-            <div className="text-center py-8">
-              <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary mx-auto mb-4"></div>
-              <p className="text-muted-foreground">Učitavanje uposlenika...</p>
-            </div>
-          ) : (
-            <div className="overflow-x-auto">
-              <Table>
-                <TableHeader>
-                  <TableRow>
-                    <TableHead>Ime i prezime</TableHead>
-                    <TableHead>Kontakt</TableHead>
-                    <TableHead>Uloge</TableHead>
-                    <TableHead>Vozačka dozvola</TableHead>
-                    <TableHead>Tahograf kartica</TableHead>
-                    <TableHead>Status</TableHead>
-                    <TableHead>Akcije</TableHead>
-                  </TableRow>
-                </TableHeader>
-                <TableBody>
-                  {filteredEmployees.map((employee) => (
-                    <TableRow key={employee.id}>
-                      <TableCell className="font-medium">
-                        {employee.first_name} {employee.last_name}
-                      </TableCell>
-                      <TableCell>
-                        <div className="text-sm">
-                          {employee.phone && <div>{employee.phone}</div>}
-                          {employee.email && <div className="text-muted-foreground">{employee.email}</div>}
-                        </div>
-                      </TableCell>
-                      <TableCell>
-                        <div className="flex flex-wrap gap-1">
-                          {employee.roles_array && employee.roles_array.length > 0 ? (
-                            employee.roles_array.map(roleId => {
-                              const roleInfo = getRoleBadge(roleId);
-                              return (
-                                <Badge key={roleId} variant={roleInfo.variant} className="text-xs">
-                                  {roleInfo.label}
-                                </Badge>
-                              );
-                            })
-                          ) : (
-                            <span className="text-muted-foreground text-sm">Nema uloge</span>
-                          )}
-                        </div>
-                      </TableCell>
-                      <TableCell>
-                        {employee.license_expiry ? (
-                          <div className="text-sm">
-                            {format(new Date(employee.license_expiry), 'dd/MM/yyyy')}
-                          </div>
-                        ) : (
-                          <span className="text-muted-foreground">N/A</span>
-                        )}
-                      </TableCell>
-                      <TableCell>
-                        {employee.tachograph_card_expiry ? (
-                          <div className="text-sm">
-                            {format(new Date(employee.tachograph_card_expiry), 'dd/MM/yyyy')}
-                          </div>
-                        ) : (
-                          <span className="text-muted-foreground">N/A</span>
-                        )}
-                      </TableCell>
-                      <TableCell>
-                        <Badge variant={employee.active ? "default" : "secondary"}>
-                          {employee.active ? "Aktivan" : "Neaktivan"}
-                        </Badge>
-                      </TableCell>
-                      <TableCell>
-                        <div className="flex items-center gap-2">
-                          <Button
-                            variant="outline"
-                            size="sm"
-                            onClick={() => handleEdit(employee)}
-                          >
-                            <Edit className="h-4 w-4" />
-                          </Button>
-                          <Button
-                            variant="outline"
-                            size="sm"
-                            onClick={() => handleDelete(employee.id)}
-                          >
-                            <Trash2 className="h-4 w-4" />
-                          </Button>
-                        </div>
-                      </TableCell>
-                    </TableRow>
-                  ))}
-                </TableBody>
-              </Table>
-            </div>
-          )}
-        </CardContent>
-      </Card>
+                <div className="space-y-2">
+                  <Label>Uloga</Label>
+                  <Select value={roleFilter} onValueChange={setRoleFilter}>
+                    <SelectTrigger>
+                      <SelectValue />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="svi">Sve uloge</SelectItem>
+                      {AVAILABLE_ROLES.map(role => (
+                        <SelectItem key={role.id} value={role.id}>
+                          {role.label}
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                </div>
+              </div>
+            </CardContent>
+          </Card>
+
+          {/* Employees Table */}
+          <Card>
+            <CardHeader>
+              <CardTitle>Lista uposlenika</CardTitle>
+              <CardDescription>
+                {filteredEmployees.length} od {employees.length} uposlenika
+              </CardDescription>
+            </CardHeader>
+            <CardContent>
+              {loading ? (
+                <div className="text-center py-8">
+                  <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary mx-auto mb-4"></div>
+                  <p className="text-muted-foreground">Učitavanje uposlenika...</p>
+                </div>
+              ) : (
+                <div className="overflow-x-auto">
+                  <Table>
+                    <TableHeader>
+                      <TableRow>
+                        <TableHead>Ime i prezime</TableHead>
+                        <TableHead>Kontakt</TableHead>
+                        <TableHead>Uloge</TableHead>
+                        <TableHead>Vozačka dozvola</TableHead>
+                        <TableHead>Tahograf kartica</TableHead>
+                        <TableHead>Status</TableHead>
+                        <TableHead>Akcije</TableHead>
+                      </TableRow>
+                    </TableHeader>
+                    <TableBody>
+                      {filteredEmployees.map((employee) => (
+                        <TableRow key={employee.id}>
+                          <TableCell className="font-medium">
+                            {employee.first_name} {employee.last_name}
+                          </TableCell>
+                          <TableCell>
+                            <div className="text-sm">
+                              {employee.phone && <div>{employee.phone}</div>}
+                              {employee.email && <div className="text-muted-foreground">{employee.email}</div>}
+                            </div>
+                          </TableCell>
+                          <TableCell>
+                            <div className="flex flex-wrap gap-1">
+                              {employee.roles_array && employee.roles_array.length > 0 ? (
+                                employee.roles_array.map(roleId => {
+                                  const roleInfo = getRoleBadge(roleId);
+                                  return (
+                                    <Badge key={roleId} variant={roleInfo.variant} className="text-xs">
+                                      {roleInfo.label}
+                                    </Badge>
+                                  );
+                                })
+                              ) : (
+                                <span className="text-muted-foreground text-sm">Nema uloge</span>
+                              )}
+                            </div>
+                          </TableCell>
+                          <TableCell>
+                            {employee.license_expiry ? (
+                              <div className="text-sm">
+                                {format(new Date(employee.license_expiry), 'dd/MM/yyyy')}
+                              </div>
+                            ) : (
+                              <span className="text-muted-foreground">N/A</span>
+                            )}
+                          </TableCell>
+                          <TableCell>
+                            {employee.tachograph_card_expiry ? (
+                              <div className="text-sm">
+                                {format(new Date(employee.tachograph_card_expiry), 'dd/MM/yyyy')}
+                              </div>
+                            ) : (
+                              <span className="text-muted-foreground">N/A</span>
+                            )}
+                          </TableCell>
+                          <TableCell>
+                            <Badge variant={employee.active ? "default" : "secondary"}>
+                              {employee.active ? "Aktivan" : "Neaktivan"}
+                            </Badge>
+                          </TableCell>
+                          <TableCell>
+                            <div className="flex items-center gap-2">
+                              <Button
+                                variant="outline"
+                                size="sm"
+                                onClick={() => handleEdit(employee)}
+                              >
+                                <Edit className="h-4 w-4" />
+                              </Button>
+                              <Button
+                                variant="outline"
+                                size="sm"
+                                onClick={() => handleDelete(employee.id)}
+                              >
+                                <Trash2 className="h-4 w-4" />
+                              </Button>
+                            </div>
+                          </TableCell>
+                        </TableRow>
+                      ))}
+                    </TableBody>
+                  </Table>
+                </div>
+              )}
+            </CardContent>
+          </Card>
+        </TabsContent>
+
+        <TabsContent value="worklog">
+          <WorkLogTab />
+        </TabsContent>
+      </Tabs>
 
       {/* Dialog for Add/Edit Employee */}
       <Dialog open={showDialog} onOpenChange={setShowDialog}>
