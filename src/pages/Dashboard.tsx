@@ -15,7 +15,9 @@ import {
   AlertTriangle,
   TrendingUp,
   Calendar as CalendarIcon,
-  FileText
+  FileText,
+  Clock,
+  Wrench
 } from "lucide-react";
 import { toast } from "@/hooks/use-toast";
 import VehicleManagement from "@/components/admin/VehicleManagement";
@@ -49,6 +51,32 @@ interface DashboardStats {
   revenue_monthly: number;
 }
 
+interface CalendarEvent {
+  ride_id: string;
+  segment_id: string | null;
+  title: string;
+  event_start: string;
+  event_end: string;
+  event_date: string;
+  start_hour: number;
+  start_minute: number;
+  ride_type: string;
+  status: string;
+}
+
+interface DriversStats {
+  drivers_today: number;
+  top_driver_name: string | null;
+  top_driver_hours: number;
+}
+
+interface FleetStats {
+  active_vehicles_today: number;
+  closest_deadline_vehicle: string | null;
+  closest_deadline_date: string | null;
+  closest_deadline_type: string | null;
+}
+
 const Dashboard = () => {
   const { user } = useAuth();
   const navigate = useNavigate();
@@ -63,6 +91,18 @@ const Dashboard = () => {
     revenue_monthly: 0,
   });
   const [busImages, setBusImages] = useState<string[]>([]);
+  const [weekEvents, setWeekEvents] = useState<CalendarEvent[]>([]);
+  const [driversStats, setDriversStats] = useState<DriversStats>({
+    drivers_today: 0,
+    top_driver_name: null,
+    top_driver_hours: 0,
+  });
+  const [fleetStats, setFleetStats] = useState<FleetStats>({
+    active_vehicles_today: 0,
+    closest_deadline_vehicle: null,
+    closest_deadline_date: null,
+    closest_deadline_type: null,
+  });
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
@@ -77,6 +117,9 @@ const Dashboard = () => {
         fetchTomorrowRides(),
         fetchStats(),
         fetchBusImages(),
+        fetchWeekEvents(),
+        fetchDriversStats(),
+        fetchFleetStats(),
       ]);
     } catch (error) {
       console.error('Error fetching dashboard data:', error);
@@ -177,6 +220,132 @@ const Dashboard = () => {
     } catch (error) {
       console.error('Error loading bus images:', error);
       setBusImages([]);
+    }
+  };
+
+  const fetchWeekEvents = async () => {
+    try {
+      const today = new Date();
+      const monday = new Date(today);
+      monday.setDate(today.getDate() - today.getDay() + 1);
+      const sunday = new Date(monday);
+      sunday.setDate(monday.getDate() + 6);
+
+      const { data, error } = await supabase
+        .from('v_calendar_events')
+        .select('*')
+        .gte('event_date', monday.toISOString().split('T')[0])
+        .lte('event_date', sunday.toISOString().split('T')[0])
+        .order('event_start', { ascending: true });
+
+      if (error) throw error;
+      setWeekEvents(data || []);
+    } catch (error) {
+      console.error('Error fetching week events:', error);
+    }
+  };
+
+  const fetchDriversStats = async () => {
+    try {
+      const today = new Date().toISOString().split('T')[0];
+      
+      // Get drivers working today
+      const { data: todayDrivers, error: todayError } = await supabase
+        .from('rides')
+        .select('driver_id')
+        .gte('start_at', today)
+        .lt('start_at', new Date(Date.now() + 24 * 60 * 60 * 1000).toISOString().split('T')[0])
+        .not('driver_id', 'is', null);
+
+      if (todayError) throw todayError;
+
+      const uniqueDriversToday = new Set(todayDrivers?.map(r => r.driver_id) || []).size;
+
+      // Get top driver this month
+      const currentMonth = new Date().toISOString().substring(0, 7);
+      const { data: topDriver, error: topDriverError } = await supabase
+        .from('v_driver_monthly_hours')
+        .select('driver_name, total_hours')
+        .eq('month_start', `${currentMonth}-01`)
+        .order('total_hours', { ascending: false })
+        .limit(1)
+        .maybeSingle();
+
+      if (topDriverError) throw topDriverError;
+
+      setDriversStats({
+        drivers_today: uniqueDriversToday,
+        top_driver_name: topDriver?.driver_name || null,
+        top_driver_hours: topDriver?.total_hours || 0,
+      });
+    } catch (error) {
+      console.error('Error fetching drivers stats:', error);
+    }
+  };
+
+  const fetchFleetStats = async () => {
+    try {
+      const today = new Date().toISOString().split('T')[0];
+      
+      // Get active vehicles today
+      const { data: todayVehicles, error: todayError } = await supabase
+        .from('rides')
+        .select('vehicle_id')
+        .gte('start_at', today)
+        .lt('start_at', new Date(Date.now() + 24 * 60 * 60 * 1000).toISOString().split('T')[0])
+        .not('vehicle_id', 'is', null);
+
+      if (todayError) throw todayError;
+
+      const uniqueVehiclesToday = new Set(todayVehicles?.map(r => r.vehicle_id) || []).size;
+
+      // Get closest maintenance deadline
+      const { data: vehicleDeadlines, error: deadlinesError } = await supabase
+        .from('vehicle_deadlines')
+        .select(`
+          vehicle_id,
+          registration_expiry,
+          technical_expiry,
+          technical_6m_expiry,
+          tachograph_calibration_expiry,
+          fire_extinguisher_expiry,
+          vehicles (registration)
+        `)
+        .not('vehicles.registration', 'is', null);
+
+      if (deadlinesError) throw deadlinesError;
+
+      let closestDeadline = null;
+      let closestDate = null;
+      let closestType = null;
+      let closestVehicle = null;
+
+      vehicleDeadlines?.forEach(vd => {
+        const deadlineTypes = [
+          { date: vd.registration_expiry, type: 'Registracija' },
+          { date: vd.technical_expiry, type: 'Tehnički pregled' },
+          { date: vd.technical_6m_expiry, type: 'Tehnički 6m' },
+          { date: vd.tachograph_calibration_expiry, type: 'Tahograf' },
+          { date: vd.fire_extinguisher_expiry, type: 'PP aparat' },
+        ];
+
+        deadlineTypes.forEach(dt => {
+          if (dt.date && (!closestDate || new Date(dt.date) < new Date(closestDate))) {
+            closestDate = dt.date;
+            closestType = dt.type;
+            closestVehicle = (vd.vehicles as any)?.registration;
+          }
+        });
+      });
+
+      setFleetStats({
+        active_vehicles_today: uniqueVehiclesToday,
+        closest_deadline_vehicle: closestVehicle,
+        closest_deadline_date: closestDate,
+        closest_deadline_type: closestType,
+      });
+    } catch (error) {
+      console.error('Error fetching fleet stats:', error);
     }
   };
 
@@ -371,81 +540,222 @@ const Dashboard = () => {
               </Card>
             </div>
 
-            {/* Reminders and Tomorrow's Rides */}
-            <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 md:gap-6">
-              {/* Reminders */}
-              <Card>
-                <CardHeader>
-                  <CardTitle className="flex items-center gap-2">
-                    <AlertTriangle className="h-5 w-5 text-warning" />
-                    Reminderi
-                  </CardTitle>
-                  <CardDescription>
-                    Nadolazeći rokovi u narednih 30 dana
-                  </CardDescription>
-                </CardHeader>
-                <CardContent>
-                  {reminders.length > 0 ? (
-                    <div className="space-y-2 md:space-y-3 max-h-64 overflow-y-auto">
-                      {reminders.map((reminder, index) => (
-                        <div key={index} className="flex items-center justify-between p-2 md:p-3 border rounded-lg">
-                          <div className="flex-1 min-w-0">
-                            <p className="font-medium text-foreground text-xs md:text-sm truncate">{reminder.title}</p>
-                            <p className="text-xs text-muted-foreground">
-                              {new Date(reminder.expiry_date).toLocaleDateString('en-GB', { day: '2-digit', month: '2-digit', year: 'numeric' })}
-                            </p>
-                          </div>
-                          <Badge variant={reminder.days_left <= 7 ? "destructive" : "secondary"} className="text-xs ml-2 flex-shrink-0">
-                            {reminder.days_left}d
-                          </Badge>
+            {/* Main content grid */}
+            <div className="grid grid-cols-1 lg:grid-cols-3 gap-4 md:gap-6">
+              {/* Left column - Widgets */}
+              <div className="lg:col-span-2 space-y-4 md:space-y-6">
+                {/* Reminders and Tomorrow's Rides */}
+                <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 md:gap-6">
+                  {/* Reminders */}
+                  <Card>
+                    <CardHeader>
+                      <CardTitle className="flex items-center gap-2">
+                        <AlertTriangle className="h-5 w-5 text-warning" />
+                        Reminderi
+                      </CardTitle>
+                      <CardDescription>
+                        Nadolazeći rokovi u narednih 30 dana
+                      </CardDescription>
+                    </CardHeader>
+                    <CardContent>
+                      {reminders.length > 0 ? (
+                        <div className="space-y-2 md:space-y-3 max-h-64 overflow-y-auto">
+                          {reminders.map((reminder, index) => (
+                            <div key={index} className="flex items-center justify-between p-2 md:p-3 border rounded-lg">
+                              <div className="flex-1 min-w-0">
+                                <p className="font-medium text-foreground text-xs md:text-sm truncate">{reminder.title}</p>
+                                <p className="text-xs text-muted-foreground">
+                                  {new Date(reminder.expiry_date).toLocaleDateString('en-GB', { day: '2-digit', month: '2-digit', year: 'numeric' })}
+                                </p>
+                              </div>
+                              <Badge variant={reminder.days_left <= 7 ? "destructive" : "secondary"} className="text-xs ml-2 flex-shrink-0">
+                                {reminder.days_left}d
+                              </Badge>
+                            </div>
+                          ))}
                         </div>
-                      ))}
-                    </div>
-                  ) : (
-                    <p className="text-muted-foreground text-sm">Nema nadolazećih rokova</p>
-                  )}
-                </CardContent>
-              </Card>
+                      ) : (
+                        <p className="text-muted-foreground text-sm">Nema nadolazećih rokova</p>
+                      )}
+                    </CardContent>
+                  </Card>
 
-              {/* Tomorrow's Rides */}
-              <Card>
-                <CardHeader>
-                  <CardTitle className="flex items-center gap-2">
-                    <Route className="h-5 w-5 text-primary" />
-                    Vožnje sutra
-                  </CardTitle>
-                  <CardDescription>
-                    Sve vožnje zakazane za sutra
-                  </CardDescription>
-                </CardHeader>
-                <CardContent>
-                  {tomorrowRides.length > 0 ? (
-                    <div className="space-y-2 md:space-y-3 max-h-64 overflow-y-auto">
-                      {tomorrowRides.map((ride) => (
-                        <div key={ride.id} className="flex items-center justify-between p-2 md:p-3 border rounded-lg">
-                          <div className="flex-1 min-w-0">
-                            <p className="font-medium text-foreground text-xs md:text-sm truncate">{ride.label}</p>
-                            <p className="text-xs text-muted-foreground">
-                              {new Date(ride.start_date).toLocaleDateString('en-GB', { day: '2-digit', month: '2-digit', year: 'numeric' })}
-                            </p>
-                          </div>
-                          <Badge variant="outline" className="text-xs ml-2 flex-shrink-0">
-                            {ride.start_time}
-                          </Badge>
+                  {/* Tomorrow's Rides */}
+                  <Card>
+                    <CardHeader>
+                      <CardTitle className="flex items-center gap-2">
+                        <Route className="h-5 w-5 text-primary" />
+                        Vožnje sutra
+                      </CardTitle>
+                      <CardDescription>
+                        Sve vožnje zakazane za sutra
+                      </CardDescription>
+                    </CardHeader>
+                    <CardContent>
+                      {tomorrowRides.length > 0 ? (
+                        <div className="space-y-2 md:space-y-3 max-h-64 overflow-y-auto">
+                          {tomorrowRides.map((ride) => (
+                            <div key={ride.id} className="flex items-center justify-between p-2 md:p-3 border rounded-lg">
+                              <div className="flex-1 min-w-0">
+                                <p className="font-medium text-foreground text-xs md:text-sm truncate">{ride.label}</p>
+                                <p className="text-xs text-muted-foreground">
+                                  {new Date(ride.start_date).toLocaleDateString('en-GB', { day: '2-digit', month: '2-digit', year: 'numeric' })}
+                                </p>
+                              </div>
+                              <Badge variant="outline" className="text-xs ml-2 flex-shrink-0">
+                                {ride.start_time}
+                              </Badge>
+                            </div>
+                          ))}
                         </div>
-                      ))}
+                      ) : (
+                        <div className="text-center py-4 text-muted-foreground">
+                          <span className="text-2xl mb-2 block">🚍</span>
+                          <p className="text-sm">Nema vožnji za sutra</p>
+                        </div>
+                      )}
+                    </CardContent>
+                  </Card>
+                </div>
+
+                {/* Drivers Widget */}
+                <Card>
+                  <CardHeader>
+                    <CardTitle className="flex items-center gap-2">
+                      <Users className="h-5 w-5 text-primary" />
+                      Vozači
+                    </CardTitle>
+                  </CardHeader>
+                  <CardContent>
+                    <div className="space-y-4">
+                      <div className="flex items-center justify-between">
+                        <span className="text-sm text-muted-foreground">Danas radi</span>
+                        <span className="font-semibold">{driversStats.drivers_today} vozača</span>
+                      </div>
+                      <div className="border-t pt-4">
+                        <div className="text-sm text-muted-foreground mb-1">Top vozač ovog mjeseca</div>
+                        {driversStats.top_driver_name ? (
+                          <div className="flex items-center justify-between">
+                            <span className="font-medium">{driversStats.top_driver_name}</span>
+                            <Badge variant="outline">{driversStats.top_driver_hours}h</Badge>
+                          </div>
+                        ) : (
+                          <span className="text-sm text-muted-foreground">Nema podataka</span>
+                        )}
+                      </div>
                     </div>
-                  ) : (
-                    <div className="text-center py-4 text-muted-foreground">
-                      <span className="text-2xl mb-2 block">🚍</span>
-                      <p className="text-sm">Nema vožnji za sutra</p>
+                  </CardContent>
+                </Card>
+
+                {/* Fleet Widget */}
+                <Card>
+                  <CardHeader>
+                    <CardTitle className="flex items-center gap-2">
+                      <Wrench className="h-5 w-5 text-warning" />
+                      Vozni park
+                    </CardTitle>
+                  </CardHeader>
+                  <CardContent>
+                    <div className="space-y-4">
+                      <div className="flex items-center justify-between">
+                        <span className="text-sm text-muted-foreground">Aktivna vozila danas</span>
+                        <span className="font-semibold">{fleetStats.active_vehicles_today} vozila</span>
+                      </div>
+                      <div className="border-t pt-4">
+                        <div className="text-sm text-muted-foreground mb-1">Najbliži rok održavanja</div>
+                        {fleetStats.closest_deadline_vehicle && fleetStats.closest_deadline_date ? (
+                          <div className="space-y-1">
+                            <div className="font-medium">{fleetStats.closest_deadline_vehicle}</div>
+                            <div className="flex items-center justify-between">
+                              <span className="text-sm text-muted-foreground">{fleetStats.closest_deadline_type}</span>
+                              <Badge variant="outline">
+                                {new Date(fleetStats.closest_deadline_date).toLocaleDateString('en-GB')}
+                              </Badge>
+                            </div>
+                          </div>
+                        ) : (
+                          <span className="text-sm text-muted-foreground">Nema podataka</span>
+                        )}
+                      </div>
                     </div>
-                  )}
-                </CardContent>
-              </Card>
+                  </CardContent>
+                </Card>
+              </div>
+
+              {/* Right column - Mini Calendar */}
+              <div className="lg:col-span-1">
+                <Card>
+                  <CardHeader>
+                    <CardTitle className="flex items-center gap-2">
+                      <CalendarIcon className="h-5 w-5 text-primary" />
+                      Mini kalendar
+                    </CardTitle>
+                    <CardDescription>
+                      Vožnje u narednih 7 dana
+                    </CardDescription>
+                  </CardHeader>
+                  <CardContent>
+                    <div className="space-y-3">
+                      {Array.from({ length: 7 }, (_, i) => {
+                        const date = new Date();
+                        const monday = new Date(date);
+                        monday.setDate(date.getDate() - date.getDay() + 1);
+                        const currentDate = new Date(monday);
+                        currentDate.setDate(monday.getDate() + i);
+                        
+                        const dayEvents = weekEvents.filter(event => 
+                          event.event_date === currentDate.toISOString().split('T')[0]
+                        );
+
+                        const isToday = currentDate.toDateString() === new Date().toDateString();
+
+                        return (
+                          <div key={i} className={`p-3 border rounded-lg cursor-pointer hover:bg-muted/50 transition-colors ${isToday ? 'bg-primary/5 border-primary/20' : ''}`}
+                               onClick={() => navigate(`/calendar?date=${currentDate.toISOString().split('T')[0]}`)}>
+                            <div className="flex items-center justify-between mb-2">
+                              <div className="font-medium text-sm">
+                                {currentDate.toLocaleDateString('hr-HR', { weekday: 'short', day: '2-digit', month: '2-digit' })}
+                              </div>
+                              <Badge variant="outline" className="text-xs">
+                                {dayEvents.length}
+                              </Badge>
+                            </div>
+                            
+                            {dayEvents.length > 0 ? (
+                              <div className="space-y-1">
+                                {dayEvents.slice(0, 3).map((event, idx) => (
+                                  <div key={idx} className="text-xs text-muted-foreground truncate" 
+                                       title={`${event.title} - ${String(event.start_hour).padStart(2, '0')}:${String(event.start_minute).padStart(2, '0')}`}>
+                                    <div className="flex items-center gap-1">
+                                      <div className={`w-2 h-2 rounded-full flex-shrink-0 ${
+                                        event.status === 'zavrseno' ? 'bg-green-500' :
+                                        event.status === 'u_toku' ? 'bg-blue-500' :
+                                        event.status === 'otkazano' ? 'bg-red-500' : 'bg-yellow-500'
+                                      }`} />
+                                      <span className="truncate">
+                                        {String(event.start_hour).padStart(2, '0')}:{String(event.start_minute).padStart(2, '0')} {event.title}
+                                      </span>
+                                    </div>
+                                  </div>
+                                ))}
+                                {dayEvents.length > 3 && (
+                                  <div className="text-xs text-muted-foreground">
+                                    +{dayEvents.length - 3} više
+                                  </div>
+                                )}
+                              </div>
+                            ) : (
+                              <div className="text-xs text-muted-foreground">Nema vožnji</div>
+                            )}
+                          </div>
+                        );
+                      })}
+                    </div>
+                  </CardContent>
+                </Card>
+              </div>
             </div>
           </TabsContent>
-
 
           <TabsContent value="vehicles">
             <VehicleManagement />
