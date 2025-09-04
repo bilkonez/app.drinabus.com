@@ -17,7 +17,8 @@ import {
   Calendar as CalendarIcon,
   FileText,
   Clock,
-  Wrench
+  Wrench,
+  Plus
 } from "lucide-react";
 import { toast } from "@/hooks/use-toast";
 import VehicleManagement from "@/components/admin/VehicleManagement";
@@ -26,14 +27,17 @@ import RideManagement from "@/components/admin/RideManagement";
 import MaintenanceManagement from "@/components/admin/MaintenanceManagement";
 import RemindersTab from "@/components/admin/RemindersTab";
 import ReportsTab from "@/components/admin/ReportsTab";
+import { AddCostModal } from "@/components/ui/AddCostModal";
+import { formatDate, formatTime } from "@/lib/dateUtils";
 
 const logoImage = "/lovable-uploads/6dd2d576-8aab-4bef-bf5a-0c7d8a00f49f.png";
 
 interface Reminder {
-  kind: string;
-  title: string;
+  reminder_type: string;
   expiry_date: string;
-  days_left: number;
+  days_until_expiry: number;
+  registration: string;
+  vehicle_id: string;
 }
 
 interface TomorrowRide {
@@ -104,6 +108,7 @@ const Dashboard = () => {
     closest_deadline_type: null,
   });
   const [loading, setLoading] = useState(true);
+  const [addCostModalOpen, setAddCostModalOpen] = useState(false);
 
   useEffect(() => {
     fetchDashboardData();
@@ -131,9 +136,9 @@ const Dashboard = () => {
   const fetchReminders = async () => {
     try {
       const { data, error } = await supabase
-        .from('v_reminders_due')
+        .from('v_vehicle_reminders_dashboard')
         .select('*')
-        .order('days_left', { ascending: true })
+        .order('expiry_date', { ascending: true })
         .limit(5);
 
       if (error) throw error;
@@ -563,13 +568,13 @@ const Dashboard = () => {
                           {reminders.map((reminder, index) => (
                             <div key={index} className="flex items-center justify-between p-2 md:p-3 border rounded-lg">
                               <div className="flex-1 min-w-0">
-                                <p className="font-medium text-foreground text-xs md:text-sm truncate">{reminder.title}</p>
+                                <p className="font-medium text-foreground text-xs md:text-sm truncate">{reminder.reminder_type}</p>
                                 <p className="text-xs text-muted-foreground">
-                                  {new Date(reminder.expiry_date).toLocaleDateString('en-GB', { day: '2-digit', month: '2-digit', year: 'numeric' })}
+                                  {reminder.registration} • {formatDate(reminder.expiry_date)}
                                 </p>
                               </div>
-                              <Badge variant={reminder.days_left <= 7 ? "destructive" : "secondary"} className="text-xs ml-2 flex-shrink-0">
-                                {reminder.days_left}d
+                              <Badge variant={reminder.days_until_expiry <= 7 ? "destructive" : "secondary"} className="text-xs ml-2 flex-shrink-0">
+                                za {reminder.days_until_expiry} dana
                               </Badge>
                             </div>
                           ))}
@@ -725,7 +730,7 @@ const Dashboard = () => {
                               <div className="space-y-1">
                                 {dayEvents.slice(0, 3).map((event, idx) => (
                                   <div key={idx} className="text-xs text-muted-foreground truncate" 
-                                       title={`${event.title} - ${String(event.start_hour).padStart(2, '0')}:${String(event.start_minute).padStart(2, '0')}`}>
+                                       title={`${event.title} - ${formatTime(event.event_start || '')}`}>
                                     <div className="flex items-center gap-1">
                                       <div className={`w-2 h-2 rounded-full flex-shrink-0 ${
                                         event.status === 'zavrseno' ? 'bg-green-500' :
@@ -733,7 +738,7 @@ const Dashboard = () => {
                                         event.status === 'otkazano' ? 'bg-red-500' : 'bg-yellow-500'
                                       }`} />
                                       <span className="truncate">
-                                        {String(event.start_hour).padStart(2, '0')}:{String(event.start_minute).padStart(2, '0')} {event.title}
+                                        {formatTime(event.event_start || '')} {event.title}
                                       </span>
                                     </div>
                                   </div>
@@ -781,6 +786,12 @@ const Dashboard = () => {
             <ReportsTab />
           </TabsContent>
         </Tabs>
+
+        <AddCostModal 
+          open={addCostModalOpen}
+          onOpenChange={setAddCostModalOpen}
+          onSuccess={() => fetchDashboardData()}
+        />
       </div>
     </div>
   );

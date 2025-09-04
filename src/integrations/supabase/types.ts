@@ -86,6 +86,13 @@ export type Database = {
             foreignKeyName: "costs_vehicle_id_fkey"
             columns: ["vehicle_id"]
             isOneToOne: false
+            referencedRelation: "v_vehicle_reminders_dashboard"
+            referencedColumns: ["vehicle_id"]
+          },
+          {
+            foreignKeyName: "costs_vehicle_id_fkey"
+            columns: ["vehicle_id"]
+            isOneToOne: false
             referencedRelation: "vehicles"
             referencedColumns: ["id"]
           },
@@ -361,6 +368,13 @@ export type Database = {
             foreignKeyName: "ride_segments_vehicle_id_fkey"
             columns: ["vehicle_id"]
             isOneToOne: false
+            referencedRelation: "v_vehicle_reminders_dashboard"
+            referencedColumns: ["vehicle_id"]
+          },
+          {
+            foreignKeyName: "ride_segments_vehicle_id_fkey"
+            columns: ["vehicle_id"]
+            isOneToOne: false
             referencedRelation: "vehicles"
             referencedColumns: ["id"]
           },
@@ -375,6 +389,7 @@ export type Database = {
           id: string
           notes: string | null
           origin: string
+          return_date: string | null
           ride_type: string | null
           start_at: string
           status: string | null
@@ -390,6 +405,7 @@ export type Database = {
           id?: string
           notes?: string | null
           origin: string
+          return_date?: string | null
           ride_type?: string | null
           start_at: string
           status?: string | null
@@ -405,6 +421,7 @@ export type Database = {
           id?: string
           notes?: string | null
           origin?: string
+          return_date?: string | null
           ride_type?: string | null
           start_at?: string
           status?: string | null
@@ -439,6 +456,13 @@ export type Database = {
             columns: ["vehicle_id"]
             isOneToOne: false
             referencedRelation: "v_vehicle_monthly_costs"
+            referencedColumns: ["vehicle_id"]
+          },
+          {
+            foreignKeyName: "rides_vehicle_id_fkey"
+            columns: ["vehicle_id"]
+            isOneToOne: false
+            referencedRelation: "v_vehicle_reminders_dashboard"
             referencedColumns: ["vehicle_id"]
           },
           {
@@ -505,6 +529,13 @@ export type Database = {
             foreignKeyName: "vehicle_deadlines_vehicle_id_fkey"
             columns: ["vehicle_id"]
             isOneToOne: true
+            referencedRelation: "v_vehicle_reminders_dashboard"
+            referencedColumns: ["vehicle_id"]
+          },
+          {
+            foreignKeyName: "vehicle_deadlines_vehicle_id_fkey"
+            columns: ["vehicle_id"]
+            isOneToOne: true
             referencedRelation: "vehicles"
             referencedColumns: ["id"]
           },
@@ -550,6 +581,13 @@ export type Database = {
             columns: ["vehicle_id"]
             isOneToOne: false
             referencedRelation: "v_vehicle_monthly_costs"
+            referencedColumns: ["vehicle_id"]
+          },
+          {
+            foreignKeyName: "vehicle_service_vehicle_id_fkey"
+            columns: ["vehicle_id"]
+            isOneToOne: false
+            referencedRelation: "v_vehicle_reminders_dashboard"
             referencedColumns: ["vehicle_id"]
           },
           {
@@ -693,6 +731,16 @@ export type Database = {
           costs_total: number | null
           month: string | null
           registration: string | null
+          vehicle_id: string | null
+        }
+        Relationships: []
+      }
+      v_vehicle_reminders_dashboard: {
+        Row: {
+          days_until_expiry: number | null
+          expiry_date: string | null
+          registration: string | null
+          reminder_type: string | null
           vehicle_id: string | null
         }
         Relationships: []
