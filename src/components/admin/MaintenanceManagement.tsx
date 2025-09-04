@@ -8,11 +8,13 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
+import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger } from "@/components/ui/alert-dialog";
 import { Badge } from "@/components/ui/badge";
-import { Calendar, Car, FileText, Plus, Upload, Wrench } from "lucide-react";
+import { Calendar, Car, FileText, Plus, Upload, Wrench, Edit, Trash2 } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
-import { format } from "date-fns";
+import { formatDate } from "@/lib/dateUtils";
+import { AddCostModal } from "@/components/ui/AddCostModal";
 
 const MaintenanceManagement = () => {
   const [vehicles, setVehicles] = useState<any[]>([]);
@@ -24,6 +26,10 @@ const MaintenanceManagement = () => {
   const [selectedVehicle, setSelectedVehicle] = useState<string>("");
   const [selectedRide, setSelectedRide] = useState<string>("");
   const [uploadingFile, setUploadingFile] = useState(false);
+  const [editingDeadline, setEditingDeadline] = useState<any>(null);
+  const [editingService, setEditingService] = useState<any>(null);
+  const [editingCost, setEditingCost] = useState<any>(null);
+  const [addCostModalOpen, setAddCostModalOpen] = useState(false);
   const { toast } = useToast();
 
   useEffect(() => {
@@ -74,11 +80,6 @@ const MaintenanceManagement = () => {
     }
   };
 
-  const formatDate = (dateString: string) => {
-    if (!dateString) return '';
-    return format(new Date(dateString), 'dd/MM/yyyy');
-  };
-
   const uploadInvoice = async (file: File): Promise<string | null> => {
     try {
       setUploadingFile(true);
@@ -109,11 +110,13 @@ const MaintenanceManagement = () => {
 
   const handleSaveDeadlines = async (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
-    if (!selectedVehicle) return;
-
     const formData = new FormData(event.currentTarget);
+    const vehicleId = editingDeadline?.vehicle_id || selectedVehicle;
+    
+    if (!vehicleId) return;
+
     const deadlineData = {
-      vehicle_id: selectedVehicle,
+      vehicle_id: vehicleId,
       registration_expiry: formData.get('registration_expiry') as string || null,
       technical_expiry: formData.get('technical_expiry') as string || null,
       technical_6m_expiry: formData.get('technical_6m_expiry') as string || null,
@@ -135,6 +138,7 @@ const MaintenanceManagement = () => {
 
       fetchData();
       setSelectedVehicle("");
+      setEditingDeadline(null);
     } catch (error) {
       console.error('Error saving deadlines:', error);
       toast({
@@ -147,19 +151,20 @@ const MaintenanceManagement = () => {
 
   const handleSaveService = async (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
-    if (!selectedVehicle) return;
-
     const formData = new FormData(event.currentTarget);
     const fileInput = event.currentTarget.querySelector('input[type="file"]') as HTMLInputElement;
+    const vehicleId = editingService?.vehicle_id || selectedVehicle;
     
-    let invoiceUrl = null;
+    if (!vehicleId) return;
+    
+    let invoiceUrl = editingService?.invoice_url || null;
     if (fileInput?.files?.[0]) {
       invoiceUrl = await uploadInvoice(fileInput.files[0]);
       if (!invoiceUrl) return;
     }
 
     const serviceData = {
-      vehicle_id: selectedVehicle,
+      vehicle_id: vehicleId,
       service_type: formData.get('service_type') as string,
       description: formData.get('description') as string,
       service_date: formData.get('service_date') as string,
@@ -169,25 +174,33 @@ const MaintenanceManagement = () => {
     };
 
     try {
-      const { error } = await supabase
-        .from('vehicle_service')
-        .insert(serviceData);
-
-      if (error) throw error;
+      if (editingService) {
+        const { error } = await supabase
+          .from('vehicle_service')
+          .update(serviceData)
+          .eq('id', editingService.id);
+        if (error) throw error;
+      } else {
+        const { error } = await supabase
+          .from('vehicle_service')
+          .insert(serviceData);
+        if (error) throw error;
+      }
 
       toast({
         title: "Uspjeh",
-        description: "Servis je uspješno dodan",
+        description: editingService ? "Servis je uspješno ažuriran" : "Servis je uspješno dodan",
       });
 
       fetchData();
       setSelectedVehicle("");
+      setEditingService(null);
       event.currentTarget.reset();
     } catch (error) {
       console.error('Error saving service:', error);
       toast({
         title: "Greška",
-        description: "Greška pri dodavanju servisa",
+        description: "Greška pri čuvanju servisa",
         variant: "destructive",
       });
     }
@@ -195,7 +208,6 @@ const MaintenanceManagement = () => {
 
   const handleSaveCost = async (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
-
     const formData = new FormData(event.currentTarget);
     const costData = {
       cost_type: formData.get('cost_type') as string,
@@ -206,26 +218,109 @@ const MaintenanceManagement = () => {
     };
 
     try {
-      const { error } = await supabase
-        .from('costs')
-        .insert(costData);
-
-      if (error) throw error;
+      if (editingCost) {
+        const { error } = await supabase
+          .from('costs')
+          .update(costData)
+          .eq('id', editingCost.id);
+        if (error) throw error;
+      } else {
+        const { error } = await supabase
+          .from('costs')
+          .insert(costData);
+        if (error) throw error;
+      }
 
       toast({
         title: "Uspjeh",
-        description: "Trošak je uspješno dodan",
+        description: editingCost ? "Trošak je uspješno ažuriran" : "Trošak je uspješno dodan",
       });
 
       fetchData();
       setSelectedVehicle("");
       setSelectedRide("");
+      setEditingCost(null);
       event.currentTarget.reset();
     } catch (error) {
       console.error('Error saving cost:', error);
       toast({
         title: "Greška",
-        description: "Greška pri dodavanju troška",
+        description: "Greška pri čuvanju troška",
+        variant: "destructive",
+      });
+    }
+  };
+
+  const handleDeleteDeadline = async (deadlineId: string) => {
+    try {
+      const { error } = await supabase
+        .from('vehicle_deadlines')
+        .delete()
+        .eq('id', deadlineId);
+
+      if (error) throw error;
+
+      toast({
+        title: "Uspjeh",
+        description: "Rokovi su uspješno obrisani",
+      });
+
+      fetchData();
+    } catch (error) {
+      console.error('Error deleting deadline:', error);
+      toast({
+        title: "Greška",
+        description: "Greška pri brisanju rokova",
+        variant: "destructive",
+      });
+    }
+  };
+
+  const handleDeleteService = async (serviceId: string) => {
+    try {
+      const { error } = await supabase
+        .from('vehicle_service')
+        .delete()
+        .eq('id', serviceId);
+
+      if (error) throw error;
+
+      toast({
+        title: "Uspjeh",
+        description: "Servis je uspješno obrisan",
+      });
+
+      fetchData();
+    } catch (error) {
+      console.error('Error deleting service:', error);
+      toast({
+        title: "Greška",
+        description: "Greška pri brisanju servisa",
+        variant: "destructive",
+      });
+    }
+  };
+
+  const handleDeleteCost = async (costId: string) => {
+    try {
+      const { error } = await supabase
+        .from('costs')
+        .delete()
+        .eq('id', costId);
+
+      if (error) throw error;
+
+      toast({
+        title: "Uspjeh",
+        description: "Trošak je uspješno obrisan",
+      });
+
+      fetchData();
+    } catch (error) {
+      console.error('Error deleting cost:', error);
+      toast({
+        title: "Greška",
+        description: "Greška pri brisanju troška",
         variant: "destructive",
       });
     }
@@ -272,34 +367,38 @@ const MaintenanceManagement = () => {
                 </div>
                 <Dialog>
                   <DialogTrigger asChild>
-                    <Button>
+                    <Button onClick={() => setEditingDeadline(null)}>
                       <Plus className="w-4 h-4 mr-2" />
                       Dodaj/Uredi rokove
                     </Button>
                   </DialogTrigger>
                   <DialogContent className="max-w-2xl">
                     <DialogHeader>
-                      <DialogTitle>Rokovi vozila</DialogTitle>
+                      <DialogTitle>
+                        {editingDeadline ? "Uredi rokove vozila" : "Dodaj rokove vozila"}
+                      </DialogTitle>
                       <DialogDescription>
-                        Dodajte ili uredite rokove za odabrano vozilo
+                        {editingDeadline ? "Uredite rokove za odabrano vozilo" : "Dodajte rokove za odabrano vozilo"}
                       </DialogDescription>
                     </DialogHeader>
                     <form onSubmit={handleSaveDeadlines} className="space-y-4">
-                      <div className="space-y-2">
-                        <Label htmlFor="vehicle-select">Vozilo</Label>
-                        <Select value={selectedVehicle} onValueChange={setSelectedVehicle} required>
-                          <SelectTrigger>
-                            <SelectValue placeholder="Izaberite vozilo" />
-                          </SelectTrigger>
-                          <SelectContent>
-                            {vehicles.map((vehicle) => (
-                              <SelectItem key={vehicle.id} value={vehicle.id}>
-                                {vehicle.registration} - {vehicle.brand} {vehicle.model}
-                              </SelectItem>
-                            ))}
-                          </SelectContent>
-                        </Select>
-                      </div>
+                      {!editingDeadline && (
+                        <div className="space-y-2">
+                          <Label htmlFor="vehicle-select">Vozilo</Label>
+                          <Select value={selectedVehicle} onValueChange={setSelectedVehicle} required>
+                            <SelectTrigger>
+                              <SelectValue placeholder="Izaberite vozilo" />
+                            </SelectTrigger>
+                            <SelectContent>
+                              {vehicles.map((vehicle) => (
+                                <SelectItem key={vehicle.id} value={vehicle.id}>
+                                  {vehicle.registration} - {vehicle.brand} {vehicle.model}
+                                </SelectItem>
+                              ))}
+                            </SelectContent>
+                          </Select>
+                        </div>
+                      )}
                       
                       <div className="grid grid-cols-2 gap-4">
                         <div className="space-y-2">
@@ -308,6 +407,7 @@ const MaintenanceManagement = () => {
                             id="registration_expiry"
                             name="registration_expiry"
                             type="date"
+                            defaultValue={editingDeadline?.registration_expiry || ''}
                           />
                         </div>
                         <div className="space-y-2">
@@ -316,6 +416,7 @@ const MaintenanceManagement = () => {
                             id="technical_expiry"
                             name="technical_expiry"
                             type="date"
+                            defaultValue={editingDeadline?.technical_expiry || ''}
                           />
                         </div>
                         <div className="space-y-2">
@@ -324,6 +425,7 @@ const MaintenanceManagement = () => {
                             id="technical_6m_expiry"
                             name="technical_6m_expiry"
                             type="date"
+                            defaultValue={editingDeadline?.technical_6m_expiry || ''}
                           />
                         </div>
                         <div className="space-y-2">
@@ -332,6 +434,7 @@ const MaintenanceManagement = () => {
                             id="tachograph_calibration_expiry"
                             name="tachograph_calibration_expiry"
                             type="date"
+                            defaultValue={editingDeadline?.tachograph_calibration_expiry || ''}
                           />
                         </div>
                         <div className="space-y-2">
@@ -340,6 +443,7 @@ const MaintenanceManagement = () => {
                             id="fire_extinguisher_expiry"
                             name="fire_extinguisher_expiry"
                             type="date"
+                            defaultValue={editingDeadline?.fire_extinguisher_expiry || ''}
                           />
                         </div>
                       </div>
@@ -362,6 +466,7 @@ const MaintenanceManagement = () => {
                     <TableHead>Tehnički (6m)</TableHead>
                     <TableHead>Tahograf</TableHead>
                     <TableHead>PP aparat</TableHead>
+                    <TableHead>Akcije</TableHead>
                   </TableRow>
                 </TableHeader>
                 <TableBody>
@@ -375,6 +480,104 @@ const MaintenanceManagement = () => {
                       <TableCell>{formatDate(deadline.technical_6m_expiry)}</TableCell>
                       <TableCell>{formatDate(deadline.tachograph_calibration_expiry)}</TableCell>
                       <TableCell>{formatDate(deadline.fire_extinguisher_expiry)}</TableCell>
+                      <TableCell>
+                        <div className="flex gap-2">
+                          <Dialog>
+                            <DialogTrigger asChild>
+                              <Button 
+                                size="sm" 
+                                variant="outline"
+                                onClick={() => setEditingDeadline(deadline)}
+                              >
+                                <Edit className="w-4 h-4" />
+                              </Button>
+                            </DialogTrigger>
+                            <DialogContent className="max-w-2xl">
+                              <DialogHeader>
+                                <DialogTitle>Uredi rokove vozila</DialogTitle>
+                                <DialogDescription>
+                                  Uredite rokove za vozilo {deadline.vehicle?.registration}
+                                </DialogDescription>
+                              </DialogHeader>
+                              <form onSubmit={handleSaveDeadlines} className="space-y-4">
+                                <div className="grid grid-cols-2 gap-4">
+                                  <div className="space-y-2">
+                                    <Label htmlFor="registration_expiry">Registracija</Label>
+                                    <Input
+                                      id="registration_expiry"
+                                      name="registration_expiry"
+                                      type="date"
+                                      defaultValue={deadline.registration_expiry || ''}
+                                    />
+                                  </div>
+                                  <div className="space-y-2">
+                                    <Label htmlFor="technical_expiry">Tehnički (godišnji)</Label>
+                                    <Input
+                                      id="technical_expiry"
+                                      name="technical_expiry"
+                                      type="date"
+                                      defaultValue={deadline.technical_expiry || ''}
+                                    />
+                                  </div>
+                                  <div className="space-y-2">
+                                    <Label htmlFor="technical_6m_expiry">Tehnički (6m)</Label>
+                                    <Input
+                                      id="technical_6m_expiry"
+                                      name="technical_6m_expiry"
+                                      type="date"
+                                      defaultValue={deadline.technical_6m_expiry || ''}
+                                    />
+                                  </div>
+                                  <div className="space-y-2">
+                                    <Label htmlFor="tachograph_calibration_expiry">Baždarenje tahografa</Label>
+                                    <Input
+                                      id="tachograph_calibration_expiry"
+                                      name="tachograph_calibration_expiry"
+                                      type="date"
+                                      defaultValue={deadline.tachograph_calibration_expiry || ''}
+                                    />
+                                  </div>
+                                  <div className="space-y-2">
+                                    <Label htmlFor="fire_extinguisher_expiry">PP aparat</Label>
+                                    <Input
+                                      id="fire_extinguisher_expiry"
+                                      name="fire_extinguisher_expiry"
+                                      type="date"
+                                      defaultValue={deadline.fire_extinguisher_expiry || ''}
+                                    />
+                                  </div>
+                                </div>
+                                
+                                <DialogFooter>
+                                  <Button type="submit">Sačuvaj rokove</Button>
+                                </DialogFooter>
+                              </form>
+                            </DialogContent>
+                          </Dialog>
+                          
+                          <AlertDialog>
+                            <AlertDialogTrigger asChild>
+                              <Button size="sm" variant="destructive">
+                                <Trash2 className="w-4 h-4" />
+                              </Button>
+                            </AlertDialogTrigger>
+                            <AlertDialogContent>
+                              <AlertDialogHeader>
+                                <AlertDialogTitle>Potvrda brisanja</AlertDialogTitle>
+                                <AlertDialogDescription>
+                                  Ovo će trajno obrisati sve rokove za vozilo {deadline.vehicle?.registration}. Nastaviti?
+                                </AlertDialogDescription>
+                              </AlertDialogHeader>
+                              <AlertDialogFooter>
+                                <AlertDialogCancel>Otkaži</AlertDialogCancel>
+                                <AlertDialogAction onClick={() => handleDeleteDeadline(deadline.id)}>
+                                  Obriši
+                                </AlertDialogAction>
+                              </AlertDialogFooter>
+                            </AlertDialogContent>
+                          </AlertDialog>
+                        </div>
+                      </TableCell>
                     </TableRow>
                   ))}
                 </TableBody>
@@ -395,38 +598,42 @@ const MaintenanceManagement = () => {
                 </div>
                 <Dialog>
                   <DialogTrigger asChild>
-                    <Button>
+                    <Button onClick={() => setEditingService(null)}>
                       <Wrench className="w-4 h-4 mr-2" />
                       Dodaj servis
                     </Button>
                   </DialogTrigger>
                   <DialogContent>
                     <DialogHeader>
-                      <DialogTitle>Novi servis</DialogTitle>
+                      <DialogTitle>
+                        {editingService ? "Uredi servis" : "Novi servis"}
+                      </DialogTitle>
                       <DialogDescription>
-                        Dodajte novi servis ili intervenciju
+                        {editingService ? "Uredite postojeći servis" : "Dodajte novi servis ili intervenciju"}
                       </DialogDescription>
                     </DialogHeader>
                     <form onSubmit={handleSaveService} className="space-y-4">
-                      <div className="space-y-2">
-                        <Label htmlFor="vehicle-select-service">Vozilo</Label>
-                        <Select value={selectedVehicle} onValueChange={setSelectedVehicle} required>
-                          <SelectTrigger>
-                            <SelectValue placeholder="Izaberite vozilo" />
-                          </SelectTrigger>
-                          <SelectContent>
-                            {vehicles.map((vehicle) => (
-                              <SelectItem key={vehicle.id} value={vehicle.id}>
-                                {vehicle.registration} - {vehicle.brand} {vehicle.model}
-                              </SelectItem>
-                            ))}
-                          </SelectContent>
-                        </Select>
-                      </div>
+                      {!editingService && (
+                        <div className="space-y-2">
+                          <Label htmlFor="vehicle-select-service">Vozilo</Label>
+                          <Select value={selectedVehicle} onValueChange={setSelectedVehicle} required>
+                            <SelectTrigger>
+                              <SelectValue placeholder="Izaberite vozilo" />
+                            </SelectTrigger>
+                            <SelectContent>
+                              {vehicles.map((vehicle) => (
+                                <SelectItem key={vehicle.id} value={vehicle.id}>
+                                  {vehicle.registration} - {vehicle.brand} {vehicle.model}
+                                </SelectItem>
+                              ))}
+                            </SelectContent>
+                          </Select>
+                        </div>
+                      )}
 
                       <div className="space-y-2">
                         <Label htmlFor="service_type">Tip servisa</Label>
-                        <Select name="service_type" required>
+                        <Select name="service_type" defaultValue={editingService?.service_type || ''} required>
                           <SelectTrigger>
                             <SelectValue placeholder="Izaberite tip servisa" />
                           </SelectTrigger>
@@ -443,6 +650,7 @@ const MaintenanceManagement = () => {
                           id="service_date"
                           name="service_date"
                           type="date"
+                          defaultValue={editingService?.service_date || ''}
                           required
                         />
                       </div>
@@ -452,50 +660,54 @@ const MaintenanceManagement = () => {
                         <Textarea
                           id="description"
                           name="description"
-                          placeholder="Opis rada..."
+                          placeholder="Opišite izvršene radove..."
+                          defaultValue={editingService?.description || ''}
                         />
                       </div>
 
-                      <div className="space-y-2">
-                        <Label htmlFor="cost">Cijena (KM)</Label>
-                        <Input
-                          id="cost"
-                          name="cost"
-                          type="number"
-                          step="0.01"
-                          placeholder="0.00"
-                        />
+                      <div className="grid grid-cols-2 gap-4">
+                        <div className="space-y-2">
+                          <Label htmlFor="cost">Trošak (KM)</Label>
+                          <Input
+                            id="cost"
+                            name="cost"
+                            type="number"
+                            step="0.01"
+                            placeholder="0.00"
+                            defaultValue={editingService?.cost || ''}
+                          />
+                        </div>
+                        <div className="space-y-2">
+                          <Label htmlFor="mileage">Kilometraža</Label>
+                          <Input
+                            id="mileage"
+                            name="mileage"
+                            type="number"
+                            placeholder="123456"
+                            defaultValue={editingService?.mileage || ''}
+                          />
+                        </div>
                       </div>
 
                       <div className="space-y-2">
-                        <Label htmlFor="mileage">Kilometraža</Label>
-                        <Input
-                          id="mileage"
-                          name="mileage"
-                          type="number"
-                          placeholder="Unesite kilometražu..."
-                        />
-                      </div>
-
-                      <div className="space-y-2">
-                        <Label htmlFor="invoice">Račun (PDF/slika)</Label>
+                        <Label htmlFor="invoice">Račun</Label>
                         <Input
                           id="invoice"
+                          name="invoice"
                           type="file"
                           accept=".pdf,.jpg,.jpeg,.png"
+                          disabled={uploadingFile}
                         />
+                        {editingService?.invoice_url && (
+                          <p className="text-sm text-muted-foreground">
+                            Trenutni račun: <a href={editingService.invoice_url} target="_blank" rel="noopener noreferrer" className="text-blue-500 underline">Pogledaj</a>
+                          </p>
+                        )}
                       </div>
-                      
+
                       <DialogFooter>
                         <Button type="submit" disabled={uploadingFile}>
-                          {uploadingFile ? (
-                            <>
-                              <Upload className="w-4 h-4 mr-2 animate-spin" />
-                              Upload...
-                            </>
-                          ) : (
-                            'Sačuvaj servis'
-                          )}
+                          {uploadingFile ? "Upload..." : editingService ? "Ažuriraj servis" : "Dodaj servis"}
                         </Button>
                       </DialogFooter>
                     </form>
@@ -508,12 +720,13 @@ const MaintenanceManagement = () => {
                 <TableHeader>
                   <TableRow>
                     <TableHead>Vozilo</TableHead>
-                    <TableHead>Datum</TableHead>
                     <TableHead>Tip</TableHead>
+                    <TableHead>Datum</TableHead>
                     <TableHead>Opis</TableHead>
-                    <TableHead>Kilometraža</TableHead>
-                    <TableHead>Cijena</TableHead>
+                    <TableHead>Trošak</TableHead>
+                    <TableHead>Km</TableHead>
                     <TableHead>Račun</TableHead>
+                    <TableHead>Akcije</TableHead>
                   </TableRow>
                 </TableHeader>
                 <TableBody>
@@ -522,28 +735,152 @@ const MaintenanceManagement = () => {
                       <TableCell className="font-medium">
                         {service.vehicle?.registration}
                       </TableCell>
-                      <TableCell>{formatDate(service.service_date)}</TableCell>
                       <TableCell>
                         <Badge variant={service.service_type === 'mali_servis' ? 'default' : 'secondary'}>
                           {service.service_type === 'mali_servis' ? 'Mali servis' : 'Ostalo'}
                         </Badge>
                       </TableCell>
-                      <TableCell>{service.description}</TableCell>
-                      <TableCell>{service.mileage ? `${service.mileage.toLocaleString()} km` : '-'}</TableCell>
+                      <TableCell>{formatDate(service.service_date)}</TableCell>
+                      <TableCell className="max-w-48 truncate">{service.description}</TableCell>
                       <TableCell>{service.cost ? `${service.cost} KM` : '-'}</TableCell>
+                      <TableCell>{service.mileage ? `${service.mileage} km` : '-'}</TableCell>
                       <TableCell>
                         {service.invoice_url ? (
-                          <a
-                            href={service.invoice_url}
-                            target="_blank"
+                          <a 
+                            href={service.invoice_url} 
+                            target="_blank" 
                             rel="noopener noreferrer"
-                            className="text-primary hover:underline"
+                            className="text-blue-500 underline"
                           >
-                            <FileText className="w-4 h-4" />
+                            Pogledaj
                           </a>
-                        ) : (
-                          '-'
-                        )}
+                        ) : '-'}
+                      </TableCell>
+                      <TableCell>
+                        <div className="flex gap-2">
+                          <Dialog>
+                            <DialogTrigger asChild>
+                              <Button 
+                                size="sm" 
+                                variant="outline"
+                                onClick={() => setEditingService(service)}
+                              >
+                                <Edit className="w-4 h-4" />
+                              </Button>
+                            </DialogTrigger>
+                            <DialogContent>
+                              <DialogHeader>
+                                <DialogTitle>Uredi servis</DialogTitle>
+                                <DialogDescription>
+                                  Uredite podatke o servisu za vozilo {service.vehicle?.registration}
+                                </DialogDescription>
+                              </DialogHeader>
+                              <form onSubmit={handleSaveService} className="space-y-4">
+                                <div className="space-y-2">
+                                  <Label htmlFor="service_type">Tip servisa</Label>
+                                  <Select name="service_type" defaultValue={service.service_type || ''} required>
+                                    <SelectTrigger>
+                                      <SelectValue placeholder="Izaberite tip servisa" />
+                                    </SelectTrigger>
+                                    <SelectContent>
+                                      <SelectItem value="mali_servis">Mali servis</SelectItem>
+                                      <SelectItem value="ostalo">Ostalo</SelectItem>
+                                    </SelectContent>
+                                  </Select>
+                                </div>
+
+                                <div className="space-y-2">
+                                  <Label htmlFor="service_date">Datum servisa</Label>
+                                  <Input
+                                    id="service_date"
+                                    name="service_date"
+                                    type="date"
+                                    defaultValue={service.service_date || ''}
+                                    required
+                                  />
+                                </div>
+
+                                <div className="space-y-2">
+                                  <Label htmlFor="description">Opis</Label>
+                                  <Textarea
+                                    id="description"
+                                    name="description"
+                                    placeholder="Opišite izvršene radove..."
+                                    defaultValue={service.description || ''}
+                                  />
+                                </div>
+
+                                <div className="grid grid-cols-2 gap-4">
+                                  <div className="space-y-2">
+                                    <Label htmlFor="cost">Trošak (KM)</Label>
+                                    <Input
+                                      id="cost"
+                                      name="cost"
+                                      type="number"
+                                      step="0.01"
+                                      placeholder="0.00"
+                                      defaultValue={service.cost || ''}
+                                    />
+                                  </div>
+                                  <div className="space-y-2">
+                                    <Label htmlFor="mileage">Kilometraža</Label>
+                                    <Input
+                                      id="mileage"
+                                      name="mileage"
+                                      type="number"
+                                      placeholder="123456"
+                                      defaultValue={service.mileage || ''}
+                                    />
+                                  </div>
+                                </div>
+
+                                <div className="space-y-2">
+                                  <Label htmlFor="invoice">Račun</Label>
+                                  <Input
+                                    id="invoice"
+                                    name="invoice"
+                                    type="file"
+                                    accept=".pdf,.jpg,.jpeg,.png"
+                                    disabled={uploadingFile}
+                                  />
+                                  {service.invoice_url && (
+                                    <p className="text-sm text-muted-foreground">
+                                      Trenutni račun: <a href={service.invoice_url} target="_blank" rel="noopener noreferrer" className="text-blue-500 underline">Pogledaj</a>
+                                    </p>
+                                  )}
+                                </div>
+
+                                <DialogFooter>
+                                  <Button type="submit" disabled={uploadingFile}>
+                                    {uploadingFile ? "Upload..." : "Ažuriraj servis"}
+                                  </Button>
+                                </DialogFooter>
+                              </form>
+                            </DialogContent>
+                          </Dialog>
+                          
+                          <AlertDialog>
+                            <AlertDialogTrigger asChild>
+                              <Button size="sm" variant="destructive">
+                                <Trash2 className="w-4 h-4" />
+                              </Button>
+                            </AlertDialogTrigger>
+                            <AlertDialogContent>
+                              <AlertDialogHeader>
+                                <AlertDialogTitle>Potvrda brisanja</AlertDialogTitle>
+                                <AlertDialogDescription>
+                                  Ovo će trajno obrisati zapis o servisu za vozilo {service.vehicle?.registration}. Nastaviti?
+                                </AlertDialogDescription>
+                              </AlertDialogHeader>
+                              <AlertDialogFooter>
+                                <AlertDialogCancel>Otkaži</AlertDialogCancel>
+                                <AlertDialogAction onClick={() => handleDeleteService(service.id)}>
+                                  Obriši
+                                </AlertDialogAction>
+                              </AlertDialogFooter>
+                            </AlertDialogContent>
+                          </AlertDialog>
+                        </div>
                       </TableCell>
                     </TableRow>
                   ))}
@@ -560,123 +897,34 @@ const MaintenanceManagement = () => {
                 <div>
                   <CardTitle>Troškovi</CardTitle>
                   <CardDescription>
-                    Evidencija troškova vezanih za vozila ili vožnje
+                    Upravljanje općim troškovima po vozilima i vožnjama
                   </CardDescription>
                 </div>
-                <Dialog>
-                  <DialogTrigger asChild>
-                    <Button>
-                      <Plus className="w-4 h-4 mr-2" />
-                      Dodaj trošak
-                    </Button>
-                  </DialogTrigger>
-                  <DialogContent>
-                    <DialogHeader>
-                      <DialogTitle>Novi trošak</DialogTitle>
-                      <DialogDescription>
-                        Dodajte novi trošak vezan za vozilo ili vožnju
-                      </DialogDescription>
-                    </DialogHeader>
-                    <form onSubmit={handleSaveCost} className="space-y-4">
-                      <div className="space-y-2">
-                        <Label htmlFor="cost_type">Tip troška</Label>
-                        <Select name="cost_type" required>
-                          <SelectTrigger>
-                            <SelectValue placeholder="Izaberite tip troška" />
-                          </SelectTrigger>
-                          <SelectContent>
-                            <SelectItem value="gorivo">Gorivo</SelectItem>
-                            <SelectItem value="putarina">Putarina</SelectItem>
-                            <SelectItem value="parking">Parking</SelectItem>
-                            <SelectItem value="dnevnice">Dnevnice</SelectItem>
-                            <SelectItem value="servis">Servis</SelectItem>
-                            <SelectItem value="ostalo">Ostalo</SelectItem>
-                          </SelectContent>
-                        </Select>
-                      </div>
-
-                      <div className="space-y-2">
-                        <Label htmlFor="amount">Iznos (KM)</Label>
-                        <Input
-                          id="amount"
-                          name="amount"
-                          type="number"
-                          step="0.01"
-                          required
-                          placeholder="0.00"
-                        />
-                      </div>
-
-                      <div className="space-y-2">
-                        <Label htmlFor="vehicle-select-cost">Vozilo (opcionalno)</Label>
-                        <Select value={selectedVehicle} onValueChange={setSelectedVehicle}>
-                          <SelectTrigger>
-                            <SelectValue placeholder="Izaberite vozilo" />
-                          </SelectTrigger>
-                          <SelectContent>
-                            <SelectItem value="">Bez vozila</SelectItem>
-                            {vehicles.map((vehicle) => (
-                              <SelectItem key={vehicle.id} value={vehicle.id}>
-                                {vehicle.registration} - {vehicle.brand} {vehicle.model}
-                              </SelectItem>
-                            ))}
-                          </SelectContent>
-                        </Select>
-                      </div>
-
-                      <div className="space-y-2">
-                        <Label htmlFor="ride-select-cost">Vožnja (opcionalno)</Label>
-                        <Select value={selectedRide} onValueChange={setSelectedRide}>
-                          <SelectTrigger>
-                            <SelectValue placeholder="Izaberite vožnju" />
-                          </SelectTrigger>
-                          <SelectContent>
-                            <SelectItem value="">Bez vožnje</SelectItem>
-                            {rides.map((ride) => (
-                              <SelectItem key={ride.id} value={ride.id}>
-                                {ride.origin} → {ride.destination} ({formatDate(ride.start_at)})
-                              </SelectItem>
-                            ))}
-                          </SelectContent>
-                        </Select>
-                      </div>
-
-                      <div className="space-y-2">
-                        <Label htmlFor="note">Napomena</Label>
-                        <Textarea
-                          id="note"
-                          name="note"
-                          placeholder="Dodatne informacije..."
-                        />
-                      </div>
-                      
-                      <DialogFooter>
-                        <Button type="submit">Sačuvaj trošak</Button>
-                      </DialogFooter>
-                    </form>
-                  </DialogContent>
-                </Dialog>
+                <Button onClick={() => setAddCostModalOpen(true)}>
+                  <Plus className="w-4 h-4 mr-2" />
+                  Dodaj trošak
+                </Button>
               </div>
             </CardHeader>
             <CardContent>
               <Table>
                 <TableHeader>
                   <TableRow>
-                    <TableHead>Datum</TableHead>
-                    <TableHead>Tip</TableHead>
+                    <TableHead>Tip troška</TableHead>
                     <TableHead>Iznos</TableHead>
                     <TableHead>Vozilo</TableHead>
                     <TableHead>Vožnja</TableHead>
                     <TableHead>Napomena</TableHead>
+                    <TableHead>Datum</TableHead>
+                    <TableHead>Akcije</TableHead>
                   </TableRow>
                 </TableHeader>
                 <TableBody>
                   {costs.map((cost) => (
                     <TableRow key={cost.id}>
-                      <TableCell>{formatDate(cost.created_at)}</TableCell>
                       <TableCell>
-                        <Badge variant="outline">
-                          {cost.cost_type.charAt(0).toUpperCase() + cost.cost_type.slice(1)}
+                        <Badge>
+                          {cost.cost_type?.charAt(0).toUpperCase() + cost.cost_type?.slice(1)}
                         </Badge>
                       </TableCell>
                       <TableCell className="font-medium">{cost.amount} KM</TableCell>
@@ -684,7 +932,133 @@ const MaintenanceManagement = () => {
                       <TableCell>
                         {cost.ride ? `${cost.ride.origin} → ${cost.ride.destination}` : '-'}
                       </TableCell>
-                      <TableCell>{cost.note || '-'}</TableCell>
+                      <TableCell className="max-w-48 truncate">{cost.note || '-'}</TableCell>
+                      <TableCell>{formatDate(cost.created_at)}</TableCell>
+                      <TableCell>
+                        <div className="flex gap-2">
+                          <Dialog>
+                            <DialogTrigger asChild>
+                              <Button 
+                                size="sm" 
+                                variant="outline"
+                                onClick={() => setEditingCost(cost)}
+                              >
+                                <Edit className="w-4 h-4" />
+                              </Button>
+                            </DialogTrigger>
+                            <DialogContent>
+                              <DialogHeader>
+                                <DialogTitle>Uredi trošak</DialogTitle>
+                                <DialogDescription>
+                                  Uredite podatke o trošku
+                                </DialogDescription>
+                              </DialogHeader>
+                              <form onSubmit={handleSaveCost} className="space-y-4">
+                                <div className="space-y-2">
+                                  <Label htmlFor="cost_type">Tip troška</Label>
+                                  <Select name="cost_type" defaultValue={cost.cost_type || ''} required>
+                                    <SelectTrigger>
+                                      <SelectValue placeholder="Izaberite tip troška" />
+                                    </SelectTrigger>
+                                    <SelectContent>
+                                      <SelectItem value="gorivo">Gorivo</SelectItem>
+                                      <SelectItem value="servis">Servis</SelectItem>
+                                      <SelectItem value="popravka">Popravka</SelectItem>
+                                      <SelectItem value="registracija">Registracija</SelectItem>
+                                      <SelectItem value="osiguranje">Osiguranje</SelectItem>
+                                      <SelectItem value="putarina">Putarina</SelectItem>
+                                      <SelectItem value="parking">Parking</SelectItem>
+                                      <SelectItem value="kazna">Kazna</SelectItem>
+                                      <SelectItem value="ostalo">Ostalo</SelectItem>
+                                    </SelectContent>
+                                  </Select>
+                                </div>
+
+                                <div className="space-y-2">
+                                  <Label htmlFor="amount">Iznos (KM)</Label>
+                                  <Input
+                                    id="amount"
+                                    name="amount"
+                                    type="number"
+                                    step="0.01"
+                                    placeholder="0.00"
+                                    defaultValue={cost.amount || ''}
+                                    required
+                                  />
+                                </div>
+
+                                <div className="space-y-2">
+                                  <Label htmlFor="vehicle_select">Vozilo</Label>
+                                  <Select value={selectedVehicle} onValueChange={setSelectedVehicle}>
+                                    <SelectTrigger>
+                                      <SelectValue placeholder="Odaberite vozilo" />
+                                    </SelectTrigger>
+                                    <SelectContent>
+                                      {vehicles.map((vehicle) => (
+                                        <SelectItem key={vehicle.id} value={vehicle.id}>
+                                          {vehicle.registration}
+                                        </SelectItem>
+                                      ))}
+                                    </SelectContent>
+                                  </Select>
+                                </div>
+
+                                <div className="space-y-2">
+                                  <Label htmlFor="ride_select">Vožnja</Label>
+                                  <Select value={selectedRide} onValueChange={setSelectedRide}>
+                                    <SelectTrigger>
+                                      <SelectValue placeholder="Odaberite vožnju" />
+                                    </SelectTrigger>
+                                    <SelectContent>
+                                      {rides.map((ride) => (
+                                        <SelectItem key={ride.id} value={ride.id}>
+                                          {ride.origin} → {ride.destination} ({formatDate(ride.start_at)})
+                                        </SelectItem>
+                                      ))}
+                                    </SelectContent>
+                                  </Select>
+                                </div>
+
+                                <div className="space-y-2">
+                                  <Label htmlFor="note">Napomena</Label>
+                                  <Textarea
+                                    id="note"
+                                    name="note"
+                                    placeholder="Dodatne informacije..."
+                                    defaultValue={cost.note || ''}
+                                  />
+                                </div>
+
+                                <DialogFooter>
+                                  <Button type="submit">Ažuriraj trošak</Button>
+                                </DialogFooter>
+                              </form>
+                            </DialogContent>
+                          </Dialog>
+                          
+                          <AlertDialog>
+                            <AlertDialogTrigger asChild>
+                              <Button size="sm" variant="destructive">
+                                <Trash2 className="w-4 h-4" />
+                              </Button>
+                            </AlertDialogTrigger>
+                            <AlertDialogContent>
+                              <AlertDialogHeader>
+                                <AlertDialogTitle>Potvrda brisanja</AlertDialogTitle>
+                                <AlertDialogDescription>
+                                  Ovo će trajno obrisati zapis o trošku od {cost.amount} KM. Nastaviti?
+                                </AlertDialogDescription>
+                              </AlertDialogHeader>
+                              <AlertDialogFooter>
+                                <AlertDialogCancel>Otkaži</AlertDialogCancel>
+                                <AlertDialogAction onClick={() => handleDeleteCost(cost.id)}>
+                                  Obriši
+                                </AlertDialogAction>
+                              </AlertDialogFooter>
+                            </AlertDialogContent>
+                          </AlertDialog>
+                        </div>
+                      </TableCell>
                     </TableRow>
                   ))}
                 </TableBody>
@@ -693,6 +1067,12 @@ const MaintenanceManagement = () => {
           </Card>
         </TabsContent>
       </Tabs>
+
+      <AddCostModal 
+        open={addCostModalOpen}
+        onOpenChange={setAddCostModalOpen}
+        onSuccess={fetchData}
+      />
     </div>
   );
 };
