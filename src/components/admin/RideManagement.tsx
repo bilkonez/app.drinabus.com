@@ -23,6 +23,7 @@ interface Ride {
   destination: string;
   start_at: string;
   end_at: string;
+  return_date: string | null;
   vehicle_id: string | null;
   driver_id: string | null;
   total_price: number | null;
@@ -70,6 +71,7 @@ const RideManagement = () => {
     destination: "",
     start_at: "",
     ride_date: "", // novi field za datum lokal vožnje
+    return_date: "", // datum povratka za vanlinijski
     vehicle_id: "",
     driver_id: "",
     total_price: "",
@@ -179,6 +181,7 @@ const RideManagement = () => {
         end_at: formData.ride_type === 'lokal' ? 
           (formData.ride_date ? `${formData.ride_date}T23:59:59` : new Date().toISOString()) : 
           formData.start_at,
+        return_date: formData.ride_type === 'vanlinijski' && formData.return_date ? formData.return_date : null,
         vehicle_id: formData.ride_type === 'lokal' ? null : (formData.vehicle_id || null),
         driver_id: formData.driver_id || null,
         total_price: formData.total_price ? parseFloat(formData.total_price) : null,
@@ -339,6 +342,7 @@ const RideManagement = () => {
         destination: ride.destination,
         start_at: ride.start_at || "",
         ride_date: "",
+        return_date: ride.return_date || "",
         vehicle_id: ride.vehicle_id || "",
         driver_id: ride.driver_id || "",
         total_price: ride.total_price?.toString() || "",
@@ -382,6 +386,7 @@ const RideManagement = () => {
       destination: "",
       start_at: "",
       ride_date: "",
+      return_date: "",
       vehicle_id: "",
       driver_id: "",
       total_price: "",
@@ -648,10 +653,50 @@ const RideManagement = () => {
                         required
                       />
                     </div>
-                  </div>
+                   </div>
 
-                  <div className="space-y-2">
-                    <Label htmlFor="vehicle_id">Vozilo</Label>
+                   {formData.ride_type === 'vanlinijski' && (
+                     <div className="space-y-2">
+                       <Label htmlFor="return_date">Datum povratka</Label>
+                       <Popover>
+                         <PopoverTrigger asChild>
+                           <Button
+                             variant="outline"
+                             className={cn(
+                               "w-full justify-start text-left font-normal",
+                               !formData.return_date && "text-muted-foreground"
+                             )}
+                           >
+                             <CalendarIcon className="mr-2 h-4 w-4" />
+                             {formData.return_date ? 
+                               new Date(formData.return_date).toLocaleDateString('en-GB', { day: '2-digit', month: '2-digit', year: 'numeric' }) : 
+                               <span>Odaberite datum povratka</span>
+                             }
+                           </Button>
+                         </PopoverTrigger>
+                         <PopoverContent className="w-auto p-0" align="start">
+                           <Calendar
+                             mode="single"
+                             selected={formData.return_date ? new Date(formData.return_date) : undefined}
+                             onSelect={(date) => {
+                               if (date) {
+                                 const year = date.getFullYear();
+                                 const month = String(date.getMonth() + 1).padStart(2, '0');
+                                 const day = String(date.getDate()).padStart(2, '0');
+                                 const dateString = `${year}-${month}-${day}`;
+                                 setFormData({...formData, return_date: dateString});
+                               }
+                             }}
+                             initialFocus
+                             className={cn("p-3 pointer-events-auto")}
+                           />
+                         </PopoverContent>
+                       </Popover>
+                     </div>
+                   )}
+
+                   <div className="space-y-2">
+                     <Label htmlFor="vehicle_id">Vozilo</Label>
                     <Select value={formData.vehicle_id} onValueChange={(value) => setFormData({...formData, vehicle_id: value})}>
                       <SelectTrigger>
                         <SelectValue placeholder="Odaberite vozilo" />

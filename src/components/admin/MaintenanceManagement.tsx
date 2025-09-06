@@ -475,11 +475,11 @@ const MaintenanceManagement = () => {
                       <TableCell className="font-medium">
                         {deadline.vehicle?.registration} - {deadline.vehicle?.brand} {deadline.vehicle?.model}
                       </TableCell>
-                      <TableCell>{formatDate(deadline.registration_expiry)}</TableCell>
-                      <TableCell>{formatDate(deadline.technical_expiry)}</TableCell>
-                      <TableCell>{formatDate(deadline.technical_6m_expiry)}</TableCell>
-                      <TableCell>{formatDate(deadline.tachograph_calibration_expiry)}</TableCell>
-                      <TableCell>{formatDate(deadline.fire_extinguisher_expiry)}</TableCell>
+                       <TableCell>{deadline.registration_expiry ? formatDate(deadline.registration_expiry) : '-'}</TableCell>
+                       <TableCell>{deadline.technical_expiry ? formatDate(deadline.technical_expiry) : '-'}</TableCell>
+                       <TableCell>{deadline.technical_6m_expiry ? formatDate(deadline.technical_6m_expiry) : '-'}</TableCell>
+                       <TableCell>{deadline.tachograph_calibration_expiry ? formatDate(deadline.tachograph_calibration_expiry) : '-'}</TableCell>
+                       <TableCell>{deadline.fire_extinguisher_expiry ? formatDate(deadline.fire_extinguisher_expiry) : '-'}</TableCell>
                       <TableCell>
                         <div className="flex gap-2">
                           <Dialog>
@@ -580,11 +580,17 @@ const MaintenanceManagement = () => {
                       </TableCell>
                     </TableRow>
                   ))}
-                </TableBody>
-              </Table>
-            </CardContent>
-          </Card>
-        </TabsContent>
+                 </TableBody>
+               </Table>
+               {deadlines.length === 0 && (
+                 <div className="text-center py-8 text-muted-foreground">
+                   <Calendar className="h-12 w-12 mx-auto mb-4 opacity-50" />
+                   <p>Nema unesenih rokova za vozila</p>
+                 </div>
+               )}
+             </CardContent>
+           </Card>
+         </TabsContent>
 
         <TabsContent value="services" className="space-y-4">
           <Card>
@@ -732,16 +738,16 @@ const MaintenanceManagement = () => {
                 <TableBody>
                   {services.map((service) => (
                     <TableRow key={service.id}>
-                      <TableCell className="font-medium">
-                        {service.vehicle?.registration}
-                      </TableCell>
+                       <TableCell className="font-medium">
+                         {service.vehicle?.registration || 'Nepoznato vozilo'}
+                       </TableCell>
                       <TableCell>
                         <Badge variant={service.service_type === 'mali_servis' ? 'default' : 'secondary'}>
                           {service.service_type === 'mali_servis' ? 'Mali servis' : 'Ostalo'}
                         </Badge>
                       </TableCell>
-                      <TableCell>{formatDate(service.service_date)}</TableCell>
-                      <TableCell className="max-w-48 truncate">{service.description}</TableCell>
+                      <TableCell>{service.service_date ? formatDate(service.service_date) : '-'}</TableCell>
+                      <TableCell className="max-w-48 truncate">{service.description || '-'}</TableCell>
                       <TableCell>{service.cost ? `${service.cost} KM` : '-'}</TableCell>
                       <TableCell>{service.mileage ? `${service.mileage} km` : '-'}</TableCell>
                       <TableCell>
@@ -922,18 +928,18 @@ const MaintenanceManagement = () => {
                 <TableBody>
                   {costs.map((cost) => (
                     <TableRow key={cost.id}>
-                      <TableCell>
-                        <Badge>
-                          {cost.cost_type?.charAt(0).toUpperCase() + cost.cost_type?.slice(1)}
-                        </Badge>
-                      </TableCell>
-                      <TableCell className="font-medium">{cost.amount} KM</TableCell>
+                       <TableCell>
+                         <Badge>
+                           {cost.cost_type?.charAt(0).toUpperCase() + cost.cost_type?.slice(1) || 'Nepoznato'}
+                         </Badge>
+                       </TableCell>
+                      <TableCell className="font-medium">{cost.amount ? `${cost.amount} KM` : '-'}</TableCell>
                       <TableCell>{cost.vehicle?.registration || '-'}</TableCell>
                       <TableCell>
                         {cost.ride ? `${cost.ride.origin} → ${cost.ride.destination}` : '-'}
                       </TableCell>
                       <TableCell className="max-w-48 truncate">{cost.note || '-'}</TableCell>
-                      <TableCell>{formatDate(cost.created_at)}</TableCell>
+                      <TableCell>{cost.created_at ? formatDate(cost.created_at) : '-'}</TableCell>
                       <TableCell>
                         <div className="flex gap-2">
                           <Dialog>
@@ -1062,10 +1068,199 @@ const MaintenanceManagement = () => {
                     </TableRow>
                   ))}
                 </TableBody>
-              </Table>
-            </CardContent>
-          </Card>
-        </TabsContent>
+               </Table>
+               {services.length === 0 && (
+                 <div className="text-center py-8 text-muted-foreground">
+                   <Wrench className="h-12 w-12 mx-auto mb-4 opacity-50" />
+                   <p>Nema unesenih servisa</p>
+                 </div>
+               )}
+             </CardContent>
+           </Card>
+         </TabsContent>
+
+         <TabsContent value="costs" className="space-y-4">
+           <Card>
+             <CardHeader>
+               <div className="flex items-center justify-between">
+                 <div>
+                   <CardTitle>Troškovi</CardTitle>
+                   <CardDescription>
+                     Upravljanje općim troškovima po vozilima i vožnjama
+                   </CardDescription>
+                 </div>
+                 <Button onClick={() => setAddCostModalOpen(true)}>
+                   <Plus className="w-4 h-4 mr-2" />
+                   Dodaj trošak
+                 </Button>
+               </div>
+             </CardHeader>
+             <CardContent>
+               <Table>
+                 <TableHeader>
+                   <TableRow>
+                     <TableHead>Tip troška</TableHead>
+                     <TableHead>Iznos</TableHead>
+                     <TableHead>Vozilo</TableHead>
+                     <TableHead>Vožnja</TableHead>
+                     <TableHead>Napomena</TableHead>
+                     <TableHead>Datum</TableHead>
+                     <TableHead>Akcije</TableHead>
+                   </TableRow>
+                 </TableHeader>
+                 <TableBody>
+                   {costs.map((cost) => (
+                     <TableRow key={cost.id}>
+                       <TableCell>
+                         <Badge>
+                           {cost.cost_type?.charAt(0).toUpperCase() + cost.cost_type?.slice(1) || 'Nepoznato'}
+                         </Badge>
+                       </TableCell>
+                       <TableCell className="font-medium">{cost.amount ? `${cost.amount} KM` : '-'}</TableCell>
+                       <TableCell>{cost.vehicle?.registration || '-'}</TableCell>
+                       <TableCell>
+                         {cost.ride ? `${cost.ride.origin} → ${cost.ride.destination}` : '-'}
+                       </TableCell>
+                       <TableCell className="max-w-48 truncate">{cost.note || '-'}</TableCell>
+                       <TableCell>{cost.created_at ? formatDate(cost.created_at) : '-'}</TableCell>
+                       <TableCell>
+                         <div className="flex gap-2">
+                           <Dialog>
+                             <DialogTrigger asChild>
+                               <Button 
+                                 size="sm" 
+                                 variant="outline"
+                                 onClick={() => setEditingCost(cost)}
+                               >
+                                 <Edit className="w-4 h-4" />
+                               </Button>
+                             </DialogTrigger>
+                             <DialogContent>
+                               <DialogHeader>
+                                 <DialogTitle>Uredi trošak</DialogTitle>
+                                 <DialogDescription>
+                                   Uredite podatke o trošku
+                                 </DialogDescription>
+                               </DialogHeader>
+                               <form onSubmit={handleSaveCost} className="space-y-4">
+                                 <div className="space-y-2">
+                                   <Label htmlFor="cost_type">Tip troška</Label>
+                                   <Select name="cost_type" defaultValue={cost.cost_type || ''} required>
+                                     <SelectTrigger>
+                                       <SelectValue placeholder="Izaberite tip troška" />
+                                     </SelectTrigger>
+                                     <SelectContent>
+                                       <SelectItem value="gorivo">Gorivo</SelectItem>
+                                       <SelectItem value="servis">Servis</SelectItem>
+                                       <SelectItem value="popravka">Popravka</SelectItem>
+                                       <SelectItem value="registracija">Registracija</SelectItem>
+                                       <SelectItem value="osiguranje">Osiguranje</SelectItem>
+                                       <SelectItem value="putarina">Putarina</SelectItem>
+                                       <SelectItem value="parking">Parking</SelectItem>
+                                       <SelectItem value="kazna">Kazna</SelectItem>
+                                       <SelectItem value="ostalo">Ostalo</SelectItem>
+                                     </SelectContent>
+                                   </Select>
+                                 </div>
+
+                                 <div className="space-y-2">
+                                   <Label htmlFor="amount">Iznos (KM)</Label>
+                                   <Input
+                                     id="amount"
+                                     name="amount"
+                                     type="number"
+                                     step="0.01"
+                                     placeholder="0.00"
+                                     defaultValue={cost.amount || ''}
+                                     required
+                                   />
+                                 </div>
+
+                                 <div className="space-y-2">
+                                   <Label htmlFor="vehicle_select">Vozilo</Label>
+                                   <Select value={selectedVehicle} onValueChange={setSelectedVehicle}>
+                                     <SelectTrigger>
+                                       <SelectValue placeholder="Odaberite vozilo" />
+                                     </SelectTrigger>
+                                     <SelectContent>
+                                       {vehicles.map((vehicle) => (
+                                         <SelectItem key={vehicle.id} value={vehicle.id}>
+                                           {vehicle.registration}
+                                         </SelectItem>
+                                       ))}
+                                     </SelectContent>
+                                   </Select>
+                                 </div>
+
+                                 <div className="space-y-2">
+                                   <Label htmlFor="ride_select">Vožnja</Label>
+                                   <Select value={selectedRide} onValueChange={setSelectedRide}>
+                                     <SelectTrigger>
+                                       <SelectValue placeholder="Odaberite vožnju" />
+                                     </SelectTrigger>
+                                     <SelectContent>
+                                       {rides.map((ride) => (
+                                         <SelectItem key={ride.id} value={ride.id}>
+                                           {ride.origin} → {ride.destination} ({formatDate(ride.start_at)})
+                                         </SelectItem>
+                                       ))}
+                                     </SelectContent>
+                                   </Select>
+                                 </div>
+
+                                 <div className="space-y-2">
+                                   <Label htmlFor="note">Napomena</Label>
+                                   <Textarea
+                                     id="note"
+                                     name="note"
+                                     placeholder="Dodatne informacije..."
+                                     defaultValue={cost.note || ''}
+                                   />
+                                 </div>
+
+                                 <DialogFooter>
+                                   <Button type="submit">Ažuriraj trošak</Button>
+                                 </DialogFooter>
+                               </form>
+                             </DialogContent>
+                           </Dialog>
+                           
+                           <AlertDialog>
+                             <AlertDialogTrigger asChild>
+                               <Button size="sm" variant="destructive">
+                                 <Trash2 className="w-4 h-4" />
+                               </Button>
+                             </AlertDialogTrigger>
+                             <AlertDialogContent>
+                               <AlertDialogHeader>
+                                 <AlertDialogTitle>Potvrda brisanja</AlertDialogTitle>
+                                 <AlertDialogDescription>
+                                   Ovo će trajno obrisati zapis o trošku od {cost.amount} KM. Nastaviti?
+                                 </AlertDialogDescription>
+                               </AlertDialogHeader>
+                               <AlertDialogFooter>
+                                 <AlertDialogCancel>Otkaži</AlertDialogCancel>
+                                 <AlertDialogAction onClick={() => handleDeleteCost(cost.id)}>
+                                   Obriši
+                                 </AlertDialogAction>
+                               </AlertDialogFooter>
+                             </AlertDialogContent>
+                           </AlertDialog>
+                         </div>
+                       </TableCell>
+                     </TableRow>
+                   ))}
+                 </TableBody>
+               </Table>
+               {costs.length === 0 && (
+                 <div className="text-center py-8 text-muted-foreground">
+                   <FileText className="h-12 w-12 mx-auto mb-4 opacity-50" />
+                   <p>Nema unesenih troškova</p>
+                 </div>
+               )}
+             </CardContent>
+           </Card>
+         </TabsContent>
       </Tabs>
 
       <AddCostModal 
