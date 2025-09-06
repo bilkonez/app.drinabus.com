@@ -3,6 +3,7 @@ import { useNavigate } from "react-router-dom";
 import { useAuth } from "@/contexts/AuthContext";
 import { supabase } from "@/integrations/supabase/client";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { Checkbox } from "@/components/ui/checkbox";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
@@ -18,7 +19,8 @@ import {
   FileText,
   Clock,
   Wrench,
-  Plus
+  Plus,
+  CheckCircle
 } from "lucide-react";
 import { toast } from "@/hooks/use-toast";
 import VehicleManagement from "@/components/admin/VehicleManagement";
@@ -370,6 +372,77 @@ const Dashboard = () => {
     }
   };
 
+  const handleCompleteReminder = async (reminder: any) => {
+    try {
+      let newExpiryDate: string;
+      const currentDate = new Date(reminder.expiry_date);
+      
+      // Calculate new expiry date based on reminder type
+      switch (reminder.reminder_type) {
+        case 'Registracija':
+          // Add 1 year
+          newExpiryDate = new Date(currentDate.setFullYear(currentDate.getFullYear() + 1)).toISOString().split('T')[0];
+          break;
+        case 'Tehnički (godišnji)':
+          // Add 1 year
+          newExpiryDate = new Date(currentDate.setFullYear(currentDate.getFullYear() + 1)).toISOString().split('T')[0];
+          break;
+        case 'Tehnički (6m)':
+          // Add 6 months
+          newExpiryDate = new Date(currentDate.setMonth(currentDate.getMonth() + 6)).toISOString().split('T')[0];
+          break;
+        case 'Baždarenje tahografa':
+          // Add 2 years
+          newExpiryDate = new Date(currentDate.setFullYear(currentDate.getFullYear() + 2)).toISOString().split('T')[0];
+          break;
+        case 'PP aparat':
+          // Add 1 year
+          newExpiryDate = new Date(currentDate.setFullYear(currentDate.getFullYear() + 1)).toISOString().split('T')[0];
+          break;
+        default:
+          // Default to 1 year
+          newExpiryDate = new Date(currentDate.setFullYear(currentDate.getFullYear() + 1)).toISOString().split('T')[0];
+      }
+
+      // Map reminder types to database column names
+      const columnMap: { [key: string]: string } = {
+        'Registracija': 'registration_expiry',
+        'Tehnički (godišnji)': 'technical_expiry', 
+        'Tehnički (6m)': 'technical_6m_expiry',
+        'Baždarenje tahografa': 'tachograph_calibration_expiry',
+        'PP aparat': 'fire_extinguisher_expiry'
+      };
+
+      const columnName = columnMap[reminder.reminder_type];
+      if (!columnName) {
+        throw new Error('Unknown reminder type');
+      }
+
+      // Update the deadline in database
+      const { error } = await supabase
+        .from('vehicle_deadlines')
+        .update({ [columnName]: newExpiryDate })
+        .eq('vehicle_id', reminder.vehicle_id);
+
+      if (error) throw error;
+
+      toast({
+        title: "Uspjeh",
+        description: `${reminder.reminder_type} za vozilo ${reminder.registration} je produžen`,
+      });
+
+      // Refresh data
+      await fetchReminders();
+    } catch (error) {
+      console.error('Error completing reminder:', error);
+      toast({
+        title: "Greška", 
+        description: "Greška pri ažuriranju roka",
+        variant: "destructive",
+      });
+    }
+  };
+
   if (loading) {
     return (
       <div className="min-h-screen bg-background flex items-center justify-center">
@@ -565,19 +638,27 @@ const Dashboard = () => {
                     <CardContent>
                       {reminders.length > 0 ? (
                         <div className="space-y-2 md:space-y-3 max-h-64 overflow-y-auto">
-                          {reminders.map((reminder, index) => (
-                            <div key={index} className="flex items-center justify-between p-2 md:p-3 border rounded-lg">
-                              <div className="flex-1 min-w-0">
-                                <p className="font-medium text-foreground text-xs md:text-sm truncate">{reminder.reminder_type}</p>
-                                <p className="text-xs text-muted-foreground">
-                                  {reminder.registration} • {formatDate(reminder.expiry_date)}
-                                </p>
-                              </div>
-                              <Badge variant={reminder.days_until_expiry <= 7 ? "destructive" : "secondary"} className="text-xs ml-2 flex-shrink-0">
-                                za {reminder.days_until_expiry} dana
-                              </Badge>
-                            </div>
-                          ))}
+                           {reminders.map((reminder, index) => (
+                             <div key={index} className="flex items-center gap-3 p-2 md:p-3 border rounded-lg">
+                               <Checkbox 
+                                 onCheckedChange={(checked) => {
+                                   if (checked) {
+                                     handleCompleteReminder(reminder);
+                                   }
+                                 }}
+                                 className="flex-shrink-0"
+                               />
+                               <div className="flex-1 min-w-0">
+                                 <p className="font-medium text-foreground text-xs md:text-sm truncate">{reminder.reminder_type}</p>
+                                 <p className="text-xs text-muted-foreground">
+                                   {reminder.registration} • {formatDate(reminder.expiry_date)}
+                                 </p>
+                               </div>
+                               <Badge variant={reminder.days_until_expiry <= 7 ? "destructive" : "secondary"} className="text-xs flex-shrink-0">
+                                 za {reminder.days_until_expiry} dana
+                               </Badge>
+                             </div>
+                           ))}
                         </div>
                       ) : (
                         <p className="text-muted-foreground text-sm">Nema nadolazećih rokova</p>
