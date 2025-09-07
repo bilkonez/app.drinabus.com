@@ -123,3 +123,8 @@ All colors MUST be HSL for consistency
     @apply bg-background text-foreground;
   }
 }
+
+/* Hide Lovable watermark */
+[data-lovable-watermark] {
+  display: none !important;
+}

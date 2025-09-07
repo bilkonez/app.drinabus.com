@@ -7,6 +7,7 @@ import utc from 'dayjs/plugin/utc';
 import timezone from 'dayjs/plugin/timezone';
 import isBetween from 'dayjs/plugin/isBetween';
 import duration from 'dayjs/plugin/duration';
+import { calendarDateFromDb, formatDisplayDateTime } from '@/lib/datetime';
 
 // Configure dayjs plugins
 dayjs.extend(utc);
@@ -142,8 +143,8 @@ const Calendar = () => {
     const calendarEvents = filtered.map(event => ({
       ...event,
       id: event.segment_id || event.ride_id,
-      start: dayjs(event.event_start).toDate(),
-      end: event.event_end ? dayjs(event.event_end).toDate() : dayjs(event.event_start).add(1, 'hour').toDate(),
+      start: calendarDateFromDb(event.event_start),
+      end: event.event_end ? calendarDateFromDb(event.event_end) : dayjs(calendarDateFromDb(event.event_start)).add(1, 'hour').toDate(),
       resource: event
     }));
 
@@ -512,8 +513,8 @@ const Calendar = () => {
                 <div>
                   <h3 className="font-semibold text-lg">{selectedEvent.title}</h3>
                   <p className="text-sm text-muted-foreground">
-                    {dayjs(selectedEvent.event_start).format("DD/MM/YYYY [u] HH:mm")}
-                    {selectedEvent.event_end && ` - ${dayjs(selectedEvent.event_end).format("HH:mm")}`}
+                    {formatDisplayDateTime(selectedEvent.event_start)}
+                    {selectedEvent.event_end && ` - ${formatDisplayDateTime(selectedEvent.event_end)}`}
                   </p>
                 </div>
 

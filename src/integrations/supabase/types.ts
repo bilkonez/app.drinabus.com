@@ -69,6 +69,20 @@ export type Database = {
             referencedColumns: ["id"]
           },
           {
+            foreignKeyName: "costs_ride_id_fkey"
+            columns: ["ride_id"]
+            isOneToOne: false
+            referencedRelation: "v_tomorrow_rides"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "costs_vehicle_id_fkey"
+            columns: ["vehicle_id"]
+            isOneToOne: false
+            referencedRelation: "v_vehicle_monthly_costs"
+            referencedColumns: ["vehicle_id"]
+          },
+          {
             foreignKeyName: "costs_vehicle_id_fkey"
             columns: ["vehicle_id"]
             isOneToOne: false
@@ -105,6 +119,13 @@ export type Database = {
             columns: ["ride_id"]
             isOneToOne: false
             referencedRelation: "rides"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "documents_ride_id_fkey"
+            columns: ["ride_id"]
+            isOneToOne: false
+            referencedRelation: "v_tomorrow_rides"
             referencedColumns: ["id"]
           },
         ]
@@ -145,6 +166,13 @@ export type Database = {
             referencedRelation: "employees"
             referencedColumns: ["id"]
           },
+          {
+            foreignKeyName: "driver_work_log_employee_id_fkey"
+            columns: ["employee_id"]
+            isOneToOne: false
+            referencedRelation: "v_employees_with_roles"
+            referencedColumns: ["id"]
+          },
         ]
       }
       employee_roles: {
@@ -169,6 +197,13 @@ export type Database = {
             columns: ["employee_id"]
             isOneToOne: false
             referencedRelation: "employees"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "employee_roles_employee_id_fkey"
+            columns: ["employee_id"]
+            isOneToOne: false
+            referencedRelation: "v_employees_with_roles"
             referencedColumns: ["id"]
           },
           {
@@ -295,6 +330,20 @@ export type Database = {
             referencedColumns: ["id"]
           },
           {
+            foreignKeyName: "ride_segments_ride_id_fkey"
+            columns: ["ride_id"]
+            isOneToOne: false
+            referencedRelation: "v_tomorrow_rides"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "ride_segments_vehicle_id_fkey"
+            columns: ["vehicle_id"]
+            isOneToOne: false
+            referencedRelation: "v_vehicle_monthly_costs"
+            referencedColumns: ["vehicle_id"]
+          },
+          {
             foreignKeyName: "ride_segments_vehicle_id_fkey"
             columns: ["vehicle_id"]
             isOneToOne: false
@@ -361,6 +410,20 @@ export type Database = {
             referencedColumns: ["id"]
           },
           {
+            foreignKeyName: "rides_driver_id_fkey"
+            columns: ["driver_id"]
+            isOneToOne: false
+            referencedRelation: "v_employees_with_roles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "rides_vehicle_id_fkey"
+            columns: ["vehicle_id"]
+            isOneToOne: false
+            referencedRelation: "v_vehicle_monthly_costs"
+            referencedColumns: ["vehicle_id"]
+          },
+          {
             foreignKeyName: "rides_vehicle_id_fkey"
             columns: ["vehicle_id"]
             isOneToOne: false
@@ -417,6 +480,13 @@ export type Database = {
             foreignKeyName: "vehicle_deadlines_vehicle_id_fkey"
             columns: ["vehicle_id"]
             isOneToOne: true
+            referencedRelation: "v_vehicle_monthly_costs"
+            referencedColumns: ["vehicle_id"]
+          },
+          {
+            foreignKeyName: "vehicle_deadlines_vehicle_id_fkey"
+            columns: ["vehicle_id"]
+            isOneToOne: true
             referencedRelation: "vehicles"
             referencedColumns: ["id"]
           },
@@ -457,6 +527,13 @@ export type Database = {
           vehicle_id?: string | null
         }
         Relationships: [
+          {
+            foreignKeyName: "vehicle_service_vehicle_id_fkey"
+            columns: ["vehicle_id"]
+            isOneToOne: false
+            referencedRelation: "v_vehicle_monthly_costs"
+            referencedColumns: ["vehicle_id"]
+          },
           {
             foreignKeyName: "vehicle_service_vehicle_id_fkey"
             columns: ["vehicle_id"]
@@ -518,6 +595,123 @@ export type Database = {
           status: string | null
           title: string | null
           total_price: number | null
+          vehicle_id: string | null
+        }
+        Relationships: []
+      }
+      v_daily_stats: {
+        Row: {
+          costs_total: number | null
+          day: string | null
+          profit_total: number | null
+          revenue_total: number | null
+          rides_count: number | null
+        }
+        Relationships: []
+      }
+      v_driver_monthly_hours: {
+        Row: {
+          days_filled: number | null
+          driver_name: string | null
+          employee_id: string | null
+          month_start: string | null
+          total_hours: number | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "driver_work_log_employee_id_fkey"
+            columns: ["employee_id"]
+            isOneToOne: false
+            referencedRelation: "employees"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "driver_work_log_employee_id_fkey"
+            columns: ["employee_id"]
+            isOneToOne: false
+            referencedRelation: "v_employees_with_roles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      v_employees_with_roles: {
+        Row: {
+          active: boolean | null
+          created_at: string | null
+          email: string | null
+          first_name: string | null
+          id: string | null
+          is_mehanicar: boolean | null
+          is_operativa: boolean | null
+          is_vozac: boolean | null
+          last_name: string | null
+          license_expiry: string | null
+          notes: string | null
+          phone: string | null
+          role: string | null
+          roles_array: string[] | null
+          roles_csv: string | null
+          tachograph_card_expiry: string | null
+          updated_at: string | null
+        }
+        Relationships: []
+      }
+      v_monthly_stats: {
+        Row: {
+          costs_total: number | null
+          month: string | null
+          profit_total: number | null
+          revenue_total: number | null
+          rides_count: number | null
+        }
+        Relationships: []
+      }
+      v_reminders_due: {
+        Row: {
+          days_left: number | null
+          expiry_date: string | null
+          kind: string | null
+          ref_id: string | null
+          title: string | null
+        }
+        Relationships: []
+      }
+      v_tomorrow_rides: {
+        Row: {
+          id: string | null
+          label: string | null
+          start_date: string | null
+          start_time: string | null
+        }
+        Insert: {
+          id?: string | null
+          label?: never
+          start_date?: never
+          start_time?: never
+        }
+        Update: {
+          id?: string | null
+          label?: never
+          start_date?: never
+          start_time?: never
+        }
+        Relationships: []
+      }
+      v_vehicle_monthly_costs: {
+        Row: {
+          costs_total: number | null
+          month: string | null
+          registration: string | null
+          vehicle_id: string | null
+        }
+        Relationships: []
+      }
+      v_vehicle_reminders_dashboard: {
+        Row: {
+          days_until_expiry: number | null
+          expiry_date: string | null
+          registration: string | null
+          reminder_type: string | null
           vehicle_id: string | null
         }
         Relationships: []

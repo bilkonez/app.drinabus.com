@@ -171,13 +171,28 @@ const RideManagement = () => {
     setLoading(true);
 
     try {
+      const { toDbIsoFromLocal, getCurrentLocalDate, getCurrentLocalTime } = await import('@/lib/datetime');
+      
+      // Handle start_at based on ride type
+      let startAt: string;
+      if (formData.ride_type === 'lokal') {
+        const date = formData.ride_date || getCurrentLocalDate();
+        startAt = toDbIsoFromLocal(date, '00:00');
+      } else {
+        // For linijski/vanlinijski rides, parse the datetime string
+        if (formData.start_at) {
+          const [date, time] = formData.start_at.split('T');
+          startAt = toDbIsoFromLocal(date, time.substring(0, 5));
+        } else {
+          startAt = toDbIsoFromLocal(getCurrentLocalDate(), getCurrentLocalTime());
+        }
+      }
+      
       const rideData = {
         ride_type: formData.ride_type,
         origin: formData.origin,
         destination: formData.destination,
-        start_at: formData.ride_type === 'lokal' ? 
-          (formData.ride_date ? `${formData.ride_date}T00:00:00` : new Date().toISOString()) : 
-          formData.start_at,
+        start_at: startAt,
         end_at: formData.ride_type === 'lokal' ? 
           (formData.ride_date ? `${formData.ride_date}T23:59:59` : new Date().toISOString()) : 
           formData.start_at,
@@ -262,11 +277,11 @@ const RideManagement = () => {
           }
 
           // Use the same date for all segments
-          const rideDate = formData.ride_date || new Date().toISOString().split('T')[0];
+          const rideDate = formData.ride_date || getCurrentLocalDate();
           
           const segmentData = validSegments.map(segment => ({
             ride_id: rideId,
-            segment_start: `${rideDate}T${segment.start_time}:00`,
+            segment_start: toDbIsoFromLocal(rideDate, segment.start_time),
             segment_end: null,
             origin: segment.origin,
             destination: segment.destination,
