@@ -2,16 +2,26 @@ import { useState, useEffect } from "react";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
-import { AlertTriangle, Calendar, Clock } from "lucide-react";
+import { Button } from "@/components/ui/button";
+import { AlertTriangle, Calendar, Clock, Check } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { format } from "date-fns";
+import { EditDeadlineModal } from "@/components/ui/EditDeadlineModal";
 
-interface Reminder {
+interface VehicleReminder {
+  vehicle_id: string;
+  registration: string;
   kind: string;
-  title: string;
   expiry_date: string;
   days_left: number;
-  ref_id: string;
+}
+
+interface EmployeeReminder {
+  employee_id: string;
+  employee_name: string;
+  kind: string;
+  expiry_date: string;
+  days_left: number;
 }
 
 interface TomorrowRide {
@@ -22,9 +32,21 @@ interface TomorrowRide {
 }
 
 const RemindersTab = () => {
-  const [reminders, setReminders] = useState<Reminder[]>([]);
+  const [vehicleReminders, setVehicleReminders] = useState<VehicleReminder[]>([]);
+  const [employeeReminders, setEmployeeReminders] = useState<EmployeeReminder[]>([]);
   const [tomorrowRides, setTomorrowRides] = useState<TomorrowRide[]>([]);
   const [loading, setLoading] = useState(true);
+  const [editModal, setEditModal] = useState<{
+    isOpen: boolean;
+    vehicleId: string;
+    kind: string;
+    currentDate: string;
+  }>({
+    isOpen: false,
+    vehicleId: '',
+    kind: '',
+    currentDate: ''
+  });
 
   useEffect(() => {
     fetchData();
@@ -34,14 +56,23 @@ const RemindersTab = () => {
     try {
       setLoading(true);
       
-      // Fetch reminders
-      const { data: reminderData, error: reminderError } = await supabase
-        .from('v_reminders_due')
+      // Fetch vehicle reminders
+      const { data: vehicleData, error: vehicleError } = await supabase
+        .from('v_vehicle_reminders_dashboard')
         .select('*')
-        .order('days_left', { ascending: true });
+        .order('expiry_date', { ascending: true });
 
-      if (reminderError) throw reminderError;
-      setReminders(reminderData || []);
+      if (vehicleError) throw vehicleError;
+      setVehicleReminders(vehicleData || []);
+
+      // Fetch employee reminders
+      const { data: employeeData, error: employeeError } = await supabase
+        .from('v_employee_reminders_dashboard')
+        .select('*')
+        .order('expiry_date', { ascending: true });
+
+      if (employeeError) throw employeeError;
+      setEmployeeReminders(employeeData || []);
 
       // Fetch tomorrow's rides
       const { data: ridesData, error: ridesError } = await supabase
@@ -71,32 +102,41 @@ const RemindersTab = () => {
 
   const getReminderIcon = (kind: string) => {
     switch (kind) {
-      case 'vozac_licenca':
-      case 'vozac_tahograf_kartica':
+      case 'Vozačka dozvola':
+      case 'Tahograf kartica':
         return '👤';
-      case 'vozilo_registracija':
-      case 'vozilo_tehnicki':
-      case 'vozilo_tehnicki_6m':
-      case 'vozilo_tahograf_bazdarenje':
-      case 'vozilo_pp_aparat':
+      case 'Registracija':
+      case 'Tehnički':
+      case '6-mj Tehnički':
+      case 'Baždarenje tahografa':
+      case 'PP aparat':
         return '🚌';
       default:
         return '📅';
     }
   };
 
-  const getKindLabel = (kind: string) => {
-    const labels: Record<string, string> = {
-      'vozac_licenca': 'Vozačka dozvola',
-      'vozac_tahograf_kartica': 'Tahograf kartica',
-      'vozilo_registracija': 'Registracija',
-      'vozilo_tehnicki': 'Tehnički pregled',
-      'vozilo_tehnicki_6m': 'Tehnički pregled (6m)',
-      'vozilo_tahograf_bazdarenje': 'Baždarenje tahografa',
-      'vozilo_pp_aparat': 'PP aparat'
-    };
-    return labels[kind] || kind;
+  const handleEditDeadline = (vehicleId: string, kind: string, currentDate: string) => {
+    setEditModal({
+      isOpen: true,
+      vehicleId,
+      kind,
+      currentDate
+    });
   };
+
+  const handleCloseEditModal = () => {
+    setEditModal({
+      isOpen: false,
+      vehicleId: '',
+      kind: '',
+      currentDate: ''
+    });
+  };
+
+  const allReminders = [...vehicleReminders, ...employeeReminders].sort((a, b) => 
+    new Date(a.expiry_date).getTime() - new Date(b.expiry_date).getTime()
+  );
 
   if (loading) {
     return (
@@ -132,28 +172,35 @@ const RemindersTab = () => {
           </CardDescription>
         </CardHeader>
         <CardContent>
-          {reminders.length === 0 ? (
+          {allReminders.length === 0 ? (
             <div className="text-center py-8 text-muted-foreground">
               <Calendar className="h-12 w-12 mx-auto mb-4 opacity-50" />
-              <p>Nema nadolazećih rokova u narednih 30 dana</p>
+              <p>Nema rokova u narednih 30 dana</p>
             </div>
           ) : (
             <div className="space-y-3">
-              {reminders.map((reminder, index) => (
+              {allReminders.map((reminder, index) => (
                 <div key={index} className="flex items-center justify-between p-3 bg-muted/50 rounded-lg">
                   <div className="flex items-center gap-3">
                     <span className="text-xl">{getReminderIcon(reminder.kind)}</span>
                     <div>
-                      <p className="font-medium text-sm">{reminder.title}</p>
-                      <p className="text-xs text-muted-foreground">
-                        {getKindLabel(reminder.kind)}
+                      <p className="font-medium text-sm">
+                        {'registration' in reminder ? reminder.registration : reminder.employee_name} – {reminder.kind} – {formatDate(reminder.expiry_date)} – za {reminder.days_left} dana
                       </p>
                     </div>
                   </div>
-                  <div className="text-right">
-                    <p className="text-sm font-medium">{formatDate(reminder.expiry_date)}</p>
+                  <div className="flex items-center gap-2">
+                    {'registration' in reminder && (
+                      <Button
+                        size="sm"
+                        variant="outline"
+                        onClick={() => handleEditDeadline(reminder.vehicle_id, reminder.kind, reminder.expiry_date)}
+                      >
+                        <Check className="h-4 w-4" />
+                      </Button>
+                    )}
                     <Badge variant={getReminderVariant(reminder.days_left)} className="text-xs">
-                      {reminder.days_left >= 0 ? `${reminder.days_left} dana` : `Prošao ${Math.abs(reminder.days_left)} dana`}
+                      za {reminder.days_left} dana
                     </Badge>
                   </div>
                 </div>
@@ -212,7 +259,7 @@ const RemindersTab = () => {
       </Card>
 
       {/* Kompletna tabela remindara */}
-      {reminders.length > 0 && (
+      {allReminders.length > 0 && (
         <Card>
           <CardHeader>
             <CardTitle>Kompletan pregled rokova</CardTitle>
@@ -226,30 +273,43 @@ const RemindersTab = () => {
                 <TableHeader>
                   <TableRow>
                     <TableHead>Tip</TableHead>
-                    <TableHead>Naziv</TableHead>
+                    <TableHead>Naziv/Vozilo</TableHead>
                     <TableHead>Datum isteka</TableHead>
                     <TableHead>Status</TableHead>
+                    <TableHead>Akcije</TableHead>
                   </TableRow>
                 </TableHeader>
                 <TableBody>
-                  {reminders.map((reminder, index) => (
+                  {allReminders.map((reminder, index) => (
                     <TableRow key={index}>
                       <TableCell>
                         <div className="flex items-center gap-2">
                           <span>{getReminderIcon(reminder.kind)}</span>
-                          <span className="text-sm">{getKindLabel(reminder.kind)}</span>
+                          <span className="text-sm">{reminder.kind}</span>
                         </div>
                       </TableCell>
                       <TableCell className="font-medium">
-                        {reminder.title}
+                        {'registration' in reminder ? reminder.registration : reminder.employee_name}
                       </TableCell>
                       <TableCell>
                         {formatDate(reminder.expiry_date)}
                       </TableCell>
                       <TableCell>
                         <Badge variant={getReminderVariant(reminder.days_left)}>
-                          {reminder.days_left >= 0 ? `${reminder.days_left} dana` : `Prošao ${Math.abs(reminder.days_left)} dana`}
+                          za {reminder.days_left} dana
                         </Badge>
+                      </TableCell>
+                      <TableCell>
+                        {'registration' in reminder && (
+                          <Button
+                            size="sm"
+                            variant="outline"
+                            onClick={() => handleEditDeadline(reminder.vehicle_id, reminder.kind, reminder.expiry_date)}
+                          >
+                            <Check className="h-4 w-4 mr-1" />
+                            Uredi
+                          </Button>
+                        )}
                       </TableCell>
                     </TableRow>
                   ))}
@@ -259,6 +319,15 @@ const RemindersTab = () => {
           </CardContent>
         </Card>
       )}
+
+      <EditDeadlineModal
+        isOpen={editModal.isOpen}
+        onClose={handleCloseEditModal}
+        vehicleId={editModal.vehicleId}
+        kind={editModal.kind}
+        currentDate={editModal.currentDate}
+        onRefetch={fetchData}
+      />
     </div>
   );
 };

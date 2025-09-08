@@ -35,11 +35,14 @@ import { formatDate, formatTime } from "@/lib/dateUtils";
 const logoImage = "/lovable-uploads/6dd2d576-8aab-4bef-bf5a-0c7d8a00f49f.png";
 
 interface Reminder {
-  reminder_type: string;
+  kind: string;
   expiry_date: string;
-  days_until_expiry: number;
-  registration: string;
-  vehicle_id: string;
+  days_left: number;
+  type: 'vehicle' | 'employee';
+  registration?: string;
+  vehicle_id?: string;
+  employee_name?: string;
+  employee_id?: string;
 }
 
 interface TomorrowRide {
@@ -137,14 +140,30 @@ const Dashboard = () => {
 
   const fetchReminders = async () => {
     try {
-      const { data, error } = await supabase
-        .from('v_vehicle_reminders_dashboard')
-        .select('*')
-        .order('expiry_date', { ascending: true })
-        .limit(5);
+      // Fetch both vehicle and employee reminders
+      const [vehicleResult, employeeResult] = await Promise.all([
+        supabase
+          .from('v_vehicle_reminders_dashboard')
+          .select('*')
+          .order('expiry_date', { ascending: true }),
+        supabase
+          .from('v_employee_reminders_dashboard')
+          .select('*')
+          .order('expiry_date', { ascending: true })
+      ]);
 
-      if (error) throw error;
-      setReminders(data || []);
+      if (vehicleResult.error) throw vehicleResult.error;
+      if (employeeResult.error) throw employeeResult.error;
+
+      // Combine and sort all reminders by date, limit to 5
+      const allReminders = [
+        ...(vehicleResult.data || []).map(r => ({ ...r, type: 'vehicle' as const })),
+        ...(employeeResult.data || []).map(r => ({ ...r, type: 'employee' as const }))
+      ]
+        .sort((a, b) => new Date(a.expiry_date).getTime() - new Date(b.expiry_date).getTime())
+        .slice(0, 5);
+
+      setReminders(allReminders);
     } catch (error) {
       console.error('Error fetching reminders:', error);
     }
@@ -648,15 +667,15 @@ const Dashboard = () => {
                                  }}
                                  className="flex-shrink-0"
                                />
-                               <div className="flex-1 min-w-0">
-                                 <p className="font-medium text-foreground text-xs md:text-sm truncate">{reminder.reminder_type}</p>
-                                 <p className="text-xs text-muted-foreground">
-                                   {reminder.registration} • {formatDate(reminder.expiry_date)}
-                                 </p>
-                               </div>
-                               <Badge variant={reminder.days_until_expiry <= 7 ? "destructive" : "secondary"} className="text-xs flex-shrink-0">
-                                 za {reminder.days_until_expiry} dana
-                               </Badge>
+                                <div className="flex-1 min-w-0">
+                                  <p className="font-medium text-foreground text-xs md:text-sm truncate">{reminder.kind}</p>
+                                  <p className="text-xs text-muted-foreground">
+                                    {reminder.type === 'vehicle' ? reminder.registration : reminder.employee_name} • {formatDate(reminder.expiry_date)}
+                                  </p>
+                                </div>
+                                <Badge variant={reminder.days_left <= 7 ? "destructive" : "secondary"} className="text-xs flex-shrink-0">
+                                  za {reminder.days_left} dana
+                                </Badge>
                              </div>
                            ))}
                         </div>

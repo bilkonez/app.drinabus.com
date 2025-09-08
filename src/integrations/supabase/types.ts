@@ -634,6 +634,16 @@ export type Database = {
           },
         ]
       }
+      v_employee_reminders_dashboard: {
+        Row: {
+          days_left: number | null
+          employee_id: string | null
+          employee_name: string | null
+          expiry_date: string | null
+          kind: string | null
+        }
+        Relationships: []
+      }
       v_employees_with_roles: {
         Row: {
           active: boolean | null
@@ -708,10 +718,10 @@ export type Database = {
       }
       v_vehicle_reminders_dashboard: {
         Row: {
-          days_until_expiry: number | null
+          days_left: number | null
           expiry_date: string | null
+          kind: string | null
           registration: string | null
-          reminder_type: string | null
           vehicle_id: string | null
         }
         Relationships: []
