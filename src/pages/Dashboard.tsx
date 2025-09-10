@@ -117,6 +117,31 @@ const Dashboard = () => {
 
   useEffect(() => {
     fetchDashboardData();
+    
+    // Set up real-time listeners for dashboard updates
+    const channel = supabase.channel('dashboard-sync')
+      .on('postgres_changes', { 
+        event: '*', 
+        schema: 'public', 
+        table: 'rides' 
+      }, () => {
+        console.log('Rides changed, refreshing dashboard...');
+        fetchTomorrowRides();
+        fetchWeekEvents();
+      })
+      .on('postgres_changes', { 
+        event: '*', 
+        schema: 'public', 
+        table: 'ride_segments' 
+      }, () => {
+        console.log('Ride segments changed, refreshing dashboard...');
+        fetchWeekEvents();
+      })
+      .subscribe();
+
+    return () => {
+      supabase.removeChannel(channel);
+    };
   }, []);
 
   const fetchDashboardData = async () => {

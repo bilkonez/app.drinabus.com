@@ -175,7 +175,17 @@ const RideManagement = () => {
       
       // Handle start_at based on ride type
       let startAt: string;
-      if (formData.ride_type === 'lokal') {
+      
+      // Check if we're editing and the datetime hasn't changed
+      const hasDateTimeChanged = editingRide && (
+        (formData.ride_type !== 'lokal' && formData.start_at) ||
+        (formData.ride_type === 'lokal' && formData.ride_date)
+      );
+      
+      if (editingRide && !hasDateTimeChanged) {
+        // Keep original start_at if user didn't change date/time
+        startAt = editingRide.start_at;
+      } else if (formData.ride_type === 'lokal') {
         const date = formData.ride_date || getCurrentLocalDate();
         startAt = toDbIsoFromLocal(date, '00:00');
       } else {
@@ -308,7 +318,9 @@ const RideManagement = () => {
 
       setDialogOpen(false);
       resetForm();
-      await fetchRides();
+      
+      // Refresh all ride-related data including calendar and mini-calendar
+      await Promise.all([fetchRides()]);
     } catch (error) {
       console.error('Error saving ride:', error);
       toast({
@@ -337,7 +349,7 @@ const RideManagement = () => {
         description: "Vožnja je uspješno obrisana",
       });
 
-      await fetchRides();
+      await Promise.all([fetchRides()]);
     } catch (error) {
       console.error('Error deleting ride:', error);
       toast({
@@ -351,11 +363,22 @@ const RideManagement = () => {
   const openDialog = async (ride?: Ride) => {
     if (ride) {
       setEditingRide(ride);
+      
+      const { localDateFromDb, localTimeFromDb } = await import('@/lib/datetime');
+      
+      // For non-lokal rides, use proper timezone conversion
+      let startAtValue = "";
+      if (ride.ride_type !== 'lokal' && ride.start_at) {
+        const date = localDateFromDb(ride.start_at);
+        const time = localTimeFromDb(ride.start_at);
+        startAtValue = `${date}T${time}`;
+      }
+      
       setFormData({
         ride_type: ride.ride_type,
         origin: ride.origin,
         destination: ride.destination,
-        start_at: ride.start_at || "",
+        start_at: startAtValue,
         ride_date: "",
         return_date: ride.return_date || "",
         vehicle_id: ride.vehicle_id || "",
@@ -370,7 +393,7 @@ const RideManagement = () => {
         const rideSegments = await fetchRideSegments(ride.id);
         setSegments(rideSegments.map(segment => ({
           id: segment.id,
-          start_time: new Date(segment.segment_start).toISOString().slice(11, 16),
+          start_time: localTimeFromDb(segment.segment_start),
           origin: segment.origin,
           destination: segment.destination,
           vehicle_id: segment.vehicle_id,
@@ -380,8 +403,7 @@ const RideManagement = () => {
         
         // Set ride date from first segment (all segments have same date)
         if (rideSegments.length > 0) {
-          const segmentDate = new Date(rideSegments[0].segment_start);
-          const rideDate = segmentDate.toLocaleDateString('en-CA'); // YYYY-MM-DD format for input[type="date"]
+          const rideDate = localDateFromDb(rideSegments[0].segment_start);
           setFormData(prev => ({ ...prev, ride_date: rideDate }));
         }
       } else {
@@ -653,18 +675,14 @@ const RideManagement = () => {
                       <Label htmlFor="start_time">Vrijeme polaska *</Label>
                       <Input
                         id="start_time"
-                        type="text"
-                        pattern="[0-9]{2}:[0-9]{2}"
-                        placeholder="14:30"
+                        type="time"
+                        step="60"
                         value={formData.start_at ? (formData.start_at.split('T')[1] || '').slice(0, 5) : ''}
                         onChange={(e) => {
                           const value = e.target.value;
-                          if (value.match(/^([0-1]?[0-9]|2[0-3]):[0-5][0-9]$/) || value === '') {
-                            const datepart = formData.start_at ? formData.start_at.split('T')[0] : new Date().toISOString().split('T')[0];
-                            setFormData({...formData, start_at: `${datepart}T${value}:00`});
-                          }
+                          const datepart = formData.start_at ? formData.start_at.split('T')[0] : new Date().toISOString().split('T')[0];
+                          setFormData({...formData, start_at: `${datepart}T${value}:00`});
                         }}
-                        maxLength={5}
                         required
                       />
                     </div>
@@ -791,18 +809,10 @@ const RideManagement = () => {
                         <div>
                           <Label className="text-xs">Vrijeme početka *</Label>
                           <Input
-                            type="text"
-                            pattern="[0-9]{2}:[0-9]{2}"
-                            placeholder="14:30"
+                            type="time"
+                            step="60"
                             value={segment.start_time}
-                            onChange={(e) => {
-                              // Allow only HH:MM format
-                              const value = e.target.value;
-                              if (value.match(/^([0-1]?[0-9]|2[0-3]):[0-5][0-9]$/) || value === '') {
-                                updateSegment(index, 'start_time', value);
-                              }
-                            }}
-                            maxLength={5}
+                            onChange={(e) => updateSegment(index, 'start_time', e.target.value)}
                             required
                           />
                         </div>

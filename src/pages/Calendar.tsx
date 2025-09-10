@@ -145,20 +145,46 @@ const Calendar = () => {
       id: event.segment_id || event.ride_id,
       start: calendarDateFromDb(event.event_start),
       end: event.event_end ? calendarDateFromDb(event.event_end) : dayjs(calendarDateFromDb(event.event_start)).add(1, 'hour').toDate(),
+      allDay: false, // Always set to false to prevent "next day" display
       resource: event
     }));
 
     setFilteredEvents(calendarEvents);
   }, [events, typeFilter, statusFilter, driverFilter, vehicleFilter]);
 
-  // Load data on component mount
+  // Load data on component mount and set up real-time listeners
   useEffect(() => {
     const loadData = async () => {
       setLoading(true);
       await Promise.all([fetchEvents(), fetchFilterData()]);
       setLoading(false);
     };
+    
     loadData();
+
+    // Set up Supabase real-time listeners
+    const channel = supabase.channel('calendar-sync')
+      .on('postgres_changes', { 
+        event: '*', 
+        schema: 'public', 
+        table: 'rides' 
+      }, () => {
+        console.log('Rides table changed, refetching events...');
+        fetchEvents();
+      })
+      .on('postgres_changes', { 
+        event: '*', 
+        schema: 'public', 
+        table: 'ride_segments' 
+      }, () => {
+        console.log('Ride segments table changed, refetching events...');
+        fetchEvents();
+      })
+      .subscribe();
+
+    return () => {
+      supabase.removeChannel(channel);
+    };
   }, [fetchEvents, fetchFilterData]);
 
   // Apply filters when data or filters change
@@ -247,8 +273,8 @@ const Calendar = () => {
         if (error) throw error;
       }
 
-      // Refresh events
-      await fetchEvents();
+      // Refresh events and notify other components
+      await Promise.all([fetchEvents()]);
       
       toast({
         title: "Uspjeh",
@@ -274,7 +300,7 @@ const Calendar = () => {
 
       if (error) throw error;
 
-      await fetchEvents();
+      await Promise.all([fetchEvents()]);
       setShowEventDialog(false);
       
       toast({
