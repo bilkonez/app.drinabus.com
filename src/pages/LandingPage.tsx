@@ -19,6 +19,36 @@ interface GalleryImage {
   alt: string;
 }
 
+// Vehicle images mapping
+const vehicleImages: Record<string, string> = {
+  'Mercedes Sprinter': '/lovable-uploads/feb19f81-e937-43e1-b3f8-1b29065267b6.png',
+  'Neoplan Cityliner A36-E-349': '/lovable-uploads/d35b41af-f340-499b-926a-af278cefaf0e.png',
+  'Otokar Sultan': '/lovable-uploads/6a6efc97-e912-4097-b4a0-48f7d46ec0d3.png',
+  'Mercedes Vito M53-E-964': '/lovable-uploads/5f35d25b-dac7-4c14-a056-aaa834f9d22f.png',
+  'Neoplan Cityliner T17-M-331': '/lovable-uploads/8bb9aa36-5a2f-42ad-a745-79b983ddcf2a.png'
+};
+
+const getVehicleImageKey = (vehicle: Vehicle): string => {
+  if (vehicle.brand === 'Mercedes' && vehicle.model === 'Sprinter') {
+    return 'Mercedes Sprinter';
+  }
+  if (vehicle.brand === 'Neoplan' && vehicle.model === 'Cityliner') {
+    if (vehicle.registration === 'A36-E-349') {
+      return 'Neoplan Cityliner A36-E-349';
+    }
+    if (vehicle.registration === 'T17-M-331') {
+      return 'Neoplan Cityliner T17-M-331';
+    }
+  }
+  if (vehicle.brand === 'Otokar' && vehicle.model === 'Sultan') {
+    return 'Otokar Sultan';
+  }
+  if (vehicle.brand === 'Mercedes' && vehicle.model === 'Vito' && vehicle.registration === 'M53-E-964') {
+    return 'Mercedes Vito M53-E-964';
+  }
+  return '';
+};
+
 const LandingPage = () => {
   const [vehicles, setVehicles] = useState<Vehicle[]>([]);
   const [galleryImages, setGalleryImages] = useState<GalleryImage[]>([]);
@@ -176,31 +206,73 @@ const LandingPage = () => {
               <p className="text-gray-500">Učitavanje voznog parka...</p>
             </div>
           ) : (
-            <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
-              {vehicles.map((vehicle) => (
-                <Card key={vehicle.id} className="group hover:shadow-xl transition-all duration-300 overflow-hidden">
-                  <div className="aspect-video bg-gradient-to-br from-green-400 to-emerald-600 flex items-center justify-center">
-                    <div className="text-white text-center">
-                      <div className="text-4xl mb-2">🚌</div>
-                      <p className="text-sm opacity-80">Slika autobusa</p>
+            <div className={`grid gap-8 ${vehicles.length <= 3 ? 'md:grid-cols-2 lg:grid-cols-3' : vehicles.length === 4 ? 'md:grid-cols-2 lg:grid-cols-2 xl:grid-cols-4' : 'md:grid-cols-2 lg:grid-cols-3'} ${vehicles.length === 5 ? 'lg:justify-items-center' : ''}`}>
+              {vehicles.map((vehicle, index) => {
+                const imageKey = getVehicleImageKey(vehicle);
+                const vehicleImage = vehicleImages[imageKey];
+                const isBottomRow = vehicles.length === 5 && index >= 3;
+                
+                return (
+                  <Card 
+                    key={vehicle.id} 
+                    className={`group hover:shadow-xl transition-all duration-300 overflow-hidden w-full max-w-sm ${
+                      isBottomRow ? 'lg:col-start-2 lg:col-span-1' : ''
+                    } ${
+                      vehicles.length === 5 && index === 3 ? 'lg:justify-self-end lg:mr-4' : ''
+                    } ${
+                      vehicles.length === 5 && index === 4 ? 'lg:justify-self-start lg:ml-4' : ''
+                    }`}
+                  >
+                    <div className="aspect-video bg-gray-100 overflow-hidden">
+                      {vehicleImage ? (
+                        <img 
+                          src={vehicleImage}
+                          alt={`${vehicle.brand} ${vehicle.model}`}
+                          className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
+                          onError={(e) => {
+                            const target = e.target as HTMLImageElement;
+                            target.style.display = 'none';
+                            target.parentElement!.innerHTML = `
+                              <div class="w-full h-full bg-gradient-to-br from-green-400 to-emerald-600 flex items-center justify-center">
+                                <div class="text-white text-center">
+                                  <div class="text-4xl mb-2">🚌</div>
+                                  <p class="text-sm opacity-80">Slika autobusa</p>
+                                </div>
+                              </div>
+                            `;
+                          }}
+                        />
+                      ) : (
+                        <div className="w-full h-full bg-gradient-to-br from-green-400 to-emerald-600 flex items-center justify-center">
+                          <div className="text-white text-center">
+                            <div className="text-4xl mb-2">🚌</div>
+                            <p className="text-sm opacity-80">Slika autobusa</p>
+                          </div>
+                        </div>
+                      )}
                     </div>
-                  </div>
-                  <CardContent className="p-6">
-                    <h3 className="text-xl font-bold text-gray-900 mb-2">
-                      {vehicle.brand} {vehicle.model}
-                    </h3>
-                    <div className="flex items-center gap-2 mb-3">
-                      <Badge variant="secondary" className="flex items-center gap-1">
-                        <Users className="h-3 w-3" />
-                        {getAdjustedCapacity(vehicle.seats)} sjedišta
-                      </Badge>
-                    </div>
-                    <p className="text-gray-600 text-sm leading-relaxed">
-                      {getVehicleDescription(vehicle.brand, vehicle.model)}
-                    </p>
-                  </CardContent>
-                </Card>
-              ))}
+                    <CardContent className="p-6">
+                      <h3 className="text-xl font-bold text-gray-900 mb-2">
+                        {vehicle.brand} {vehicle.model}
+                        {vehicle.registration && vehicle.registration !== vehicle.model && (
+                          <span className="text-sm font-normal text-gray-500 block">
+                            {vehicle.registration}
+                          </span>
+                        )}
+                      </h3>
+                      <div className="flex items-center gap-2 mb-3">
+                        <Badge variant="secondary" className="flex items-center gap-1">
+                          <Users className="h-3 w-3" />
+                          {getAdjustedCapacity(vehicle.seats)} sjedišta
+                        </Badge>
+                      </div>
+                      <p className="text-gray-600 text-sm leading-relaxed">
+                        {getVehicleDescription(vehicle.brand, vehicle.model)}
+                      </p>
+                    </CardContent>
+                  </Card>
+                );
+              })}
             </div>
           )}
         </div>
