@@ -4,6 +4,7 @@ import { Badge } from '@/components/ui/badge';
 import { Dialog, DialogContent } from '@/components/ui/dialog';
 import { supabase } from '@/integrations/supabase/client';
 import { Phone, Mail, Instagram, MapPin, Users, Route, Calendar, X } from 'lucide-react';
+import heroBusImage from '@/assets/hero-bus-hd.jpg';
 
 interface Vehicle {
   id: string;
@@ -33,9 +34,9 @@ const LandingPage = () => {
     try {
       const { data, error } = await supabase
         .from('vehicles')
-        .select('id, brand, model, registration, seats')
+        .select('id, brand, model, registration, seats, is_operational')
         .eq('status', 'dostupno')
-        .neq('registration', 'O08') // Exclude Mercedes Vito O08
+        .eq('is_operational', true) // Only show operational vehicles
         .order('brand');
 
       if (error) throw error;
@@ -92,10 +93,10 @@ const LandingPage = () => {
         <div 
           className="absolute inset-0 bg-cover bg-center bg-no-repeat"
           style={{ 
-            backgroundImage: `url(/lovable-uploads/6dd2d576-8aab-4bef-bf5a-0c7d8a00f49f.png), url('https://images.unsplash.com/photo-1544620347-c4fd4a3d5957?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=2069&q=80')`
+            backgroundImage: `url(${heroBusImage})`
           }}
         />
-        <div className="absolute inset-0 bg-gradient-to-r from-green-900/80 via-green-800/60 to-emerald-700/40" />
+        <div className="absolute inset-0 bg-gradient-to-r from-black/60 via-black/40 to-black/60" />
         
         <div className="relative z-10 text-center text-white max-w-4xl mx-auto px-6">
           <div className="mb-8">

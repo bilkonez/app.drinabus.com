@@ -548,6 +548,7 @@ export type Database = {
           brand: string
           created_at: string | null
           id: string
+          is_operational: boolean | null
           model: string
           notes: string | null
           registration: string
@@ -559,6 +560,7 @@ export type Database = {
           brand: string
           created_at?: string | null
           id?: string
+          is_operational?: boolean | null
           model: string
           notes?: string | null
           registration: string
@@ -570,6 +572,7 @@ export type Database = {
           brand?: string
           created_at?: string | null
           id?: string
+          is_operational?: boolean | null
           model?: string
           notes?: string | null
           registration?: string
