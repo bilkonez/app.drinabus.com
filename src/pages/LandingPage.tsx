@@ -4,7 +4,6 @@ import { Badge } from '@/components/ui/badge';
 import { Dialog, DialogContent } from '@/components/ui/dialog';
 import { supabase } from '@/integrations/supabase/client';
 import { Phone, Mail, Instagram, MapPin, Users, Route, Calendar, X } from 'lucide-react';
-import heroBusImage from '@/assets/hero-bus-hd.jpg';
 
 interface Vehicle {
   id: string;
@@ -12,6 +11,7 @@ interface Vehicle {
   model: string;
   registration: string;
   seats: number;
+  is_operational?: boolean;
 }
 
 interface GalleryImage {
@@ -93,7 +93,7 @@ const LandingPage = () => {
         <div 
           className="absolute inset-0 bg-cover bg-center bg-no-repeat"
           style={{ 
-            backgroundImage: `url(${heroBusImage})`
+            backgroundImage: `url(/lovable-uploads/1bc6f777-073d-4e8d-be07-8473954f5e95.png)`
           }}
         />
         <div className="absolute inset-0 bg-gradient-to-r from-black/60 via-black/40 to-black/60" />
