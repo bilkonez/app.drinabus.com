@@ -19,22 +19,24 @@ interface GalleryImage {
   alt: string;
 }
 
-// Storage vehicle images mapping
-const getVehicleImageFromStorage = (vehicle: Vehicle): string => {
-  if (vehicle.brand === 'Mercedes' && vehicle.model === 'Vito') {
-    return supabase.storage.from('media').getPublicUrl('vehicles/mercedes_vito.jpg').data.publicUrl;
-  }
-  if (vehicle.brand === 'Neoplan' && vehicle.registration === 'T17-M-331') {
-    return supabase.storage.from('media').getPublicUrl('vehicles/neoplan_t17m331.jpg').data.publicUrl;
-  }
+// Previously uploaded vehicle images mapping
+const getVehicleImageFromUploads = (vehicle: Vehicle): string => {
   if (vehicle.brand === 'Mercedes' && vehicle.model === 'Sprinter') {
-    return supabase.storage.from('media').getPublicUrl('vehicles/mercedes_sprinter.jpg').data.publicUrl;
+    return '/lovable-uploads/feb19f81-e937-43e1-b3f8-1b29065267b6.png';
   }
   if (vehicle.brand === 'Neoplan' && vehicle.model === 'Cityliner') {
-    return supabase.storage.from('media').getPublicUrl('vehicles/neoplan_tourliner.jpg').data.publicUrl;
+    if (vehicle.registration === 'A36-E-349') {
+      return '/lovable-uploads/d35b41af-f340-499b-926a-af278cefaf0e.png';
+    }
+    if (vehicle.registration === 'T17-M-331') {
+      return '/lovable-uploads/8bb9aa36-5a2f-42ad-a745-79b983ddcf2a.png';
+    }
   }
   if (vehicle.brand === 'Otokar' && vehicle.model === 'Sultan') {
-    return supabase.storage.from('media').getPublicUrl('vehicles/otokar_sultan.jpg').data.publicUrl;
+    return '/lovable-uploads/6a6efc97-e912-4097-b4a0-48f7d46ec0d3.png';
+  }
+  if (vehicle.brand === 'Mercedes' && vehicle.model === 'Vito') {
+    return '/lovable-uploads/5f35d25b-dac7-4c14-a056-aaa834f9d22f.png';
   }
   return '';
 };
@@ -206,75 +208,140 @@ const LandingPage = () => {
               <p className="text-gray-500">Učitavanje voznog parka...</p>
             </div>
           ) : (
-            <div className="grid gap-6 grid-cols-1 md:grid-cols-2 lg:grid-cols-3 lg:gap-8 max-w-7xl mx-auto">
-              {vehicles.slice(0, 5).map((vehicle, index) => {
-                const vehicleImage = getVehicleImageFromStorage(vehicle);
-                const isLastTwoCards = index >= 3;
-                
-                return (
-                  <Card 
-                    key={vehicle.id} 
-                    className={`group hover:shadow-xl transition-all duration-300 overflow-hidden w-full shadow-sm border-2 hover:border-green-200 rounded-lg ${
-                      isLastTwoCards ? 'lg:col-start-2 lg:max-w-sm lg:justify-self-center' : ''
-                    } ${
-                      vehicles.length === 5 && index === 3 ? 'lg:justify-self-end lg:mr-8' : ''
-                    } ${
-                      vehicles.length === 5 && index === 4 ? 'lg:justify-self-start lg:ml-8' : ''
-                    }`}
-                  >
-                    <div className="aspect-video bg-gray-100 overflow-hidden rounded-t-lg">
-                      {vehicleImage ? (
-                        <img 
-                          src={vehicleImage}
-                          alt={`${vehicle.brand} ${vehicle.model} - Drina Bus`}
-                          className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
-                          loading="lazy"
-                          width="400"
-                          height="225"
-                          onError={(e) => {
-                            const target = e.target as HTMLImageElement;
-                            target.style.display = 'none';
-                            target.parentElement!.innerHTML = `
-                              <div class="w-full h-full bg-gradient-to-br from-green-400 to-emerald-600 flex items-center justify-center">
-                                <div class="text-white text-center">
-                                  <div class="text-4xl mb-2">🚌</div>
-                                  <p class="text-sm opacity-80">Slika autobusa</p>
+            <div className="space-y-8">
+              {/* First row - 3 cards */}
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 lg:gap-8">
+                {vehicles.slice(0, 3).map((vehicle) => {
+                  const vehicleImage = getVehicleImageFromUploads(vehicle);
+                  
+                  return (
+                    <Card 
+                      key={vehicle.id} 
+                      className="group hover:shadow-xl transition-all duration-300 overflow-hidden w-full shadow-sm border-2 hover:border-green-200 rounded-lg"
+                    >
+                      <div className="aspect-video bg-gray-100 overflow-hidden rounded-t-lg">
+                        {vehicleImage ? (
+                          <img 
+                            src={vehicleImage}
+                            alt={`${vehicle.brand} ${vehicle.model} - Drina Bus`}
+                            className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
+                            loading="lazy"
+                            width="400"
+                            height="225"
+                            onError={(e) => {
+                              const target = e.target as HTMLImageElement;
+                              target.style.display = 'none';
+                              target.parentElement!.innerHTML = `
+                                <div class="w-full h-full bg-gradient-to-br from-green-400 to-emerald-600 flex items-center justify-center">
+                                  <div class="text-white text-center">
+                                    <div class="text-4xl mb-2">🚌</div>
+                                    <p class="text-sm opacity-80">Slika autobusa</p>
+                                  </div>
+                                </div>
+                              `;
+                            }}
+                          />
+                        ) : (
+                          <div className="w-full h-full bg-gradient-to-br from-green-400 to-emerald-600 flex items-center justify-center">
+                            <div className="text-white text-center">
+                              <div className="text-4xl mb-2">🚌</div>
+                              <p className="text-sm opacity-80">Slika autobusa</p>
+                            </div>
+                          </div>
+                        )}
+                      </div>
+                      <CardContent className="p-6">
+                        <h3 className="text-xl font-bold text-gray-900 mb-2">
+                          {vehicle.brand} {vehicle.model}
+                          {vehicle.registration && vehicle.registration !== vehicle.model && (
+                            <span className="text-sm font-normal text-gray-500 block">
+                              {vehicle.registration}
+                            </span>
+                          )}
+                        </h3>
+                        <div className="flex items-center gap-2 mb-3">
+                          <Badge variant="secondary" className="flex items-center gap-1">
+                            <Users className="h-3 w-3" />
+                            {getAdjustedCapacity(vehicle.seats)} sjedišta
+                          </Badge>
+                        </div>
+                        <p className="text-gray-600 text-sm leading-relaxed">
+                          {getVehicleDescription(vehicle.brand, vehicle.model)}
+                        </p>
+                      </CardContent>
+                    </Card>
+                  );
+                })}
+              </div>
+              
+              {/* Second row - 2 cards centered */}
+              {vehicles.length > 3 && (
+                <div className="flex justify-center">
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-6 lg:gap-8 max-w-2xl">
+                    {vehicles.slice(3, 5).map((vehicle) => {
+                      const vehicleImage = getVehicleImageFromUploads(vehicle);
+                      
+                      return (
+                        <Card 
+                          key={vehicle.id} 
+                          className="group hover:shadow-xl transition-all duration-300 overflow-hidden w-full shadow-sm border-2 hover:border-green-200 rounded-lg"
+                        >
+                          <div className="aspect-video bg-gray-100 overflow-hidden rounded-t-lg">
+                            {vehicleImage ? (
+                              <img 
+                                src={vehicleImage}
+                                alt={`${vehicle.brand} ${vehicle.model} - Drina Bus`}
+                                className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
+                                loading="lazy"
+                                width="400"
+                                height="225"
+                                onError={(e) => {
+                                  const target = e.target as HTMLImageElement;
+                                  target.style.display = 'none';
+                                  target.parentElement!.innerHTML = `
+                                    <div class="w-full h-full bg-gradient-to-br from-green-400 to-emerald-600 flex items-center justify-center">
+                                      <div class="text-white text-center">
+                                        <div class="text-4xl mb-2">🚌</div>
+                                        <p class="text-sm opacity-80">Slika autobusa</p>
+                                      </div>
+                                    </div>
+                                  `;
+                                }}
+                              />
+                            ) : (
+                              <div className="w-full h-full bg-gradient-to-br from-green-400 to-emerald-600 flex items-center justify-center">
+                                <div className="text-white text-center">
+                                  <div className="text-4xl mb-2">🚌</div>
+                                  <p className="text-sm opacity-80">Slika autobusa</p>
                                 </div>
                               </div>
-                            `;
-                          }}
-                        />
-                      ) : (
-                        <div className="w-full h-full bg-gradient-to-br from-green-400 to-emerald-600 flex items-center justify-center">
-                          <div className="text-white text-center">
-                            <div className="text-4xl mb-2">🚌</div>
-                            <p className="text-sm opacity-80">Slika autobusa</p>
+                            )}
                           </div>
-                        </div>
-                      )}
-                    </div>
-                    <CardContent className="p-6">
-                      <h3 className="text-xl font-bold text-gray-900 mb-2">
-                        {vehicle.brand} {vehicle.model}
-                        {vehicle.registration && vehicle.registration !== vehicle.model && (
-                          <span className="text-sm font-normal text-gray-500 block">
-                            {vehicle.registration}
-                          </span>
-                        )}
-                      </h3>
-                      <div className="flex items-center gap-2 mb-3">
-                        <Badge variant="secondary" className="flex items-center gap-1">
-                          <Users className="h-3 w-3" />
-                          {getAdjustedCapacity(vehicle.seats)} sjedišta
-                        </Badge>
-                      </div>
-                      <p className="text-gray-600 text-sm leading-relaxed">
-                        {getVehicleDescription(vehicle.brand, vehicle.model)}
-                      </p>
-                    </CardContent>
-                  </Card>
-                );
-              })}
+                          <CardContent className="p-6">
+                            <h3 className="text-xl font-bold text-gray-900 mb-2">
+                              {vehicle.brand} {vehicle.model}
+                              {vehicle.registration && vehicle.registration !== vehicle.model && (
+                                <span className="text-sm font-normal text-gray-500 block">
+                                  {vehicle.registration}
+                                </span>
+                              )}
+                            </h3>
+                            <div className="flex items-center gap-2 mb-3">
+                              <Badge variant="secondary" className="flex items-center gap-1">
+                                <Users className="h-3 w-3" />
+                                {getAdjustedCapacity(vehicle.seats)} sjedišta
+                              </Badge>
+                            </div>
+                            <p className="text-gray-600 text-sm leading-relaxed">
+                              {getVehicleDescription(vehicle.brand, vehicle.model)}
+                            </p>
+                          </CardContent>
+                        </Card>
+                      );
+                    })}
+                  </div>
+                </div>
+              )}
             </div>
           )}
         </div>
