@@ -19,32 +19,22 @@ interface GalleryImage {
   alt: string;
 }
 
-// Vehicle images mapping
-const vehicleImages: Record<string, string> = {
-  'Mercedes Sprinter': '/lovable-uploads/feb19f81-e937-43e1-b3f8-1b29065267b6.png',
-  'Neoplan Cityliner A36-E-349': '/lovable-uploads/d35b41af-f340-499b-926a-af278cefaf0e.png',
-  'Otokar Sultan': '/lovable-uploads/6a6efc97-e912-4097-b4a0-48f7d46ec0d3.png',
-  'Mercedes Vito M53-E-964': '/lovable-uploads/5f35d25b-dac7-4c14-a056-aaa834f9d22f.png',
-  'Neoplan Cityliner T17-M-331': '/lovable-uploads/8bb9aa36-5a2f-42ad-a745-79b983ddcf2a.png'
-};
-
-const getVehicleImageKey = (vehicle: Vehicle): string => {
+// Storage vehicle images mapping
+const getVehicleImageFromStorage = (vehicle: Vehicle): string => {
+  if (vehicle.brand === 'Mercedes' && vehicle.model === 'Vito') {
+    return supabase.storage.from('media').getPublicUrl('vehicles/mercedes_vito.jpg').data.publicUrl;
+  }
+  if (vehicle.brand === 'Neoplan' && vehicle.registration === 'T17-M-331') {
+    return supabase.storage.from('media').getPublicUrl('vehicles/neoplan_t17m331.jpg').data.publicUrl;
+  }
   if (vehicle.brand === 'Mercedes' && vehicle.model === 'Sprinter') {
-    return 'Mercedes Sprinter';
+    return supabase.storage.from('media').getPublicUrl('vehicles/mercedes_sprinter.jpg').data.publicUrl;
   }
   if (vehicle.brand === 'Neoplan' && vehicle.model === 'Cityliner') {
-    if (vehicle.registration === 'A36-E-349') {
-      return 'Neoplan Cityliner A36-E-349';
-    }
-    if (vehicle.registration === 'T17-M-331') {
-      return 'Neoplan Cityliner T17-M-331';
-    }
+    return supabase.storage.from('media').getPublicUrl('vehicles/neoplan_tourliner.jpg').data.publicUrl;
   }
   if (vehicle.brand === 'Otokar' && vehicle.model === 'Sultan') {
-    return 'Otokar Sultan';
-  }
-  if (vehicle.brand === 'Mercedes' && vehicle.model === 'Vito' && vehicle.registration === 'M53-E-964') {
-    return 'Mercedes Vito M53-E-964';
+    return supabase.storage.from('media').getPublicUrl('vehicles/otokar_sultan.jpg').data.publicUrl;
   }
   return '';
 };
@@ -80,21 +70,28 @@ const LandingPage = () => {
 
   const fetchGalleryImages = async () => {
     try {
-      // Fetch images from Supabase storage
-      const { data, error } = await supabase.storage
-        .from('media')
-        .list('', { limit: 20 });
+      // Fetch images from both vehicles and gallery folders
+      const [vehiclesRes, galleryRes] = await Promise.all([
+        supabase.storage.from('media').list('vehicles', { limit: 100 }),
+        supabase.storage.from('media').list('gallery', { limit: 500 })
+      ]);
 
-      if (error) throw error;
-
-      const imageUrls = data
-        ?.filter(file => file.name.match(/\.(jpg|jpeg|png|webp)$/i))
+      const vehicleImages = (vehiclesRes.data || [])
+        .filter(file => file.name.match(/\.(jpg|jpeg|png|webp)$/i))
         .map(file => ({
-          url: supabase.storage.from('media').getPublicUrl(file.name).data.publicUrl,
-          alt: `Drina Bus ${file.name}`
-        })) || [];
+          url: supabase.storage.from('media').getPublicUrl(`vehicles/${file.name}`).data.publicUrl,
+          alt: `Drina Bus - ${file.name.replace(/\.[^/.]+$/, '').replace(/_/g, ' ')}`
+        }));
 
-      setGalleryImages(imageUrls);
+      const galleryImages = (galleryRes.data || [])
+        .filter(file => file.name.match(/\.(jpg|jpeg|png|webp)$/i))
+        .map(file => ({
+          url: supabase.storage.from('media').getPublicUrl(`gallery/${file.name}`).data.publicUrl,
+          alt: `Drina Bus - ${file.name.replace(/\.[^/.]+$/, '').replace(/_/g, ' ')}`
+        }));
+
+      const allImages = [...vehicleImages, ...galleryImages].filter(img => img.url);
+      setGalleryImages(allImages);
     } catch (error) {
       console.error('Error fetching gallery images:', error);
     }
@@ -110,6 +107,9 @@ const LandingPage = () => {
     if (brand === 'Otokar' && model === 'Sultan') {
       return 'Pouzdan i komforan autobus za srednje grupe, klimatizovan sa modernim sadržajima.';
     }
+    if (brand === 'Mercedes' && model === 'Vito') {
+      return 'Kompaktni i praktičan van, idealan za manje grupe do 8 putnika.';
+    }
     return 'Udoban, klimatizovan i moderno opremljen autobus za Vaša putovanja.';
   };
 
@@ -123,10 +123,10 @@ const LandingPage = () => {
         <div 
           className="absolute inset-0 bg-cover bg-center bg-no-repeat"
           style={{ 
-            backgroundImage: `url(/lovable-uploads/1bc6f777-073d-4e8d-be07-8473954f5e95.png)`
+            backgroundImage: `url(${supabase.storage.from('media').getPublicUrl('hero/hero_bus.jpg').data.publicUrl})`
           }}
         />
-        <div className="absolute inset-0 bg-gradient-to-r from-black/60 via-black/40 to-black/60" />
+        <div className="absolute inset-0 bg-gradient-to-r from-black/50 via-black/40 to-black/50" />
         
         <div className="relative z-10 text-center text-white max-w-4xl mx-auto px-6">
           <div className="mb-8">
@@ -206,29 +206,31 @@ const LandingPage = () => {
               <p className="text-gray-500">Učitavanje voznog parka...</p>
             </div>
           ) : (
-            <div className={`grid gap-8 ${vehicles.length <= 3 ? 'md:grid-cols-2 lg:grid-cols-3' : vehicles.length === 4 ? 'md:grid-cols-2 lg:grid-cols-2 xl:grid-cols-4' : 'md:grid-cols-2 lg:grid-cols-3'} ${vehicles.length === 5 ? 'lg:justify-items-center' : ''}`}>
-              {vehicles.map((vehicle, index) => {
-                const imageKey = getVehicleImageKey(vehicle);
-                const vehicleImage = vehicleImages[imageKey];
-                const isBottomRow = vehicles.length === 5 && index >= 3;
+            <div className="grid gap-6 grid-cols-1 md:grid-cols-2 lg:grid-cols-3 lg:gap-8 max-w-7xl mx-auto">
+              {vehicles.slice(0, 5).map((vehicle, index) => {
+                const vehicleImage = getVehicleImageFromStorage(vehicle);
+                const isLastTwoCards = index >= 3;
                 
                 return (
                   <Card 
                     key={vehicle.id} 
-                    className={`group hover:shadow-xl transition-all duration-300 overflow-hidden w-full max-w-sm ${
-                      isBottomRow ? 'lg:col-start-2 lg:col-span-1' : ''
+                    className={`group hover:shadow-xl transition-all duration-300 overflow-hidden w-full shadow-sm border-2 hover:border-green-200 rounded-lg ${
+                      isLastTwoCards ? 'lg:col-start-2 lg:max-w-sm lg:justify-self-center' : ''
                     } ${
-                      vehicles.length === 5 && index === 3 ? 'lg:justify-self-end lg:mr-4' : ''
+                      vehicles.length === 5 && index === 3 ? 'lg:justify-self-end lg:mr-8' : ''
                     } ${
-                      vehicles.length === 5 && index === 4 ? 'lg:justify-self-start lg:ml-4' : ''
+                      vehicles.length === 5 && index === 4 ? 'lg:justify-self-start lg:ml-8' : ''
                     }`}
                   >
-                    <div className="aspect-video bg-gray-100 overflow-hidden">
+                    <div className="aspect-video bg-gray-100 overflow-hidden rounded-t-lg">
                       {vehicleImage ? (
                         <img 
                           src={vehicleImage}
-                          alt={`${vehicle.brand} ${vehicle.model}`}
+                          alt={`${vehicle.brand} ${vehicle.model} - Drina Bus`}
                           className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
+                          loading="lazy"
+                          width="400"
+                          height="225"
                           onError={(e) => {
                             const target = e.target as HTMLImageElement;
                             target.style.display = 'none';
@@ -310,7 +312,7 @@ const LandingPage = () => {
             </p>
           </div>
 
-          <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
             {galleryImages.map((image, index) => (
               <div 
                 key={index}
@@ -321,6 +323,9 @@ const LandingPage = () => {
                   src={image.url} 
                   alt={image.alt}
                   className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
+                  loading="lazy"
+                  width="300"
+                  height="300"
                   onError={(e) => {
                     const target = e.target as HTMLImageElement;
                     target.src = 'data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMjAwIiBoZWlnaHQ9IjIwMCIgdmlld0JveD0iMCAwIDIwMCAyMDAiIGZpbGw9Im5vbmUiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+PHJlY3Qgd2lkdGg9IjIwMCIgaGVpZ2h0PSIyMDAiIGZpbGw9IiNGM0Y0RjYiLz48dGV4dCB4PSIxMDAiIHk9IjEwMCIgdGV4dC1hbmNob3I9Im1pZGRsZSIgZG9taW5hbnQtYmFzZWxpbmU9Im1pZGRsZSIgZmlsbD0iIzlDQTNBRiIgZm9udC1zaXplPSIxNCIgZm9udC1mYW1pbHk9InNhbnMtc2VyaWYiPkRyaW5hIEJ1czwvdGV4dD48L3N2Zz4=';
