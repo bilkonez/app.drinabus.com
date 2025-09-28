@@ -165,6 +165,29 @@ const WorkLogTab = () => {
     });
   }, []);
 
+  // Calculate daily allowances automatically
+  const calculateDnevnice = useCallback(() => {
+    setMonthlyEntries(prev => prev.map(entry => {
+      const hours = entry.hours || 0;
+      let dnevnica = '';
+      
+      if (hours === 0) {
+        dnevnica = 'Slobodan';
+      } else if (hours > 0 && hours <= 8) {
+        dnevnica = '50KM';
+      } else if (hours > 8) {
+        dnevnica = '60KM';
+      }
+      
+      return { ...entry, note: dnevnica };
+    }));
+    
+    toast({
+      title: "Uspjeh",
+      description: "Dnevnice su automatski izračunate",
+    });
+  }, []);
+
   // Save all entries
   const saveAllEntries = useCallback(async () => {
     if (!selectedDriverId || selectedDriverId === 'svi') return;
@@ -273,15 +296,13 @@ const WorkLogTab = () => {
     const monthYear = format(selectedMonth, 'MM/yyyy');
     
     const csvContent = [
-      ['driver_name', 'date', 'hours', 'note'],
-      ...monthlyEntries
-        .filter(entry => entry.hours !== null && entry.hours > 0)
-        .map(entry => [
-          `${driverName?.first_name} ${driverName?.last_name}`,
-          entry.date,
-          entry.hours?.toString() || '0',
-          entry.note || ''
-        ])
+      ['driver_name', 'date', 'hours', 'dnevnice'],
+      ...monthlyEntries.map(entry => [
+        `${driverName?.first_name} ${driverName?.last_name}`,
+        entry.date,
+        entry.hours?.toString() || '0',
+        entry.note || ''
+      ])
     ].map(row => row.map(cell => `"${cell}"`).join(',')).join('\n');
 
     const blob = new Blob([csvContent], { type: 'text/csv' });
@@ -363,7 +384,7 @@ const WorkLogTab = () => {
             <div className="space-y-2 sm:col-span-2">
               <Label className="text-xs sm:text-sm font-semibold">Akcije</Label>
               <div className="flex flex-col sm:flex-row gap-2">
-                <Button 
+                 <Button 
                   variant="outline" 
                   size="sm"
                   onClick={fillWorkingDays}
@@ -372,6 +393,16 @@ const WorkLogTab = () => {
                 >
                   <Plus className="h-4 w-4 mr-1" />
                   Radni dani
+                </Button>
+                <Button 
+                  variant="outline" 
+                  size="sm"
+                  onClick={calculateDnevnice}
+                  disabled={!selectedDriverId || selectedDriverId === 'svi'}
+                  className="flex-1 h-10 sm:h-11 text-xs sm:text-sm"
+                >
+                  <Plus className="h-4 w-4 mr-1" />
+                  Izračunaj dnevnice
                 </Button>
                 <Button 
                   variant="outline" 
@@ -475,11 +506,11 @@ const WorkLogTab = () => {
                               />
                             </div>
                             <div>
-                              <Label className="text-xs text-muted-foreground">Napomena</Label>
+                              <Label className="text-xs text-muted-foreground">Dnevnice</Label>
                               <Input
                                 value={entry.note}
                                 onChange={(e) => updateNote(entry.date, e.target.value)}
-                                placeholder="Opcionalna napomena..."
+                                placeholder="Dnevnice..."
                                 className="text-sm h-9"
                               />
                             </div>
@@ -499,7 +530,7 @@ const WorkLogTab = () => {
                       <TableHead className="w-32 font-semibold">Datum</TableHead>
                       <TableHead className="w-32 font-semibold">Dan</TableHead>
                       <TableHead className="w-40 font-semibold">Sati</TableHead>
-                      <TableHead className="font-semibold">Napomena</TableHead>
+                      <TableHead className="font-semibold">Dnevnice</TableHead>
                       <TableHead className="w-20 font-semibold">Akcije</TableHead>
                     </TableRow>
                   </TableHeader>
@@ -551,7 +582,7 @@ const WorkLogTab = () => {
                             <Input
                               value={entry.note}
                               onChange={(e) => updateNote(entry.date, e.target.value)}
-                              placeholder="Opcionalna napomena..."
+                              placeholder="Dnevnice..."
                               className="min-w-[300px]"
                             />
                           </TableCell>
