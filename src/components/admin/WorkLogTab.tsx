@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useCallback } from 'react';
+import React, { useState, useEffect, useCallback, useMemo } from 'react';
 import { supabase } from '@/integrations/supabase/client';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -12,7 +12,8 @@ import { Badge } from '@/components/ui/badge';
 import { toast } from '@/hooks/use-toast';
 import { Calendar as CalendarIcon, Download, Save, Trash2, Clock, Users, FileDown, Plus } from 'lucide-react';
 import { cn } from '@/lib/utils';
-import { format, getDaysInMonth, startOfMonth, addMonths, isValid } from 'date-fns';
+import { format, getDaysInMonth, startOfMonth, addMonths, isValid, parseISO } from 'date-fns';
+import { sr } from 'date-fns/locale';
 
 interface Driver {
   id: string;
@@ -165,28 +166,13 @@ const WorkLogTab = () => {
     });
   }, []);
 
-  // Calculate daily allowances automatically
-  const calculateDnevnice = useCallback(() => {
-    setMonthlyEntries(prev => prev.map(entry => {
-      const hours = entry.hours || 0;
-      let dnevnica = '';
-      
-      if (hours === 0) {
-        dnevnica = 'Slobodan';
-      } else if (hours > 0 && hours <= 8) {
-        dnevnica = '50KM';
-      } else if (hours > 8) {
-        dnevnica = '60KM';
-      }
-      
-      return { ...entry, note: dnevnica };
-    }));
-    
-    toast({
-      title: "Uspjeh",
-      description: "Dnevnice su automatski izračunate",
-    });
-  }, []);
+  // Calculate total dnevnice
+  const totalDnevnice = useMemo(() => {
+    return monthlyEntries.reduce((sum, entry) => {
+      const dnevnica = parseFloat(entry.note) || 0;
+      return sum + dnevnica;
+    }, 0);
+  }, [monthlyEntries]);
 
   // Save all entries
   const saveAllEntries = useCallback(async () => {
@@ -296,14 +282,19 @@ const WorkLogTab = () => {
     const monthYear = format(selectedMonth, 'MM/yyyy');
     
     const csvContent = [
-      ['driver_name', 'date', 'hours', 'dnevnice'],
+      [`${driverName?.first_name} ${driverName?.last_name}`, format(selectedMonth, 'MMMM', { locale: sr })],
+      ['', '', '', ''],
+      ['', '', 'RADNI SATI', 'DNEVNICE'],
       ...monthlyEntries.map(entry => [
-        `${driverName?.first_name} ${driverName?.last_name}`,
-        entry.date,
+        format(parseISO(entry.date), 'dd/MM/yyyy'),
+        '',
         entry.hours?.toString() || '0',
-        entry.note || ''
-      ])
-    ].map(row => row.map(cell => `"${cell}"`).join(',')).join('\n');
+        entry.note || '0'
+      ]),
+      ['', '', '', ''],
+      ['', '', 'UKUPNO :', totalDnevnice.toString()],
+      ['', '', '', '']
+    ].map(row => row.join(',')).join('\n');
 
     const blob = new Blob([csvContent], { type: 'text/csv' });
     const url = URL.createObjectURL(blob);
@@ -393,16 +384,6 @@ const WorkLogTab = () => {
                 >
                   <Plus className="h-4 w-4 mr-1" />
                   Radni dani
-                </Button>
-                <Button 
-                  variant="outline" 
-                  size="sm"
-                  onClick={calculateDnevnice}
-                  disabled={!selectedDriverId || selectedDriverId === 'svi'}
-                  className="flex-1 h-10 sm:h-11 text-xs sm:text-sm"
-                >
-                  <Plus className="h-4 w-4 mr-1" />
-                  Izračunaj dnevnice
                 </Button>
                 <Button 
                   variant="outline" 
@@ -508,9 +489,10 @@ const WorkLogTab = () => {
                             <div>
                               <Label className="text-xs text-muted-foreground">Dnevnice</Label>
                               <Input
+                                type="number"
                                 value={entry.note}
                                 onChange={(e) => updateNote(entry.date, e.target.value)}
-                                placeholder="Dnevnice..."
+                                placeholder="0"
                                 className="text-sm h-9"
                               />
                             </div>
@@ -580,9 +562,10 @@ const WorkLogTab = () => {
                           </TableCell>
                           <TableCell>
                             <Input
+                              type="number"
                               value={entry.note}
                               onChange={(e) => updateNote(entry.date, e.target.value)}
-                              placeholder="Dnevnice..."
+                              placeholder="0"
                               className="min-w-[300px]"
                             />
                           </TableCell>
@@ -620,6 +603,26 @@ const WorkLogTab = () => {
           </CardContent>
         </Card>
       )}
+
+      {/* Total dnevnice display */}
+      {selectedDriverId && selectedDriverId !== 'svi' && (() => {
+        const driverName = drivers.find(d => d.id === selectedDriverId);
+        return (
+          <div className="mt-6 p-4 bg-muted rounded-lg border">
+            <div className="flex justify-between items-center">
+              <div>
+                <h3 className="text-lg font-semibold">
+                  {driverName?.first_name} {driverName?.last_name} - {format(selectedMonth, 'MMMM yyyy', { locale: sr }).toUpperCase()}
+                </h3>
+              </div>
+              <div className="text-right">
+                <p className="text-sm text-muted-foreground">UKUPNO DNEVNICE:</p>
+                <p className="text-2xl font-bold">{totalDnevnice} KM</p>
+              </div>
+            </div>
+          </div>
+        );
+      })()}
     </div>
   );
 };
