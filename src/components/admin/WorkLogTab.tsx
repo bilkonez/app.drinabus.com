@@ -14,6 +14,26 @@ import { Calendar as CalendarIcon, Download, Save, Trash2, Clock, Users, FileDow
 import { cn } from '@/lib/utils';
 import { format, getDaysInMonth, startOfMonth, addMonths, isValid, parseISO } from 'date-fns';
 
+// Serbian/Bosnian month names
+const monthNames: { [key: number]: string } = {
+  0: 'JANUAR',
+  1: 'FEBRUAR', 
+  2: 'MART',
+  3: 'APRIL',
+  4: 'MAJ',
+  5: 'JUNI',
+  6: 'JULI',
+  7: 'AUGUST',
+  8: 'SEPTEMBAR',
+  9: 'OKTOBAR',
+  10: 'NOVEMBAR',
+  11: 'DECEMBAR'
+};
+
+const getMonthName = (date: Date): string => {
+  return monthNames[date.getMonth()];
+};
+
 interface Driver {
   id: string;
   first_name: string;
@@ -281,7 +301,7 @@ const WorkLogTab = () => {
     const monthYear = format(selectedMonth, 'MM/yyyy');
     
     const csvContent = [
-      [`${driverName?.first_name} ${driverName?.last_name}`, format(selectedMonth, 'MMMM').toUpperCase()],
+      [`${driverName?.first_name} ${driverName?.last_name}`, getMonthName(selectedMonth)],
       ['', '', '', ''],
       ['', '', 'RADNI SATI', 'DNEVNICE'],
       ...monthlyEntries.map(entry => [
@@ -356,7 +376,7 @@ const WorkLogTab = () => {
                   <PopoverTrigger asChild>
                     <Button variant="outline" className="h-10 sm:h-11 w-full justify-start text-left font-normal shadow-sm text-sm">
                       <CalendarIcon className="mr-2 h-4 w-4" />
-                      {format(selectedMonth, "MMMM yyyy")}
+                      {getMonthName(selectedMonth)} {selectedMonth.getFullYear()}
                     </Button>
                   </PopoverTrigger>
                 <PopoverContent className="w-auto p-0" align="start">
@@ -410,7 +430,7 @@ const WorkLogTab = () => {
                     {drivers.find(d => d.id === selectedDriverId)?.first_name?.toUpperCase()} {drivers.find(d => d.id === selectedDriverId)?.last_name?.toUpperCase()}
                   </CardTitle>
                   <div className="text-sm text-muted-foreground font-medium">
-                    {format(selectedMonth, 'MMMM').toUpperCase()}
+                    {getMonthName(selectedMonth)}
                   </div>
                 </div>
                 <div className="flex flex-col sm:flex-row items-start sm:items-center gap-2 sm:gap-4">
@@ -620,7 +640,7 @@ const WorkLogTab = () => {
             <div className="flex justify-between items-center">
               <div>
                 <h3 className="text-lg font-semibold">
-                  {driverName?.first_name} {driverName?.last_name} - {format(selectedMonth, 'MMMM yyyy').toUpperCase()}
+                  {driverName?.first_name} {driverName?.last_name} - {getMonthName(selectedMonth)} {selectedMonth.getFullYear()}
                 </h3>
               </div>
               <div className="text-right">
