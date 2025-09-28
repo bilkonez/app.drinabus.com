@@ -13,7 +13,6 @@ import { toast } from '@/hooks/use-toast';
 import { Calendar as CalendarIcon, Download, Save, Trash2, Clock, Users, FileDown, Plus } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { format, getDaysInMonth, startOfMonth, addMonths, isValid, parseISO } from 'date-fns';
-import { sr } from 'date-fns/locale';
 
 interface Driver {
   id: string;
@@ -282,7 +281,7 @@ const WorkLogTab = () => {
     const monthYear = format(selectedMonth, 'MM/yyyy');
     
     const csvContent = [
-      [`${driverName?.first_name} ${driverName?.last_name}`, format(selectedMonth, 'MMMM', { locale: sr })],
+      [`${driverName?.first_name} ${driverName?.last_name}`, format(selectedMonth, 'MMMM').toUpperCase()],
       ['', '', '', ''],
       ['', '', 'RADNI SATI', 'DNEVNICE'],
       ...monthlyEntries.map(entry => [
@@ -354,12 +353,12 @@ const WorkLogTab = () => {
             <div className="space-y-2">
               <Label className="text-xs sm:text-sm font-semibold">Mjesec</Label>
               <Popover>
-                <PopoverTrigger asChild>
-                  <Button variant="outline" className="h-10 sm:h-11 w-full justify-start text-left font-normal shadow-sm text-sm">
-                    <CalendarIcon className="mr-2 h-4 w-4" />
-                    {format(selectedMonth, "MMMM yyyy")}
-                  </Button>
-                </PopoverTrigger>
+                  <PopoverTrigger asChild>
+                    <Button variant="outline" className="h-10 sm:h-11 w-full justify-start text-left font-normal shadow-sm text-sm">
+                      <CalendarIcon className="mr-2 h-4 w-4" />
+                      {format(selectedMonth, "MMMM yyyy")}
+                    </Button>
+                  </PopoverTrigger>
                 <PopoverContent className="w-auto p-0" align="start">
                   <Calendar
                     mode="single"
@@ -405,16 +404,25 @@ const WorkLogTab = () => {
       {selectedDriverId && selectedDriverId !== 'svi' && (
         <Card className="border-2 shadow-lg">
           <CardHeader className="bg-gradient-to-r from-primary/5 to-primary/10 border-b px-3 sm:px-6 py-3 sm:py-4">
-            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
-              <CardTitle className="text-base sm:text-xl font-semibold">
-                <span className="hidden sm:inline">Mjesečni pregled - </span>
-                {drivers.find(d => d.id === selectedDriverId)?.first_name} {drivers.find(d => d.id === selectedDriverId)?.last_name}
-              </CardTitle>
-              <div className="flex flex-col sm:flex-row items-start sm:items-center gap-2 sm:gap-4">
-                <Badge variant="secondary" className="text-sm sm:text-lg font-semibold w-fit">
-                  <Clock className="h-3 w-3 sm:h-4 sm:w-4 mr-1 sm:mr-2" />
-                  Ukupno: {totalHours.toFixed(2)}h
-                </Badge>
+              <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+                <div className="flex flex-col gap-1">
+                  <CardTitle className="text-base sm:text-xl font-semibold">
+                    {drivers.find(d => d.id === selectedDriverId)?.first_name?.toUpperCase()} {drivers.find(d => d.id === selectedDriverId)?.last_name?.toUpperCase()}
+                  </CardTitle>
+                  <div className="text-sm text-muted-foreground font-medium">
+                    {format(selectedMonth, 'MMMM').toUpperCase()}
+                  </div>
+                </div>
+                <div className="flex flex-col sm:flex-row items-start sm:items-center gap-2 sm:gap-4">
+                  <div className="flex flex-col sm:flex-row gap-2">
+                    <Badge variant="secondary" className="text-sm sm:text-lg font-semibold w-fit">
+                      <Clock className="h-3 w-3 sm:h-4 sm:w-4 mr-1 sm:mr-2" />
+                      Ukupno: {totalHours.toFixed(2)}h
+                    </Badge>
+                    <Badge variant="outline" className="text-sm sm:text-lg font-semibold w-fit">
+                      💰 Dnevnice: {totalDnevnice.toFixed(2)} KM
+                    </Badge>
+                  </div>
                 <Button 
                   onClick={saveAllEntries} 
                   disabled={saving} 
@@ -612,7 +620,7 @@ const WorkLogTab = () => {
             <div className="flex justify-between items-center">
               <div>
                 <h3 className="text-lg font-semibold">
-                  {driverName?.first_name} {driverName?.last_name} - {format(selectedMonth, 'MMMM yyyy', { locale: sr }).toUpperCase()}
+                  {driverName?.first_name} {driverName?.last_name} - {format(selectedMonth, 'MMMM yyyy').toUpperCase()}
                 </h3>
               </div>
               <div className="text-right">
