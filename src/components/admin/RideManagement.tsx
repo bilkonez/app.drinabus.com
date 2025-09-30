@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import React, { useState, useEffect } from "react";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -109,7 +109,7 @@ const RideManagement = () => {
         .from('rides')
         .select('*')
         .in('status', ['planirano', 'zavrseno'])
-        .order('start_at', { ascending: true }); // Sortiraj po datumima uzlazno
+        .order('start_at', { ascending: true });
 
       if (error) throw error;
       setRides(data || []);
@@ -475,6 +475,48 @@ const RideManagement = () => {
     };
     return variants[status as keyof typeof variants] || { variant: "outline" as const, label: status };
   };
+
+  // Group rides by date and sort so future dates come first
+  const groupedRides = React.useMemo(() => {
+    const today = new Date();
+    today.setHours(0, 0, 0, 0);
+    
+    const groups: { [key: string]: Ride[] } = {};
+    
+    rides.forEach(ride => {
+      const rideDate = new Date(ride.start_at);
+      const dateKey = rideDate.toISOString().split('T')[0]; // YYYY-MM-DD format
+      
+      if (!groups[dateKey]) {
+        groups[dateKey] = [];
+      }
+      groups[dateKey].push(ride);
+    });
+
+    // Sort dates so future dates come first, then past dates
+    const sortedDates = Object.keys(groups).sort((a, b) => {
+      const dateA = new Date(a);
+      const dateB = new Date(b);
+      
+      const isAFuture = dateA >= today;
+      const isBFuture = dateB >= today;
+      
+      // Future dates first
+      if (isAFuture && !isBFuture) return -1;
+      if (!isAFuture && isBFuture) return 1;
+      
+      // Among future dates, earliest first
+      if (isAFuture && isBFuture) return dateA.getTime() - dateB.getTime();
+      
+      // Among past dates, latest first
+      return dateB.getTime() - dateA.getTime();
+    });
+
+    return sortedDates.map(date => ({
+      date,
+      rides: groups[date].sort((a, b) => new Date(a.start_at).getTime() - new Date(b.start_at).getTime())
+    }));
+  }, [rides]);
 
   const getVehicleName = (vehicleId: string | null) => {
     if (!vehicleId) return 'N/A';
@@ -1005,190 +1047,144 @@ const RideManagement = () => {
                 <p>Nema vožnji u bazi</p>
               </div>
             ) : (
-              <div className="overflow-x-auto">
-                  <Table>
-                  <TableHeader>
-                    <TableRow>
-                      <TableHead>Relacija</TableHead>
-                      <TableHead>Tip</TableHead>
-                      <TableHead>Datum/Sat</TableHead>
-                      <TableHead>Klijent</TableHead>
-                      <TableHead>Vozilo</TableHead>
-                      <TableHead>Vozač</TableHead>
-                      <TableHead>Cijena</TableHead>
-                      <TableHead>Plaćanje</TableHead>
-                      <TableHead>Status</TableHead>
-                      <TableHead>Akcije</TableHead>
-                    </TableRow>
-                  </TableHeader>
-                  <TableBody>
-                    {rides.map((ride) => {
-                      const statusInfo = getStatusBadge(ride.status);
-                      const rideDate = new Date(ride.start_at);
-                      return (
-                        <TableRow key={ride.id}>
-                          <TableCell className="font-medium">
-                            {ride.origin} → {ride.destination}
-                          </TableCell>
-                          <TableCell>
-                            <Badge variant="outline">
-                              {ride.ride_type === 'linijski' ? 'Linijski' : 
-                               ride.ride_type === 'vanlinijski' ? 'Vanlinijski' : 'Lokal'}
-                            </Badge>
-                          </TableCell>
-                           <TableCell>
-                              <div className="text-sm">
-                                 {rideDate.toLocaleDateString('en-GB', { day: '2-digit', month: '2-digit', year: 'numeric' })}
-                                <div className="text-muted-foreground">
-                                  {ride.ride_type === 'lokal' ? 'Više segmenata' : 
-                                   rideDate.toLocaleTimeString('en-GB', { 
-                                     hour: '2-digit', 
-                                     minute: '2-digit',
-                                     hour12: false 
-                                   })
-                                  }
-                                </div>
-                              </div>
-                           </TableCell>
-                           <TableCell className="text-sm">
-                             {ride.client_name || 'N/A'}
-                           </TableCell>
-                           <TableCell className="text-sm">
-                             {ride.ride_type === 'lokal' ? 'Lokal prevoz' : getVehicleName(ride.vehicle_id)}
-                           </TableCell>
-                          <TableCell className="text-sm">
-                            {getDriverName(ride.driver_id)}
-                          </TableCell>
-                          <TableCell>
-                            {ride.total_price ? `${ride.total_price.toFixed(2)} KM` : 'N/A'}
-                          </TableCell>
-                          <TableCell>
-                            <Badge variant={ride.payment_type === 'F' ? 'secondary' : 'outline'}>
-                              {ride.payment_type === 'F' ? 'Faktura' : 'Kesh'}
-                            </Badge>
-                          </TableCell>
-                          <TableCell>
-                            <Badge variant={statusInfo.variant}>
-                              {statusInfo.label}
-                            </Badge>
-                          </TableCell>
-                          <TableCell>
-                            <div className="flex items-center gap-2">
-                              <Button
-                                variant="outline"
-                                size="sm"
-                                onClick={() => openDialog(ride)}
-                              >
-                                <Edit className="h-4 w-4" />
-                              </Button>
-                              <Button
-                                variant="outline"
-                                size="sm"
-                                onClick={() => handleDelete(ride.id)}
-                              >
-                                <Trash2 className="h-4 w-4" />
-                              </Button>
-                              <Button
-                                variant="outline"
-                                size="sm"
-                                onClick={() => generateRideReport(ride)}
-                                title="Generiši izvještaj za vožnju"
-                              >
-                                <FileText className="h-4 w-4" />
-                              </Button>
-                            </div>
-                          </TableCell>
-                        </TableRow>
-                      );
-                    })}
-                  </TableBody>
-                </Table>
+              <div className="space-y-6">
+                {groupedRides.map(({ date, rides: dateRides }) => {
+                  const dateObj = new Date(date);
+                  const today = new Date();
+                  today.setHours(0, 0, 0, 0);
+                  const isToday = dateObj.getTime() === today.getTime();
+                  const isFuture = dateObj >= today;
+                  
+                  return (
+                    <div key={date} className="space-y-3">
+                      <div className="flex items-center gap-3">
+                        <div className={`px-3 py-1 rounded-full text-sm font-medium ${
+                          isToday ? 'bg-primary text-primary-foreground' :
+                          isFuture ? 'bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-200' :
+                          'bg-muted text-muted-foreground'
+                        }`}>
+                          {isToday ? 'Danas' : 
+                           dateObj.toLocaleDateString('sr-RS', { 
+                             weekday: 'long', 
+                             year: 'numeric', 
+                             month: 'long', 
+                             day: 'numeric' 
+                           })}
+                        </div>
+                        <div className="flex-1 h-px bg-border"></div>
+                        <span className="text-sm text-muted-foreground">
+                          {dateRides.length} {dateRides.length === 1 ? 'vožnja' : 'vožnji'}
+                        </span>
+                      </div>
+                      
+                      <Card className={`${isFuture ? 'ring-1 ring-green-200 dark:ring-green-800' : ''}`}>
+                        <CardContent className="p-0">
+                          <div className="overflow-x-auto">
+                            <Table>
+                              <TableHeader>
+                                <TableRow>
+                                  <TableHead>Relacija</TableHead>
+                                  <TableHead>Tip</TableHead>
+                                  <TableHead>Vrijeme</TableHead>
+                                  <TableHead>Klijent</TableHead>
+                                  <TableHead>Vozilo</TableHead>
+                                  <TableHead>Vozač</TableHead>
+                                  <TableHead>Cijena</TableHead>
+                                  <TableHead>Plaćanje</TableHead>
+                                  <TableHead>Status</TableHead>
+                                  <TableHead>Akcije</TableHead>
+                                </TableRow>
+                              </TableHeader>
+                              <TableBody>
+                                {dateRides.map((ride) => {
+                                  const statusInfo = getStatusBadge(ride.status);
+                                  const rideDate = new Date(ride.start_at);
+                                  return (
+                                    <TableRow key={ride.id}>
+                                      <TableCell className="font-medium">
+                                        {ride.origin} → {ride.destination}
+                                      </TableCell>
+                                      <TableCell>
+                                        <Badge variant="outline">
+                                          {ride.ride_type === 'linijski' ? 'Linijski' : 
+                                           ride.ride_type === 'vanlinijski' ? 'Vanlinijski' : 'Lokal'}
+                                        </Badge>
+                                      </TableCell>
+                                      <TableCell>
+                                        <div className="text-sm font-medium">
+                                          {ride.ride_type === 'lokal' ? 'Više segmenata' : 
+                                           rideDate.toLocaleTimeString('en-GB', { 
+                                             hour: '2-digit', 
+                                             minute: '2-digit',
+                                             hour12: false 
+                                           })
+                                          }
+                                        </div>
+                                      </TableCell>
+                                      <TableCell className="text-sm">
+                                        {ride.client_name || 'N/A'}
+                                      </TableCell>
+                                      <TableCell className="text-sm">
+                                        {ride.ride_type === 'lokal' ? 'Lokal prevoz' : getVehicleName(ride.vehicle_id)}
+                                      </TableCell>
+                                      <TableCell className="text-sm">
+                                        {getDriverName(ride.driver_id)}
+                                      </TableCell>
+                                      <TableCell>
+                                        {ride.total_price ? `${ride.total_price.toFixed(2)} KM` : 'N/A'}
+                                      </TableCell>
+                                      <TableCell>
+                                        <Badge variant={ride.payment_type === 'F' ? 'secondary' : 'outline'}>
+                                          {ride.payment_type === 'F' ? 'Faktura' : 'Kesh'}
+                                        </Badge>
+                                      </TableCell>
+                                      <TableCell>
+                                        <Badge variant={statusInfo.variant}>
+                                          {statusInfo.label}
+                                        </Badge>
+                                      </TableCell>
+                                      <TableCell>
+                                        <div className="flex items-center gap-2">
+                                          <Button
+                                            variant="outline"
+                                            size="sm"
+                                            onClick={() => openDialog(ride)}
+                                          >
+                                            <Edit className="h-4 w-4" />
+                                          </Button>
+                                          <Button
+                                            variant="outline"
+                                            size="sm"
+                                            onClick={() => handleDelete(ride.id)}
+                                          >
+                                            <Trash2 className="h-4 w-4" />
+                                          </Button>
+                                          <Button
+                                            variant="outline"
+                                            size="sm"
+                                            onClick={() => generateRideReport(ride)}
+                                            title="Generiši izvještaj za vožnju"
+                                          >
+                                            <FileText className="h-4 w-4" />
+                                          </Button>
+                                        </div>
+                                      </TableCell>
+                                    </TableRow>
+                                  );
+                                })}
+                              </TableBody>
+                            </Table>
+                          </div>
+                        </CardContent>
+                      </Card>
+                    </div>
+                  );
+                })}
               </div>
             )}
           </CardContent>
         </Card>
 
-        <Card>
-          <CardHeader>
-            <CardTitle className="flex items-center gap-2">
-              <Route className="h-5 w-5" />
-              Završene vožnje
-            </CardTitle>
-            <CardDescription>
-              {rides.filter(ride => ride.status === 'zavrseno').length} završenih vožnji
-            </CardDescription>
-          </CardHeader>
-          <CardContent>
-            {loading ? (
-              <div className="text-center py-8">
-                <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary mx-auto mb-4"></div>
-                <p className="text-muted-foreground">Učitavanje...</p>
-              </div>
-            ) : rides.filter(ride => ride.status === 'zavrseno').length === 0 ? (
-              <div className="text-center py-8 text-muted-foreground">
-                <Route className="h-12 w-12 mx-auto mb-4 opacity-50" />
-                <p>Nema završenih vožnji</p>
-              </div>
-            ) : (
-              <div className="space-y-3 max-h-96 overflow-y-auto">
-                {rides
-                  .filter(ride => ride.status === 'zavrseno')
-                  .map((ride) => {
-                    const rideDate = new Date(ride.start_at);
-                    return (
-                      <div key={ride.id} className="border rounded-lg p-3 hover:bg-muted/50 transition-colors">
-                        <div className="flex justify-between items-start mb-2">
-                          <div className="font-medium text-sm">
-                            {ride.origin} → {ride.destination}
-                          </div>
-                          <Badge variant="secondary" className="text-xs">
-                            Završeno
-                          </Badge>
-                        </div>
-                        <div className="grid grid-cols-2 gap-2 text-xs text-muted-foreground">
-                          <div>
-                            <span className="font-medium">Datum:</span> {rideDate.toLocaleDateString('en-GB', { day: '2-digit', month: '2-digit', year: 'numeric' })}
-                          </div>
-                          <div>
-                             <span className="font-medium">Sat:</span> {rideDate.toLocaleTimeString('en-GB', { 
-                               hour: '2-digit', 
-                               minute: '2-digit',
-                               hour12: false 
-                             })}
-                          </div>
-                          <div>
-                            <span className="font-medium">Vozilo:</span> {getVehicleName(ride.vehicle_id)}
-                          </div>
-                          <div>
-                            <span className="font-medium">Cijena:</span> {ride.total_price ? `${ride.total_price.toFixed(2)} KM` : 'N/A'}
-                          </div>
-                        </div>
-                        <div className="flex justify-end gap-1 mt-2">
-                          <Button
-                            variant="outline"
-                            size="sm"
-                            onClick={() => openDialog(ride)}
-                            className="h-6 px-2 text-xs"
-                          >
-                            <Edit className="h-3 w-3" />
-                          </Button>
-                          <Button
-                            variant="outline"
-                            size="sm"
-                            onClick={() => generateRideReport(ride)}
-                            title="Generiši izvještaj za vožnju"
-                            className="h-6 px-2 text-xs"
-                          >
-                            <FileText className="h-3 w-3" />
-                          </Button>
-                        </div>
-                      </div>
-                    );
-                  })}
-              </div>
-            )}
-          </CardContent>
-        </Card>
       </div>
     </div>
   );
