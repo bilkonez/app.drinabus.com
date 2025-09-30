@@ -354,6 +354,7 @@ export type Database = {
       }
       rides: {
         Row: {
+          client_name: string | null
           created_at: string | null
           destination: string
           driver_id: string | null
@@ -361,6 +362,7 @@ export type Database = {
           id: string
           notes: string | null
           origin: string
+          payment_type: string | null
           return_date: string | null
           ride_type: string | null
           start_at: string
@@ -370,6 +372,7 @@ export type Database = {
           vehicle_id: string | null
         }
         Insert: {
+          client_name?: string | null
           created_at?: string | null
           destination: string
           driver_id?: string | null
@@ -377,6 +380,7 @@ export type Database = {
           id?: string
           notes?: string | null
           origin: string
+          payment_type?: string | null
           return_date?: string | null
           ride_type?: string | null
           start_at: string
@@ -386,6 +390,7 @@ export type Database = {
           vehicle_id?: string | null
         }
         Update: {
+          client_name?: string | null
           created_at?: string | null
           destination?: string
           driver_id?: string | null
@@ -393,6 +398,7 @@ export type Database = {
           id?: string
           notes?: string | null
           origin?: string
+          payment_type?: string | null
           return_date?: string | null
           ride_type?: string | null
           start_at?: string

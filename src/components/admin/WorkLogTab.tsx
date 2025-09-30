@@ -188,7 +188,9 @@ const WorkLogTab = () => {
   // Calculate total dnevnice
   const totalDnevnice = useMemo(() => {
     return monthlyEntries.reduce((sum, entry) => {
-      const dnevnica = parseFloat(entry.note) || 0;
+      // Provjeriti da li je note broj ili string koji sadrži broj
+      const noteValue = entry.note || '0';
+      const dnevnica = parseFloat(noteValue.toString()) || 0;
       return sum + dnevnica;
     }, 0);
   }, [monthlyEntries]);

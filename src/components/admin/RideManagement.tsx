@@ -29,6 +29,8 @@ interface Ride {
   total_price: number | null;
   notes: string | null;
   status: string;
+  client_name: string | null;
+  payment_type: string | null;
   created_at: string;
   updated_at: string;
 }
@@ -77,6 +79,8 @@ const RideManagement = () => {
     total_price: "",
     notes: "",
     status: "planirano",
+    client_name: "",
+    payment_type: "K", // Default na "Kesh"
   });
   
 
@@ -105,7 +109,7 @@ const RideManagement = () => {
         .from('rides')
         .select('*')
         .in('status', ['planirano', 'zavrseno'])
-        .order('start_at', { ascending: false });
+        .order('start_at', { ascending: true }); // Sortiraj po datumima uzlazno
 
       if (error) throw error;
       setRides(data || []);
@@ -212,6 +216,8 @@ const RideManagement = () => {
         total_price: formData.total_price ? parseFloat(formData.total_price) : null,
         notes: formData.notes || null,
         status: formData.status,
+        client_name: formData.client_name || null,
+        payment_type: formData.payment_type || 'K',
       };
 
       let rideId: string;
@@ -386,6 +392,8 @@ const RideManagement = () => {
         total_price: ride.total_price?.toString() || "",
         notes: ride.notes || "",
         status: ride.status,
+        client_name: ride.client_name || "",
+        payment_type: ride.payment_type || "K",
       });
 
       // Load segments for lokal rides
@@ -429,6 +437,8 @@ const RideManagement = () => {
       total_price: "",
       notes: "",
       status: "planirano",
+      client_name: "",
+      payment_type: "K",
     });
     
     setSegments([]);
@@ -899,6 +909,30 @@ const RideManagement = () => {
                 </Select>
               </div>
 
+              <div className="grid grid-cols-2 gap-4">
+                <div className="space-y-2">
+                  <Label htmlFor="client_name">Ime klijenta</Label>
+                  <Input
+                    id="client_name"
+                    value={formData.client_name}
+                    onChange={(e) => setFormData({...formData, client_name: e.target.value})}
+                    placeholder="Naziv klijenta"
+                  />
+                </div>
+                <div className="space-y-2">
+                  <Label htmlFor="payment_type">Način plaćanja</Label>
+                  <Select value={formData.payment_type} onValueChange={(value) => setFormData({...formData, payment_type: value})}>
+                    <SelectTrigger>
+                      <SelectValue />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="F">F - Faktura</SelectItem>
+                      <SelectItem value="K">K - Kesh</SelectItem>
+                    </SelectContent>
+                  </Select>
+                </div>
+              </div>
+
               <div className="space-y-2">
                 <Label htmlFor="total_price">Ukupna cijena (KM)</Label>
                 <Input
@@ -972,15 +1006,17 @@ const RideManagement = () => {
               </div>
             ) : (
               <div className="overflow-x-auto">
-                <Table>
+                  <Table>
                   <TableHeader>
                     <TableRow>
                       <TableHead>Relacija</TableHead>
                       <TableHead>Tip</TableHead>
                       <TableHead>Datum/Sat</TableHead>
+                      <TableHead>Klijent</TableHead>
                       <TableHead>Vozilo</TableHead>
                       <TableHead>Vozač</TableHead>
                       <TableHead>Cijena</TableHead>
+                      <TableHead>Plaćanje</TableHead>
                       <TableHead>Status</TableHead>
                       <TableHead>Akcije</TableHead>
                     </TableRow>
@@ -1015,6 +1051,9 @@ const RideManagement = () => {
                               </div>
                            </TableCell>
                            <TableCell className="text-sm">
+                             {ride.client_name || 'N/A'}
+                           </TableCell>
+                           <TableCell className="text-sm">
                              {ride.ride_type === 'lokal' ? 'Lokal prevoz' : getVehicleName(ride.vehicle_id)}
                            </TableCell>
                           <TableCell className="text-sm">
@@ -1022,6 +1061,11 @@ const RideManagement = () => {
                           </TableCell>
                           <TableCell>
                             {ride.total_price ? `${ride.total_price.toFixed(2)} KM` : 'N/A'}
+                          </TableCell>
+                          <TableCell>
+                            <Badge variant={ride.payment_type === 'F' ? 'secondary' : 'outline'}>
+                              {ride.payment_type === 'F' ? 'Faktura' : 'Kesh'}
+                            </Badge>
                           </TableCell>
                           <TableCell>
                             <Badge variant={statusInfo.variant}>
