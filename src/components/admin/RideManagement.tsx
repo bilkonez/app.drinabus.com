@@ -1064,7 +1064,7 @@ const RideManagement = () => {
                           'bg-muted text-muted-foreground'
                         }`}>
                           {isToday ? 'Danas' : 
-                           dateObj.toLocaleDateString('sr-RS', { 
+                           dateObj.toLocaleDateString('bs-BA', { 
                              weekday: 'long', 
                              year: 'numeric', 
                              month: 'long', 
