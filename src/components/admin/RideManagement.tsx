@@ -116,8 +116,8 @@ const RideManagement = () => {
     } catch (error) {
       console.error('Error fetching rides:', error);
       toast({
-        title: "Greška",
-        description: "Greška prilikom učitavanja vožnji",
+        title: "Greska",
+        description: "Greska prilikom ucitavanja voznji",
         variant: "destructive",
       });
     }
@@ -260,8 +260,8 @@ const RideManagement = () => {
         }
 
         toast({
-          title: "Uspjeh",
-          description: "Vožnja je uspješno ažurirana",
+          title: "Uspeh",
+          description: "Voznja je uspesno azurirana",
         });
       } else {
         const { data: newRideData, error } = await supabase
@@ -284,8 +284,8 @@ const RideManagement = () => {
 
           if (validSegments.length === 0) {
             toast({
-              title: "Greška",
-              description: "Morate dodati barem jedan valjan segment sa vremenom početka, polazištem i odredištem",
+              title: "Greska",
+              description: "Morate dodati barem jedan valjan segment sa vremenom pocetka, polazistem i odredistem",
               variant: "destructive",
             });
             setLoading(false);
@@ -317,8 +317,8 @@ const RideManagement = () => {
         }
 
         toast({
-          title: "Uspjeh",
-          description: "Vožnja je uspješno dodana",
+          title: "Uspeh",
+          description: "Voznja je uspesno dodata",
         });
       }
 
@@ -330,8 +330,8 @@ const RideManagement = () => {
     } catch (error) {
       console.error('Error saving ride:', error);
       toast({
-        title: "Greška",
-        description: "Greška prilikom čuvanja vožnje",
+        title: "Greska",
+        description: "Greska prilikom cuvanja voznje",
         variant: "destructive",
       });
     } finally {
@@ -340,7 +340,7 @@ const RideManagement = () => {
   };
 
   const handleDelete = async (id: string) => {
-    if (!confirm('Da li ste sigurni da želite obrisati ovu vožnju?')) return;
+    if (!confirm('Da li ste sigurni da zelite obrisati ovu voznju?')) return;
 
     try {
       const { error } = await supabase
@@ -351,16 +351,16 @@ const RideManagement = () => {
       if (error) throw error;
 
       toast({
-        title: "Uspjeh",
-        description: "Vožnja je uspješno obrisana",
+        title: "Uspeh",
+        description: "Voznja je uspesno obrisana",
       });
 
       await Promise.all([fetchRides()]);
     } catch (error) {
       console.error('Error deleting ride:', error);
       toast({
-        title: "Greška",
-        description: "Greška prilikom brisanja vožnje",
+        title: "Greska",
+        description: "Greska prilikom brisanja voznje",
         variant: "destructive",
       });
     }
@@ -471,7 +471,7 @@ const RideManagement = () => {
   const getStatusBadge = (status: string) => {
     const variants = {
       planirano: { variant: "outline" as const, label: "Planirano" },
-      zavrseno: { variant: "secondary" as const, label: "Završeno" },
+      zavrseno: { variant: "secondary" as const, label: "Zavrseno" },
     };
     return variants[status as keyof typeof variants] || { variant: "outline" as const, label: status };
   };
@@ -558,7 +558,7 @@ const RideManagement = () => {
         prihod: ride.total_price ? `${ride.total_price.toFixed(2)} KM` : 'N/A',
         troskovi: `${totalCosts.toFixed(2)} KM`,
         profit: `${profit.toFixed(2)} KM`,
-        status: ride.status === 'zavrseno' ? 'Završeno' : 'Planirano',
+        status: ride.status === 'zavrseno' ? 'Zavrseno' : 'Planirano',
         napomene: ride.notes || 'Nema napomena',
         brojTroskova: costs.length,
         brojDokumenata: documents.length,
@@ -567,24 +567,24 @@ const RideManagement = () => {
 
       // Generate CSV content for download
       const csvContent = [
-        'Polje,Vrijednost',
-        `ID vožnje,${reportData.id}`,
+        'Polje,Vrednost',
+        `ID voznje,${reportData.id}`,
         `Ruta,${reportData.ruta}`,
         `Tip prevoza,${reportData.tip}`,
         `Datum,${reportData.datum}`,
-        `Vrijeme,${reportData.vrijeme}`,
+        `Vreme,${reportData.vrijeme}`,
         `Vozilo,${reportData.vozilo}`,
-        `Vozač,${reportData.vozac}`,
+        `Vozac,${reportData.vozac}`,
         `Prihod,${reportData.prihod}`,
-        `Troškovi,${reportData.troskovi}`,
+        `Troskovi,${reportData.troskovi}`,
         `Profit,${reportData.profit}`,
         `Status,${reportData.status}`,
         `Napomene,${reportData.napomene}`,
-        `Broj troškova,${reportData.brojTroskova}`,
+        `Broj troskova,${reportData.brojTroskova}`,
         `Broj dokumenata,${reportData.brojDokumenata}`,
         
         '',
-        'TROŠKOVI PO STAVCI:',
+        'TROSKOVI PO STAVCI:',
         'Tip,Iznos,Napomena'
       ].filter(line => line !== ''); // Remove empty lines
 
@@ -599,7 +599,7 @@ const RideManagement = () => {
       const link = document.createElement('a');
       const url = URL.createObjectURL(blob);
       link.setAttribute('href', url);
-      link.setAttribute('download', `voznja-izvjestaj-${ride.id.substring(0, 8)}-${reportData.datum.replace(/\//g, '-')}.csv`);
+      link.setAttribute('download', `voznja-izvestaj-${ride.id.substring(0, 8)}-${reportData.datum.replace(/\//g, '-')}.csv`);
       link.style.visibility = 'hidden';
       document.body.appendChild(link);
       link.click();
@@ -607,14 +607,14 @@ const RideManagement = () => {
       URL.revokeObjectURL(url);
 
       toast({
-        title: "Uspjeh",
-        description: "Izvještaj za vožnju je uspješno generiran",
+        title: "Uspeh",
+        description: "Izvestaj za voznju je uspesno generisan",
       });
     } catch (error) {
       console.error('Error generating ride report:', error);
       toast({
-        title: "Greška",
-        description: "Greška pri generiranju izvještaja",
+        title: "Greska",
+        description: "Greska pri generisanju izvestaja",
         variant: "destructive",
       });
     }
@@ -624,9 +624,9 @@ const RideManagement = () => {
     <div className="space-y-6">
       <div className="flex items-center justify-between">
         <div>
-          <h2 className="text-2xl font-bold text-foreground">Vožnje</h2>
+          <h2 className="text-2xl font-bold text-foreground">Voznje</h2>
           <p className="text-muted-foreground">
-            Upravljanje vožnjama i transportom
+            Upravljanje voznjama i transportom
           </p>
         </div>
         
@@ -634,13 +634,13 @@ const RideManagement = () => {
           <DialogTrigger asChild>
             <Button onClick={() => openDialog()}>
               <Plus className="h-4 w-4 mr-2" />
-              Dodaj vožnju
+              Dodaj voznju
             </Button>
           </DialogTrigger>
           <DialogContent className="max-w-4xl max-h-[90vh] overflow-y-auto">
             <DialogHeader>
               <DialogTitle>
-                {editingRide ? "Uredi vožnju" : "Dodaj novu vožnju"}
+                {editingRide ? "Uredi voznju" : "Dodaj novu voznju"}
               </DialogTitle>
             </DialogHeader>
             <form onSubmit={handleSubmit} className="space-y-4">
@@ -660,7 +660,7 @@ const RideManagement = () => {
 
               <div className="grid grid-cols-2 gap-4">
                 <div className="space-y-2">
-                  <Label htmlFor="origin">Polazište *</Label>
+                  <Label htmlFor="origin">Polaziste *</Label>
                   <Input
                     id="origin"
                     value={formData.origin}
@@ -671,7 +671,7 @@ const RideManagement = () => {
                 </div>
 
                 <div className="space-y-2">
-                  <Label htmlFor="destination">Odredište *</Label>
+                  <Label htmlFor="destination">Odrediste *</Label>
                   <Input
                     id="destination"
                     value={formData.destination}
@@ -724,7 +724,7 @@ const RideManagement = () => {
                       </Popover>
                     </div>
                     <div className="space-y-2">
-                      <Label htmlFor="start_time">Vrijeme polaska *</Label>
+                      <Label htmlFor="start_time">Vreme polaska *</Label>
                       <Input
                         id="start_time"
                         type="time"
@@ -801,7 +801,7 @@ const RideManagement = () => {
               {formData.ride_type === 'lokal' && (
                 <>
                   <div className="space-y-2">
-                    <Label htmlFor="ride_date">Datum vožnje (isti za sve segmente) *</Label>
+                    <Label htmlFor="ride_date">Datum voznje (isti za sve segmente) *</Label>
                     <Popover>
                       <PopoverTrigger asChild>
                         <Button
@@ -837,7 +837,7 @@ const RideManagement = () => {
 
                   <div className="space-y-4">
                     <div className="flex items-center justify-between">
-                      <Label className="text-base font-semibold">Segmenti vožnje</Label>
+                      <Label className="text-base font-semibold">Segmenti voznje</Label>
                       <Button type="button" onClick={addSegment} size="sm">
                         <Plus className="h-4 w-4 mr-1" />
                         Dodaj segment
@@ -859,7 +859,7 @@ const RideManagement = () => {
                         </div>
                         
                         <div>
-                          <Label className="text-xs">Vrijeme početka *</Label>
+                          <Label className="text-xs">Vreme pocetka *</Label>
                           <Input
                             type="time"
                             step="60"
@@ -871,7 +871,7 @@ const RideManagement = () => {
                         
                         <div className="grid grid-cols-2 gap-2">
                           <div>
-                            <Label className="text-xs">Polazište *</Label>
+                            <Label className="text-xs">Polaziste *</Label>
                             <Input
                               value={segment.origin}
                               onChange={(e) => updateSegment(index, 'origin', e.target.value)}
@@ -880,7 +880,7 @@ const RideManagement = () => {
                             />
                           </div>
                           <div>
-                            <Label className="text-xs">Odredište *</Label>
+                            <Label className="text-xs">Odrediste *</Label>
                             <Input
                               value={segment.destination}
                               onChange={(e) => updateSegment(index, 'destination', e.target.value)}
@@ -909,8 +909,8 @@ const RideManagement = () => {
                             </SelectContent>
                           </Select>
                         </div>
-                        <div>
-                          <Label className="text-xs">Cijena (KM)</Label>
+                       <div>
+                         <Label className="text-xs">Cena (KM)</Label>
                           <Input
                             type="number"
                             step="0.01"
@@ -936,11 +936,11 @@ const RideManagement = () => {
                )}
 
               <div className="space-y-2">
-                <Label htmlFor="driver_id">Vozač</Label>
+                <Label htmlFor="driver_id">Vozac</Label>
                 <Select value={formData.driver_id} onValueChange={(value) => setFormData({...formData, driver_id: value})}>
-                  <SelectTrigger>
-                    <SelectValue placeholder="Odaberite vozača" />
-                  </SelectTrigger>
+                    <SelectTrigger>
+                      <SelectValue placeholder="Odaberite vozaca" />
+                    </SelectTrigger>
                   <SelectContent>
                     {employees.map((employee) => (
                       <SelectItem key={employee.id} value={employee.id}>
@@ -962,7 +962,7 @@ const RideManagement = () => {
                   />
                 </div>
                 <div className="space-y-2">
-                  <Label htmlFor="payment_type">Način plaćanja</Label>
+                  <Label htmlFor="payment_type">Nacin placanja</Label>
                   <Select value={formData.payment_type} onValueChange={(value) => setFormData({...formData, payment_type: value})}>
                     <SelectTrigger>
                       <SelectValue />
@@ -976,7 +976,7 @@ const RideManagement = () => {
               </div>
 
               <div className="space-y-2">
-                <Label htmlFor="total_price">Ukupna cijena (KM)</Label>
+                <Label htmlFor="total_price">Ukupna cena (KM)</Label>
                 <Input
                   id="total_price"
                   type="number"
@@ -995,7 +995,7 @@ const RideManagement = () => {
                   </SelectTrigger>
                   <SelectContent>
                     <SelectItem value="planirano">Planirano</SelectItem>
-                    <SelectItem value="zavrseno">Završeno</SelectItem>
+                    <SelectItem value="zavrseno">Zavrseno</SelectItem>
                   </SelectContent>
                 </Select>
               </div>
@@ -1013,10 +1013,10 @@ const RideManagement = () => {
 
               <div className="flex gap-2 pt-4">
                 <Button type="submit" disabled={loading} className="flex-1">
-                  {loading ? "Čuvanje..." : "Sačuvaj"}
+                  {loading ? "Cuvanje..." : "Sacuvaj"}
                 </Button>
                 <Button type="button" variant="outline" onClick={() => setDialogOpen(false)}>
-                  Otkaži
+                  Otkazi
                 </Button>
               </div>
             </form>
@@ -1029,22 +1029,22 @@ const RideManagement = () => {
           <CardHeader>
             <CardTitle className="flex items-center gap-2">
               <Route className="h-5 w-5" />
-              Sve vožnje
+              Sve voznje
             </CardTitle>
             <CardDescription>
-              {rides.length} vožnji u sistemu
+              {rides.length} voznji u sistemu
             </CardDescription>
           </CardHeader>
           <CardContent>
             {loading ? (
               <div className="text-center py-8">
                 <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary mx-auto mb-4"></div>
-                <p className="text-muted-foreground">Učitavanje vožnji...</p>
+                <p className="text-muted-foreground">Ucitavanje voznji...</p>
               </div>
             ) : rides.length === 0 ? (
               <div className="text-center py-8 text-muted-foreground">
                 <Route className="h-12 w-12 mx-auto mb-4 opacity-50" />
-                <p>Nema vožnji u bazi</p>
+                <p>Nema voznji u bazi</p>
               </div>
             ) : (
               <div className="space-y-6">
@@ -1073,7 +1073,7 @@ const RideManagement = () => {
                         </div>
                         <div className="flex-1 h-px bg-border"></div>
                         <span className="text-sm text-muted-foreground">
-                          {dateRides.length} {dateRides.length === 1 ? 'vožnja' : 'vožnji'}
+                          {dateRides.length} {dateRides.length === 1 ? 'voznja' : 'voznji'}
                         </span>
                       </div>
                       
@@ -1085,12 +1085,12 @@ const RideManagement = () => {
                                 <TableRow>
                                   <TableHead>Relacija</TableHead>
                                   <TableHead>Tip</TableHead>
-                                  <TableHead>Vrijeme</TableHead>
+                                  <TableHead>Vreme</TableHead>
                                   <TableHead>Klijent</TableHead>
                                   <TableHead>Vozilo</TableHead>
-                                  <TableHead>Vozač</TableHead>
-                                  <TableHead>Cijena</TableHead>
-                                  <TableHead>Plaćanje</TableHead>
+                                  <TableHead>Vozac</TableHead>
+                                  <TableHead>Cena</TableHead>
+                                  <TableHead>Placanje</TableHead>
                                   <TableHead>Status</TableHead>
                                   <TableHead>Akcije</TableHead>
                                 </TableRow>
@@ -1112,7 +1112,7 @@ const RideManagement = () => {
                                       </TableCell>
                                       <TableCell>
                                         <div className="text-sm font-medium">
-                                          {ride.ride_type === 'lokal' ? 'Više segmenata' : 
+                                          {ride.ride_type === 'lokal' ? 'Vise segmenata' : 
                                            rideDate.toLocaleTimeString('en-GB', { 
                                              hour: '2-digit', 
                                              minute: '2-digit',
@@ -1159,14 +1159,14 @@ const RideManagement = () => {
                                           >
                                             <Trash2 className="h-4 w-4" />
                                           </Button>
-                                          <Button
-                                            variant="outline"
-                                            size="sm"
-                                            onClick={() => generateRideReport(ride)}
-                                            title="Generiši izvještaj za vožnju"
-                                          >
-                                            <FileText className="h-4 w-4" />
-                                          </Button>
+                                           <Button
+                                             variant="outline"
+                                             size="sm"
+                                             onClick={() => generateRideReport(ride)}
+                                             title="Generisi izvestaj za voznju"
+                                           >
+                                             <FileText className="h-4 w-4" />
+                                           </Button>
                                         </div>
                                       </TableCell>
                                     </TableRow>
