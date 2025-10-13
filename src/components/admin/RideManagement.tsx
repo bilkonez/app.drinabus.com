@@ -15,6 +15,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { toast } from "@/hooks/use-toast";
 import { format } from "date-fns";
 import { cn } from "@/lib/utils";
+import { formatDisplayDate } from "@/lib/datetime";
 
 interface Ride {
   id: string;
@@ -1064,12 +1065,7 @@ const RideManagement = () => {
                           'bg-muted text-muted-foreground'
                         }`}>
                           {isToday ? 'Danas' : 
-                           dateObj.toLocaleDateString('bs-BA', { 
-                             weekday: 'long', 
-                             year: 'numeric', 
-                             month: 'long', 
-                             day: 'numeric' 
-                           })}
+                           `${formatDisplayDate(dateObj)} - ${dateObj.toLocaleDateString('bs-BA', { weekday: 'long' })}`}
                         </div>
                         <div className="flex-1 h-px bg-border"></div>
                         <span className="text-sm text-muted-foreground">
