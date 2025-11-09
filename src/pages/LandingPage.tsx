@@ -22,21 +22,25 @@ interface GalleryImage {
 
 // Previously uploaded vehicle images mapping
 const getVehicleImageFromUploads = (vehicle: Vehicle): string => {
-  if (vehicle.brand === 'Mercedes' && vehicle.model === 'Sprinter') {
+  const brand = vehicle.brand?.trim();
+  const model = vehicle.model?.trim();
+  const registration = vehicle.registration?.trim();
+  
+  if (brand === 'Mercedes' && model === 'Sprinter') {
     return '/lovable-uploads/feb19f81-e937-43e1-b3f8-1b29065267b6.png';
   }
-  if (vehicle.brand === 'Neoplan' && vehicle.model === 'Cityliner') {
-    if (vehicle.registration === 'A36-E-349') {
+  if (brand === 'Neoplan' && model === 'Cityliner') {
+    if (registration === 'A36-E-349') {
       return '/lovable-uploads/d35b41af-f340-499b-926a-af278cefaf0e.png';
     }
-    if (vehicle.registration === 'T17-M-331') {
+    if (registration === 'T17-M-331') {
       return '/lovable-uploads/8bb9aa36-5a2f-42ad-a745-79b983ddcf2a.png';
     }
   }
-  if (vehicle.brand === 'Otokar' && vehicle.model === 'Sultan') {
+  if (brand === 'Otokar' && model === 'Sultan') {
     return '/lovable-uploads/6a6efc97-e912-4097-b4a0-48f7d46ec0d3.png';
   }
-  if (vehicle.brand === 'Mercedes' && vehicle.model === 'Vito') {
+  if (brand === 'Mercedes' && model === 'Vito') {
     return '/lovable-uploads/5f35d25b-dac7-4c14-a056-aaa834f9d22f.png';
   }
   return '';
@@ -132,31 +136,53 @@ const LandingPage = () => {
   return (
     <div className="min-h-screen bg-background">
       {/* Hero Section */}
-      <section className="relative h-screen flex items-center justify-center overflow-hidden">
+      <section className="relative min-h-screen flex items-center justify-center overflow-hidden">
         <div 
           className="absolute inset-0 bg-cover bg-center bg-no-repeat"
           style={{ 
             backgroundImage: `url(${heroBackground})`
           }}
         />
-        <div className="absolute inset-0 bg-gradient-to-r from-black/60 via-black/50 to-black/60" />
+        <div className="absolute inset-0 bg-gradient-to-b from-black/70 via-black/40 to-black/70" />
         
-        <div className="relative z-10 text-center text-white max-w-4xl mx-auto px-6">
-          <div className="mb-8">
+        <div className="relative z-10 text-center text-white max-w-5xl mx-auto px-6 py-20">
+          <div className="mb-12 animate-fade-in">
             <img 
-              src="/lovable-uploads/6dd2d576-8aab-4bef-bf5a-0c7d8a00f49f.png" 
+              src="/lovable-uploads/drina-bus-logo-transparent.png" 
               alt="Drina Bus Logo" 
-              className="h-24 w-auto mx-auto mb-6 drop-shadow-2xl"
+              className="h-32 md:h-40 w-auto mx-auto mb-8 drop-shadow-2xl"
             />
           </div>
           
-          <h1 className="text-4xl md:text-6xl lg:text-7xl font-bold mb-6 leading-tight">
-            Siguran i udoban prevoz putnika
+          <h1 className="text-5xl md:text-6xl lg:text-8xl font-bold mb-8 leading-tight text-shadow-lg">
+            Siguran i udoban prevoz
           </h1>
           
-          <p className="text-xl md:text-2xl lg:text-3xl font-light opacity-90 max-w-3xl mx-auto">
+          <p className="text-2xl md:text-3xl lg:text-4xl font-light mb-12 text-white/95">
             Povezujemo ljude – lokalno i međunarodno
           </p>
+
+          <div className="flex flex-col sm:flex-row gap-6 justify-center items-center">
+            <a 
+              href="#fleet" 
+              className="bg-green-600 hover:bg-green-700 text-white px-8 py-4 rounded-lg text-lg font-semibold transition-all duration-300 shadow-lg hover:shadow-xl hover:scale-105"
+            >
+              Pogledaj vozni park
+            </a>
+            <a 
+              href="#contact" 
+              className="bg-white/10 backdrop-blur-sm hover:bg-white/20 text-white border-2 border-white/50 px-8 py-4 rounded-lg text-lg font-semibold transition-all duration-300 shadow-lg hover:shadow-xl hover:scale-105"
+            >
+              Kontaktirajte nas
+            </a>
+          </div>
+        </div>
+
+        {/* Scroll indicator */}
+        <div className="absolute bottom-8 left-1/2 transform -translate-x-1/2 animate-bounce">
+          <div className="w-6 h-10 border-2 border-white/50 rounded-full flex justify-center">
+            <div className="w-1 h-3 bg-white/50 rounded-full mt-2"></div>
+          </div>
         </div>
       </section>
 
@@ -207,7 +233,7 @@ const LandingPage = () => {
       </section>
 
       {/* Fleet Section */}
-      <section className="py-20 px-6 bg-gray-50">
+      <section id="fleet" className="py-20 px-6 bg-gray-50 scroll-mt-20">
         <div className="max-w-6xl mx-auto">
           <div className="text-center mb-16">
             <h2 className="text-3xl md:text-4xl font-bold text-gray-900 mb-4">
@@ -420,7 +446,7 @@ const LandingPage = () => {
       </section>
 
       {/* Contact Section */}
-      <section className="py-20 px-6 bg-green-900 text-white">
+      <section id="contact" className="py-20 px-6 bg-green-900 text-white scroll-mt-20">
         <div className="max-w-6xl mx-auto">
           <div className="text-center mb-16">
             <h2 className="text-3xl md:text-4xl font-bold mb-4">

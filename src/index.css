@@ -128,3 +128,25 @@ All colors MUST be HSL for consistency
 [data-lovable-watermark] {
   display: none !important;
 }
+
+/* Custom utility classes */
+@layer utilities {
+  .text-shadow-lg {
+    text-shadow: 0 4px 20px rgba(0, 0, 0, 0.5);
+  }
+  
+  .animate-fade-in {
+    animation: fadeIn 1s ease-in;
+  }
+  
+  @keyframes fadeIn {
+    from {
+      opacity: 0;
+      transform: translateY(-20px);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+}
