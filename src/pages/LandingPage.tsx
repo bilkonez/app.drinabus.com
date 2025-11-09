@@ -4,7 +4,7 @@ import { Badge } from '@/components/ui/badge';
 import { Dialog, DialogContent } from '@/components/ui/dialog';
 import { supabase } from '@/integrations/supabase/client';
 import { Phone, Mail, Instagram, MapPin, Users, Route, Calendar, X } from 'lucide-react';
-import heroBackground from '@/assets/hero-background.jpg';
+import heroBackground from '@/assets/hero-river-bus.jpg';
 
 interface Vehicle {
   id: string;
@@ -148,7 +148,7 @@ const LandingPage = () => {
         <div className="relative z-10 text-center text-white max-w-5xl mx-auto px-6 py-20">
           <div className="mb-12 animate-fade-in">
             <img 
-              src="/lovable-uploads/drina-bus-logo-transparent.png" 
+              src="/lovable-uploads/6dd2d576-8aab-4bef-bf5a-0c7d8a00f49f.png" 
               alt="Drina Bus Logo" 
               className="h-32 md:h-40 w-auto mx-auto mb-8 drop-shadow-2xl"
             />
@@ -260,12 +260,18 @@ const LandingPage = () => {
                       key={vehicle.id} 
                       className="group hover:shadow-xl transition-all duration-300 overflow-hidden w-full shadow-sm border-2 hover:border-green-200 rounded-lg"
                     >
-                      <div className="aspect-video bg-gray-100 overflow-hidden rounded-t-lg">
+                      <div className="aspect-video bg-gray-100 overflow-hidden rounded-t-lg flex items-center justify-center p-4">
                         {vehicleImage ? (
                           <img 
                             src={vehicleImage}
                             alt={`${vehicle.brand} ${vehicle.model} - Drina Bus`}
-                            className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
+                            className={`w-full h-full transition-transform duration-300 ${
+                              vehicle.brand === 'Mercedes' && vehicle.model === 'Vito' 
+                                ? 'object-contain group-hover:scale-110' 
+                                : vehicle.brand === 'Neoplan' && vehicle.registration === 'T17-M-331'
+                                ? 'object-contain scale-110 group-hover:scale-125'
+                                : 'object-cover group-hover:scale-105'
+                            }`}
                             loading="lazy"
                             width="400"
                             height="225"
@@ -327,12 +333,18 @@ const LandingPage = () => {
                           key={vehicle.id} 
                           className="group hover:shadow-xl transition-all duration-300 overflow-hidden w-full shadow-sm border-2 hover:border-green-200 rounded-lg"
                         >
-                          <div className="aspect-video bg-gray-100 overflow-hidden rounded-t-lg">
+                          <div className="aspect-video bg-gray-100 overflow-hidden rounded-t-lg flex items-center justify-center p-4">
                             {vehicleImage ? (
                               <img 
                                 src={vehicleImage}
                                 alt={`${vehicle.brand} ${vehicle.model} - Drina Bus`}
-                                className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
+                                className={`w-full h-full transition-transform duration-300 ${
+                                  vehicle.brand === 'Mercedes' && vehicle.model === 'Vito' 
+                                    ? 'object-contain group-hover:scale-110' 
+                                    : vehicle.brand === 'Neoplan' && vehicle.registration === 'T17-M-331'
+                                    ? 'object-contain scale-110 group-hover:scale-125'
+                                    : 'object-cover group-hover:scale-105'
+                                }`}
                                 loading="lazy"
                                 width="400"
                                 height="225"
