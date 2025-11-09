@@ -4,6 +4,7 @@ import { Badge } from '@/components/ui/badge';
 import { Dialog, DialogContent } from '@/components/ui/dialog';
 import { supabase } from '@/integrations/supabase/client';
 import { Phone, Mail, Instagram, MapPin, Users, Route, Calendar, X } from 'lucide-react';
+import heroBackground from '@/assets/hero-background.jpg';
 
 interface Vehicle {
   id: string;
@@ -135,10 +136,10 @@ const LandingPage = () => {
         <div 
           className="absolute inset-0 bg-cover bg-center bg-no-repeat"
           style={{ 
-            backgroundImage: `url(${supabase.storage.from('media').getPublicUrl('hero/hero_bus.jpg').data.publicUrl})`
+            backgroundImage: `url(${heroBackground})`
           }}
         />
-        <div className="absolute inset-0 bg-gradient-to-r from-black/50 via-black/40 to-black/50" />
+        <div className="absolute inset-0 bg-gradient-to-r from-black/60 via-black/50 to-black/60" />
         
         <div className="relative z-10 text-center text-white max-w-4xl mx-auto px-6">
           <div className="mb-8">
