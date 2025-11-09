@@ -72,6 +72,16 @@ const LandingPage = () => {
 
   const fetchGalleryImages = async () => {
     try {
+      // Static uploaded images
+      const staticImages: GalleryImage[] = [
+        { url: '/lovable-uploads/feb19f81-e937-43e1-b3f8-1b29065267b6.png', alt: 'Mercedes Sprinter - Drina Bus' },
+        { url: '/lovable-uploads/d35b41af-f340-499b-926a-af278cefaf0e.png', alt: 'Neoplan Cityliner - Drina Bus' },
+        { url: '/lovable-uploads/8bb9aa36-5a2f-42ad-a745-79b983ddcf2a.png', alt: 'Neoplan Cityliner - Drina Bus' },
+        { url: '/lovable-uploads/6a6efc97-e912-4097-b4a0-48f7d46ec0d3.png', alt: 'Otokar Sultan - Drina Bus' },
+        { url: '/lovable-uploads/5f35d25b-dac7-4c14-a056-aaa834f9d22f.png', alt: 'Mercedes Vito - Drina Bus' },
+        { url: '/lovable-uploads/1bc6f777-073d-4e8d-be07-8473954f5e95.png', alt: 'Autobus - Drina Bus' },
+      ];
+
       // Fetch images from both vehicles and gallery folders
       const [vehiclesRes, galleryRes] = await Promise.all([
         supabase.storage.from('media').list('vehicles', { limit: 100 }),
@@ -92,7 +102,7 @@ const LandingPage = () => {
           alt: `Drina Bus - ${file.name.replace(/\.[^/.]+$/, '').replace(/_/g, ' ')}`
         }));
 
-      const allImages = [...vehicleImages, ...galleryImages].filter(img => img.url);
+      const allImages = [...staticImages, ...vehicleImages, ...galleryImages].filter(img => img.url);
       setGalleryImages(allImages);
     } catch (error) {
       console.error('Error fetching gallery images:', error);
@@ -150,7 +160,11 @@ const LandingPage = () => {
       </section>
 
       {/* Services Section */}
-      <section className="py-20 px-6 bg-white">
+      <section className="py-20 px-6 bg-white relative overflow-hidden">
+        <div className="absolute inset-0 opacity-5 bg-repeat" style={{ 
+          backgroundImage: `url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%23059669' fill-opacity='1'%3E%3Cpath d='M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E")`,
+          backgroundSize: '60px 60px'
+        }} />
         <div className="max-w-6xl mx-auto">
           <div className="text-center mb-16">
             <h2 className="text-3xl md:text-4xl font-bold text-gray-900 mb-4">
