@@ -4,7 +4,7 @@ import { Badge } from '@/components/ui/badge';
 import { Dialog, DialogContent } from '@/components/ui/dialog';
 import { supabase } from '@/integrations/supabase/client';
 import { Phone, Mail, Instagram, MapPin, Users, Route, Calendar, X } from 'lucide-react';
-import heroBackground from '@/assets/hero-neoplan.jpg';
+import heroBackground from '@/assets/hero-river-bus.jpg';
 import WhatsAppButton from '@/components/ui/WhatsAppButton';
 import { useLanguage } from '@/contexts/LanguageContext';
 
@@ -59,14 +59,14 @@ const getVehicleImagePosition = (vehicle: Vehicle): string => {
     return 'center 70%';
   }
   
-  // Neoplan A36 - pomaknut još 10% prema gore (sa 25% na 15%)
+  // Neoplan A36 - gurnut prema dolje (35%)
   if (brand === 'Neoplan' && model === 'Cityliner' && registration === 'A36-E-349') {
-    return 'center 15%';
+    return 'center 35%';
   }
   
-  // Neoplan T17 - same as Vito (70%)
+  // Neoplan T17 - gurnut prema dolje i zumiran (75%)
   if (brand === 'Neoplan' && model === 'Cityliner' && registration === 'T17-M-331') {
-    return 'center 70%';
+    return 'center 75%';
   }
   
   // Default center positioning
@@ -172,11 +172,20 @@ const LandingPage = () => {
       <nav className="fixed top-0 left-0 right-0 z-50 bg-black/30 backdrop-blur-lg border-b border-white/10">
         <div className="max-w-7xl mx-auto px-6 py-4">
           <div className="flex items-center justify-between">
-            <img 
-              src="/lovable-uploads/drina-bus-logo-transparent.png" 
-              alt="Drina Bus Logo" 
-              className="h-12 w-auto drop-shadow-lg"
-            />
+            <a 
+              href="#"
+              onClick={(e) => {
+                e.preventDefault();
+                window.scrollTo({ top: 0, behavior: 'smooth' });
+              }}
+              className="cursor-pointer"
+            >
+              <img 
+                src="/lovable-uploads/drina-bus-logo-transparent.png" 
+                alt="Drina Bus Logo" 
+                className="h-12 w-auto drop-shadow-lg hover:opacity-90 transition-opacity"
+              />
+            </a>
             <div className="flex items-center gap-8">
               <a 
                 href="#fleet" 
@@ -332,7 +341,7 @@ const LandingPage = () => {
                             src={vehicleImage}
                             alt={`${vehicle.brand} ${vehicle.model} - Drina Bus`}
                             className={`w-full h-full object-cover transition-transform duration-300 ${
-                              vehicle.registration === 'T17-M-331' ? 'group-hover:scale-125' : 'group-hover:scale-110'
+                              vehicle.registration === 'T17-M-331' ? 'group-hover:scale-135' : 'group-hover:scale-110'
                             }`}
                             style={{ objectPosition: imagePosition }}
                             loading="lazy"

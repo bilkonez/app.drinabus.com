@@ -52,8 +52,8 @@ const translations = {
     
     // About
     'about.title': 'O nama',
-    'about.text1': 'Drina Bus je porodična firma iz Ustikoline, specijalizovana za linijski i vanlinijski prevoz putnika. Naša misija je pružiti sigurno, udobno i pristupačno putovanje, bilo da se radi o svakodnevnim linijama ili posebnim putovanjima za grupe, ekskurzije i turiste.',
-    'about.text2': 'Sa dugogodišnjim iskustvom, modernim voznim parkom i profesionalnim vozačima, Drina Bus je pouzdan partner na svakom putovanju.',
+    'about.text1': 'Drina Bus je porodična firma iz Ustikoline, Bosna i Hercegovina, specijalizovana za linijski i vanlinijski prevoz putnika. Ponosni smo što svojim uslugama povezujemo ljude širom Bosne i Hercegovine i regiona. Naša misija je pružiti sigurno, udobno i pristupačno putovanje, bilo da se radi o svakodnevnim linijama ili posebnim putovanjima za grupe, ekskurzije i turiste.',
+    'about.text2': 'Sa dugogodišnjim iskustvom u transportnoj industriji Bosne i Hercegovine, modernim voznim parkom i profesionalnim vozačima, Drina Bus je pouzdan partner na svakom putovanju.',
     
     // Contact
     'contact.title': 'Kontakt',
@@ -110,8 +110,8 @@ const translations = {
     
     // About
     'about.title': 'About us',
-    'about.text1': 'Drina Bus is a family business from Ustikolina, specialized in regular and charter passenger transport. Our mission is to provide safe, comfortable and affordable travel, whether for daily routes or special trips for groups, excursions and tourists.',
-    'about.text2': 'With years of experience, modern fleet and professional drivers, Drina Bus is a reliable partner on every journey.',
+    'about.text1': 'Drina Bus is a family business from Ustikolina, Bosnia and Herzegovina, specialized in regular and charter passenger transport. We are proud to connect people throughout Bosnia and Herzegovina and the region with our services. Our mission is to provide safe, comfortable and affordable travel, whether for daily routes or special trips for groups, excursions and tourists.',
+    'about.text2': 'With years of experience in the transport industry of Bosnia and Herzegovina, modern fleet and professional drivers, Drina Bus is a reliable partner on every journey.',
     
     // Contact
     'contact.title': 'Contact',
