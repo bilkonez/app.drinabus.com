@@ -64,9 +64,9 @@ const getVehicleImagePosition = (vehicle: Vehicle): string => {
     return 'center 55%';
   }
   
-  // Neoplan T17 - gurnut prema dolje i zumiran (75%)
+  // Neoplan T17 - centriran i zumiran
   if (brand === 'Neoplan' && model === 'Cityliner' && registration === 'T17-M-331') {
-    return 'center 75%';
+    return 'center center';
   }
   
   // Default center positioning
@@ -341,7 +341,7 @@ const LandingPage = () => {
                             src={vehicleImage}
                             alt={`${vehicle.brand} ${vehicle.model} - Drina Bus`}
                             className={`w-full h-full object-cover transition-transform duration-300 ${
-                              vehicle.registration === 'T17-M-331' ? 'group-hover:scale-150' : 'group-hover:scale-110'
+                              vehicle.registration === 'T17-M-331' ? 'group-hover:scale-180' : 'group-hover:scale-110'
                             }`}
                             style={{ objectPosition: imagePosition }}
                             loading="lazy"

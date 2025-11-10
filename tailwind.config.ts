@@ -21,6 +21,7 @@ export default {
 			scale: {
 				'135': '1.35',
 				'150': '1.50',
+				'180': '1.80',
 			},
 			fontFamily: {
 				'bebas': ['Bebas Neue', 'cursive'],
