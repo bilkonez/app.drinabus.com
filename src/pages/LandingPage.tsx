@@ -54,18 +54,18 @@ const getVehicleImagePosition = (vehicle: Vehicle): string => {
   const model = vehicle.model?.trim();
   const registration = vehicle.registration?.trim();
   
-  // Mercedes Vito needs to be positioned higher (towards top)
+  // Mercedes Vito needs to be positioned lower (towards bottom)
   if (brand === 'Mercedes' && model === 'Vito') {
-    return 'center 20%';
+    return 'center 70%';
   }
   
-  // Neoplan A36 needs to be positioned higher (towards top)
+  // Neoplan A36 needs to be positioned lower (towards bottom)
   if (brand === 'Neoplan' && model === 'Cityliner' && registration === 'A36-E-349') {
-    return 'center 25%';
+    return 'center 65%';
   }
   
   // Default center positioning
-  return 'center 40%';
+  return 'center 50%';
 };
 
 const LandingPage = () => {
@@ -164,40 +164,42 @@ const LandingPage = () => {
   return (
     <div className="min-h-screen bg-background">
       {/* Navigation Bar */}
-      <nav className="fixed top-0 left-0 right-0 z-50 bg-white/80 backdrop-blur-md shadow-sm border-b border-gray-200/50">
+      <nav className="fixed top-0 left-0 right-0 z-50 bg-black/30 backdrop-blur-lg border-b border-white/10">
         <div className="max-w-7xl mx-auto px-6 py-4">
           <div className="flex items-center justify-between">
-            <h1 className="text-2xl font-bold bg-gradient-to-r from-green-600 to-emerald-600 bg-clip-text text-transparent">
-              DRINA BUS
-            </h1>
+            <img 
+              src="/lovable-uploads/drina-bus-logo-transparent.png" 
+              alt="Drina Bus Logo" 
+              className="h-12 w-auto drop-shadow-lg"
+            />
             <div className="flex items-center gap-8">
               <a 
                 href="#fleet" 
-                className="text-gray-700 hover:text-green-600 font-medium transition-colors duration-200"
+                className="text-white hover:text-green-400 font-medium transition-colors duration-200 drop-shadow-lg"
               >
                 {t('nav.fleet')}
               </a>
               <a 
                 href="#about" 
-                className="text-gray-700 hover:text-green-600 font-medium transition-colors duration-200"
+                className="text-white hover:text-green-400 font-medium transition-colors duration-200 drop-shadow-lg"
               >
                 {t('nav.about')}
               </a>
               <a 
                 href="#gallery" 
-                className="text-gray-700 hover:text-green-600 font-medium transition-colors duration-200"
+                className="text-white hover:text-green-400 font-medium transition-colors duration-200 drop-shadow-lg"
               >
                 {t('nav.gallery')}
               </a>
               <a 
                 href="#contact" 
-                className="text-gray-700 hover:text-green-600 font-medium transition-colors duration-200"
+                className="text-white hover:text-green-400 font-medium transition-colors duration-200 drop-shadow-lg"
               >
                 {t('nav.contact')}
               </a>
               <button
                 onClick={() => setLanguage(language === 'sr' ? 'en' : 'sr')}
-                className="flex items-center gap-2 text-gray-700 hover:text-green-600 font-medium transition-colors duration-200 border-l border-gray-300 pl-6"
+                className="flex items-center gap-2 text-white hover:text-green-400 font-medium transition-colors duration-200 border-l border-white/30 pl-6 drop-shadow-lg"
               >
                 <span className="text-sm">{language === 'sr' ? 'EN' : 'BH'}</span>
               </button>
@@ -220,11 +222,9 @@ const LandingPage = () => {
         
         <div className="relative z-10 text-center text-white max-w-5xl mx-auto px-6 py-20">
           <div className="mb-12 animate-fade-in">
-            <img 
-              src="/lovable-uploads/drina-bus-logo-transparent.png" 
-              alt="Drina Bus Logo" 
-              className="h-32 md:h-40 w-auto mx-auto mb-8 drop-shadow-2xl"
-            />
+            <h1 className="text-6xl md:text-7xl lg:text-9xl font-bold bg-gradient-to-r from-green-500 via-emerald-500 to-green-600 bg-clip-text text-transparent drop-shadow-2xl mb-8">
+              DRINA BUS
+            </h1>
           </div>
           
           <h1 className="text-5xl md:text-6xl lg:text-8xl font-bold mb-8 leading-tight text-shadow-lg">
