@@ -59,9 +59,9 @@ const getVehicleImagePosition = (vehicle: Vehicle): string => {
     return 'center 70%';
   }
   
-  // Neoplan A36 - gurnut prema dolje (35%)
+  // Neoplan A36 - gurnut prema dolje (55%)
   if (brand === 'Neoplan' && model === 'Cityliner' && registration === 'A36-E-349') {
-    return 'center 35%';
+    return 'center 55%';
   }
   
   // Neoplan T17 - gurnut prema dolje i zumiran (75%)
@@ -341,7 +341,7 @@ const LandingPage = () => {
                             src={vehicleImage}
                             alt={`${vehicle.brand} ${vehicle.model} - Drina Bus`}
                             className={`w-full h-full object-cover transition-transform duration-300 ${
-                              vehicle.registration === 'T17-M-331' ? 'group-hover:scale-135' : 'group-hover:scale-110'
+                              vehicle.registration === 'T17-M-331' ? 'group-hover:scale-150' : 'group-hover:scale-110'
                             }`}
                             style={{ objectPosition: imagePosition }}
                             loading="lazy"
@@ -480,9 +480,25 @@ const LandingPage = () => {
             <p className="text-lg mb-6">
               {t('about.text1')}
             </p>
-            <p className="text-lg">
+            <p className="text-lg mb-12">
               {t('about.text2')}
             </p>
+          </div>
+          
+          {/* Stats Section */}
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-8 mt-12 max-w-3xl mx-auto">
+            <div className="text-center p-6 bg-green-50 rounded-lg border-2 border-green-100 hover:border-green-300 transition-all duration-300">
+              <div className="text-4xl font-bold text-green-600 mb-2">15+</div>
+              <div className="text-gray-700 font-medium">{t('about.stats.experience')}</div>
+            </div>
+            <div className="text-center p-6 bg-green-50 rounded-lg border-2 border-green-100 hover:border-green-300 transition-all duration-300">
+              <div className="text-4xl font-bold text-green-600 mb-2">2000+</div>
+              <div className="text-gray-700 font-medium">{t('about.stats.trips')}</div>
+            </div>
+            <div className="text-center p-6 bg-green-50 rounded-lg border-2 border-green-100 hover:border-green-300 transition-all duration-300">
+              <div className="text-4xl font-bold text-green-600 mb-2">30+</div>
+              <div className="text-gray-700 font-medium">{t('about.stats.clients')}</div>
+            </div>
           </div>
         </div>
       </section>

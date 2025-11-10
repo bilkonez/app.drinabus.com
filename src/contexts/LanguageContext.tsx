@@ -54,6 +54,9 @@ const translations = {
     'about.title': 'O nama',
     'about.text1': 'Drina Bus je porodična firma iz Ustikoline, Bosna i Hercegovina, specijalizovana za linijski i vanlinijski prevoz putnika. Ponosni smo što svojim uslugama povezujemo ljude širom Bosne i Hercegovine i regiona. Naša misija je pružiti sigurno, udobno i pristupačno putovanje, bilo da se radi o svakodnevnim linijama ili posebnim putovanjima za grupe, ekskurzije i turiste.',
     'about.text2': 'Sa dugogodišnjim iskustvom u transportnoj industriji Bosne i Hercegovine, modernim voznim parkom i profesionalnim vozačima, Drina Bus je pouzdan partner na svakom putovanju.',
+    'about.stats.experience': 'godina iskustva',
+    'about.stats.trips': 'završenih vožnji',
+    'about.stats.clients': 'aktivnih klijenata',
     
     // Contact
     'contact.title': 'Kontakt',
@@ -112,6 +115,9 @@ const translations = {
     'about.title': 'About us',
     'about.text1': 'Drina Bus is a family business from Ustikolina, Bosnia and Herzegovina, specialized in regular and charter passenger transport. We are proud to connect people throughout Bosnia and Herzegovina and the region with our services. Our mission is to provide safe, comfortable and affordable travel, whether for daily routes or special trips for groups, excursions and tourists.',
     'about.text2': 'With years of experience in the transport industry of Bosnia and Herzegovina, modern fleet and professional drivers, Drina Bus is a reliable partner on every journey.',
+    'about.stats.experience': 'years of experience',
+    'about.stats.trips': 'completed trips',
+    'about.stats.clients': 'active clients',
     
     // Contact
     'contact.title': 'Contact',
