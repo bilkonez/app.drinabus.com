@@ -5,6 +5,9 @@ import { Dialog, DialogContent } from '@/components/ui/dialog';
 import { supabase } from '@/integrations/supabase/client';
 import { Phone, Mail, Instagram, MapPin, Users, Route, Calendar, X } from 'lucide-react';
 import heroBackground from '@/assets/hero-river-bus.jpg';
+import WhatsAppButton from '@/components/ui/WhatsAppButton';
+import LanguageSwitcher from '@/components/ui/LanguageSwitcher';
+import { useLanguage } from '@/contexts/LanguageContext';
 
 interface Vehicle {
   id: string;
@@ -47,6 +50,7 @@ const getVehicleImageFromUploads = (vehicle: Vehicle): string => {
 };
 
 const LandingPage = () => {
+  const { t } = useLanguage();
   const [vehicles, setVehicles] = useState<Vehicle[]>([]);
   const [galleryImages, setGalleryImages] = useState<GalleryImage[]>([]);
   const [selectedImage, setSelectedImage] = useState<string | null>(null);
@@ -116,18 +120,18 @@ const LandingPage = () => {
 
   const getVehicleDescription = (brand: string, model: string) => {
     if (brand === 'Neoplan' && model === 'Cityliner') {
-      return 'Luksuzni autobus za duga putovanja sa visokim komforom, klimatizovan i moderno opremljen.';
+      return t('vehicle.neoplan');
     }
     if (brand === 'Mercedes' && model === 'Sprinter') {
-      return 'Kompaktni i udoban minibus, idealan za manje grupe i lokalni prevoz.';
+      return t('vehicle.sprinter');
     }
     if (brand === 'Otokar' && model === 'Sultan') {
-      return 'Pouzdan i komforan autobus za srednje grupe, klimatizovan sa modernim sadržajima.';
+      return t('vehicle.sultan');
     }
     if (brand === 'Mercedes' && model === 'Vito') {
-      return 'Kompaktni i praktičan van, idealan za manje grupe do 8 putnika.';
+      return t('vehicle.vito');
     }
-    return 'Udoban, klimatizovan i moderno opremljen autobus za Vaša putovanja.';
+    return t('vehicle.default');
   };
 
   // Adjust vehicle capacity (reduce by 1)
@@ -135,6 +139,9 @@ const LandingPage = () => {
 
   return (
     <div className="min-h-screen bg-background">
+      <LanguageSwitcher />
+      <WhatsAppButton />
+      
       {/* Hero Section */}
       <section className="relative min-h-screen flex items-center justify-center overflow-hidden">
         <div 
@@ -155,11 +162,11 @@ const LandingPage = () => {
           </div>
           
           <h1 className="text-5xl md:text-6xl lg:text-8xl font-bold mb-8 leading-tight text-shadow-lg">
-            Siguran i udoban prevoz
+            {t('hero.title')}
           </h1>
           
           <p className="text-2xl md:text-3xl lg:text-4xl font-light mb-12 text-white/95">
-            Povezujemo ljude – lokalno i međunarodno
+            {t('hero.subtitle')}
           </p>
 
           <div className="flex flex-col sm:flex-row gap-6 justify-center items-center">
@@ -167,13 +174,13 @@ const LandingPage = () => {
               href="#fleet" 
               className="bg-green-600 hover:bg-green-700 text-white px-8 py-4 rounded-lg text-lg font-semibold transition-all duration-300 shadow-lg hover:shadow-xl hover:scale-105"
             >
-              Pogledaj vozni park
+              {t('hero.viewFleet')}
             </a>
             <a 
               href="#contact" 
               className="bg-white/10 backdrop-blur-sm hover:bg-white/20 text-white border-2 border-white/50 px-8 py-4 rounded-lg text-lg font-semibold transition-all duration-300 shadow-lg hover:shadow-xl hover:scale-105"
             >
-              Kontaktirajte nas
+              {t('hero.contact')}
             </a>
           </div>
         </div>
@@ -195,10 +202,10 @@ const LandingPage = () => {
         <div className="max-w-6xl mx-auto">
           <div className="text-center mb-16">
             <h2 className="text-3xl md:text-4xl font-bold text-gray-900 mb-4">
-              Naše usluge
+              {t('services.title')}
             </h2>
             <p className="text-lg text-gray-600 max-w-2xl mx-auto">
-              Pružamo pouzdane usluge prevoza prilagođene vašim potrebama
+              {t('services.subtitle')}
             </p>
           </div>
 
@@ -208,10 +215,9 @@ const LandingPage = () => {
                 <div className="w-16 h-16 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-6 group-hover:bg-green-200 transition-colors">
                   <Route className="h-8 w-8 text-green-600" />
                 </div>
-                <h3 className="text-2xl font-bold text-gray-900 mb-4">Linijski prevoz</h3>
+                <h3 className="text-2xl font-bold text-gray-900 mb-4">{t('services.regular.title')}</h3>
                 <p className="text-gray-600 leading-relaxed">
-                  Linijski prevoz putnika na lokalnim linijama. Pouzdane i redovne rute za 
-                  svakodnevne potrebe naših putnika.
+                  {t('services.regular.desc')}
                 </p>
               </CardContent>
             </Card>
@@ -221,10 +227,9 @@ const LandingPage = () => {
                 <div className="w-16 h-16 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-6 group-hover:bg-green-200 transition-colors">
                   <Calendar className="h-8 w-8 text-green-600" />
                 </div>
-                <h3 className="text-2xl font-bold text-gray-900 mb-4">Vanlinijski prevoz</h3>
+                <h3 className="text-2xl font-bold text-gray-900 mb-4">{t('services.charter.title')}</h3>
                 <p className="text-gray-600 leading-relaxed">
-                  Organizovani vanlinijski prevoz za ekskurzije, jednodnevne izlete, poslovna i 
-                  turistička putovanja. Fleksibilni termini i destinacije.
+                  {t('services.charter.desc')}
                 </p>
               </CardContent>
             </Card>
@@ -237,16 +242,16 @@ const LandingPage = () => {
         <div className="max-w-6xl mx-auto">
           <div className="text-center mb-16">
             <h2 className="text-3xl md:text-4xl font-bold text-gray-900 mb-4">
-              Vozni park
+              {t('fleet.title')}
             </h2>
             <p className="text-lg text-gray-600 max-w-2xl mx-auto">
-              Moderni i sigurni autobusi za sva vaša putovanja
+              {t('fleet.subtitle')}
             </p>
           </div>
 
           {loading ? (
             <div className="text-center py-12">
-              <p className="text-gray-500">Učitavanje voznog parka...</p>
+              <p className="text-gray-500">{t('fleet.loading')}</p>
             </div>
           ) : (
             <div className="space-y-8">
@@ -260,18 +265,12 @@ const LandingPage = () => {
                       key={vehicle.id} 
                       className="group hover:shadow-xl transition-all duration-300 overflow-hidden w-full shadow-sm border-2 hover:border-green-200 rounded-lg"
                     >
-                      <div className="aspect-video bg-gray-100 overflow-hidden rounded-t-lg flex items-center justify-center p-4">
+                      <div className="aspect-video bg-gray-100 overflow-hidden rounded-t-lg">
                         {vehicleImage ? (
                           <img 
                             src={vehicleImage}
                             alt={`${vehicle.brand} ${vehicle.model} - Drina Bus`}
-                            className={`w-full h-full transition-transform duration-300 ${
-                              vehicle.brand === 'Mercedes' && vehicle.model === 'Vito' 
-                                ? 'object-contain group-hover:scale-110' 
-                                : vehicle.brand === 'Neoplan' && vehicle.registration === 'T17-M-331'
-                                ? 'object-contain scale-110 group-hover:scale-125'
-                                : 'object-cover group-hover:scale-105'
-                            }`}
+                            className="w-full h-full object-cover object-center group-hover:scale-105 transition-transform duration-300"
                             loading="lazy"
                             width="400"
                             height="225"
@@ -282,7 +281,7 @@ const LandingPage = () => {
                                 <div class="w-full h-full bg-gradient-to-br from-green-400 to-emerald-600 flex items-center justify-center">
                                   <div class="text-white text-center">
                                     <div class="text-4xl mb-2">🚌</div>
-                                    <p class="text-sm opacity-80">Slika autobusa</p>
+                                    <p class="text-sm opacity-80">${t('fleet.busImage')}</p>
                                   </div>
                                 </div>
                               `;
@@ -292,7 +291,7 @@ const LandingPage = () => {
                           <div className="w-full h-full bg-gradient-to-br from-green-400 to-emerald-600 flex items-center justify-center">
                             <div className="text-white text-center">
                               <div className="text-4xl mb-2">🚌</div>
-                              <p className="text-sm opacity-80">Slika autobusa</p>
+                              <p className="text-sm opacity-80">{t('fleet.busImage')}</p>
                             </div>
                           </div>
                         )}
@@ -309,7 +308,7 @@ const LandingPage = () => {
                         <div className="flex items-center gap-2 mb-3">
                           <Badge variant="secondary" className="flex items-center gap-1">
                             <Users className="h-3 w-3" />
-                            {getAdjustedCapacity(vehicle.seats)} sjedišta
+                            {getAdjustedCapacity(vehicle.seats)} {t('fleet.seats')}
                           </Badge>
                         </div>
                         <p className="text-gray-600 text-sm leading-relaxed">
@@ -333,18 +332,12 @@ const LandingPage = () => {
                           key={vehicle.id} 
                           className="group hover:shadow-xl transition-all duration-300 overflow-hidden w-full shadow-sm border-2 hover:border-green-200 rounded-lg"
                         >
-                          <div className="aspect-video bg-gray-100 overflow-hidden rounded-t-lg flex items-center justify-center p-4">
+                          <div className="aspect-video bg-gray-100 overflow-hidden rounded-t-lg">
                             {vehicleImage ? (
                               <img 
                                 src={vehicleImage}
                                 alt={`${vehicle.brand} ${vehicle.model} - Drina Bus`}
-                                className={`w-full h-full transition-transform duration-300 ${
-                                  vehicle.brand === 'Mercedes' && vehicle.model === 'Vito' 
-                                    ? 'object-contain group-hover:scale-110' 
-                                    : vehicle.brand === 'Neoplan' && vehicle.registration === 'T17-M-331'
-                                    ? 'object-contain scale-110 group-hover:scale-125'
-                                    : 'object-cover group-hover:scale-105'
-                                }`}
+                                className="w-full h-full object-cover object-center group-hover:scale-105 transition-transform duration-300"
                                 loading="lazy"
                                 width="400"
                                 height="225"
@@ -355,7 +348,7 @@ const LandingPage = () => {
                                     <div class="w-full h-full bg-gradient-to-br from-green-400 to-emerald-600 flex items-center justify-center">
                                       <div class="text-white text-center">
                                         <div class="text-4xl mb-2">🚌</div>
-                                        <p class="text-sm opacity-80">Slika autobusa</p>
+                                        <p class="text-sm opacity-80">${t('fleet.busImage')}</p>
                                       </div>
                                     </div>
                                   `;
@@ -365,7 +358,7 @@ const LandingPage = () => {
                               <div className="w-full h-full bg-gradient-to-br from-green-400 to-emerald-600 flex items-center justify-center">
                                 <div className="text-white text-center">
                                   <div className="text-4xl mb-2">🚌</div>
-                                  <p className="text-sm opacity-80">Slika autobusa</p>
+                                  <p className="text-sm opacity-80">{t('fleet.busImage')}</p>
                                 </div>
                               </div>
                             )}
@@ -382,7 +375,7 @@ const LandingPage = () => {
                             <div className="flex items-center gap-2 mb-3">
                               <Badge variant="secondary" className="flex items-center gap-1">
                                 <Users className="h-3 w-3" />
-                                {getAdjustedCapacity(vehicle.seats)} sjedišta
+                                {getAdjustedCapacity(vehicle.seats)} {t('fleet.seats')}
                               </Badge>
                             </div>
                             <p className="text-gray-600 text-sm leading-relaxed">
@@ -404,17 +397,14 @@ const LandingPage = () => {
       <section className="py-20 px-6 bg-white">
         <div className="max-w-4xl mx-auto text-center">
           <h2 className="text-3xl md:text-4xl font-bold text-gray-900 mb-8">
-            O nama
+            {t('about.title')}
           </h2>
           <div className="prose prose-lg mx-auto text-gray-600 leading-relaxed">
             <p className="text-lg mb-6">
-              Drina Bus je porodična firma iz Ustikoline, specijalizovana za linijski i vanlinijski 
-              prevoz putnika. Naša misija je pružiti sigurno, udobno i pristupačno putovanje, bilo da 
-              se radi o svakodnevnim linijama ili posebnim putovanjima za grupe, ekskurzije i turiste.
+              {t('about.text1')}
             </p>
             <p className="text-lg">
-              Sa dugogodišnjim iskustvom, modernim voznim parkom i profesionalnim vozačima, 
-              Drina Bus je pouzdan partner na svakom putovanju.
+              {t('about.text2')}
             </p>
           </div>
         </div>
@@ -425,10 +415,10 @@ const LandingPage = () => {
         <div className="max-w-6xl mx-auto">
           <div className="text-center mb-16">
             <h2 className="text-3xl md:text-4xl font-bold text-gray-900 mb-4">
-              Galerija
+              {t('gallery.title')}
             </h2>
             <p className="text-lg text-gray-600 max-w-2xl mx-auto">
-              Pogledajte naš vozni park i udobnost naših autobusa
+              {t('gallery.subtitle')}
             </p>
           </div>
 
@@ -462,10 +452,10 @@ const LandingPage = () => {
         <div className="max-w-6xl mx-auto">
           <div className="text-center mb-16">
             <h2 className="text-3xl md:text-4xl font-bold mb-4">
-              Kontakt
+              {t('contact.title')}
             </h2>
             <p className="text-xl opacity-90 max-w-2xl mx-auto">
-              Kontaktirajte nas za sve informacije o našim uslugama
+              {t('contact.subtitle')}
             </p>
           </div>
 
@@ -474,15 +464,15 @@ const LandingPage = () => {
               <div className="w-16 h-16 bg-green-700 rounded-full flex items-center justify-center mx-auto mb-4">
                 <MapPin className="h-8 w-8" />
               </div>
-              <h3 className="font-bold text-lg mb-2">Lokacija</h3>
-              <p className="opacity-90">Ustikolina, BiH</p>
+              <h3 className="font-bold text-lg mb-2">{t('contact.location')}</h3>
+              <p className="opacity-90">{t('contact.addressValue')}</p>
             </div>
 
             <div className="text-center">
               <div className="w-16 h-16 bg-green-700 rounded-full flex items-center justify-center mx-auto mb-4">
                 <Phone className="h-8 w-8" />
               </div>
-              <h3 className="font-bold text-lg mb-2">Telefon</h3>
+              <h3 className="font-bold text-lg mb-2">{t('contact.phone')}</h3>
               <p className="opacity-90">+387 62 888 702</p>
             </div>
 
@@ -490,7 +480,7 @@ const LandingPage = () => {
               <div className="w-16 h-16 bg-green-700 rounded-full flex items-center justify-center mx-auto mb-4">
                 <Mail className="h-8 w-8" />
               </div>
-              <h3 className="font-bold text-lg mb-2">Email</h3>
+              <h3 className="font-bold text-lg mb-2">{t('contact.email')}</h3>
               <p className="opacity-90">drinabus@hotmail.com</p>
             </div>
 
@@ -498,7 +488,7 @@ const LandingPage = () => {
               <div className="w-16 h-16 bg-green-700 rounded-full flex items-center justify-center mx-auto mb-4">
                 <Instagram className="h-8 w-8" />
               </div>
-              <h3 className="font-bold text-lg mb-2">Instagram</h3>
+              <h3 className="font-bold text-lg mb-2">{t('contact.instagram')}</h3>
               <p className="opacity-90">@drinabus</p>
             </div>
           </div>
@@ -509,7 +499,7 @@ const LandingPage = () => {
       <footer className="py-8 bg-green-950 text-white text-center">
         <div className="max-w-6xl mx-auto px-6">
           <p className="opacity-80">
-            © 2025 Drina Bus – Sva prava zadržana.
+            © 2025 Drina Bus – {t('footer.rights')}
           </p>
         </div>
       </footer>
