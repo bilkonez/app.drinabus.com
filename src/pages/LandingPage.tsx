@@ -36,7 +36,7 @@ const getVehicleImageFromUploads = (vehicle: Vehicle): string => {
       return '/lovable-uploads/d35b41af-f340-499b-926a-af278cefaf0e.png';
     }
     if (registration === 'T17-M-331') {
-      return '/lovable-uploads/8bb9aa36-5a2f-42ad-a745-79b983ddcf2a.png';
+      return '/lovable-uploads/neoplan-cityliner-t17.jpg';
     }
   }
   if (brand === 'Otokar' && model === 'Sultan') {
