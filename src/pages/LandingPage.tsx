@@ -181,7 +181,7 @@ const LandingPage = () => {
               className="cursor-pointer"
             >
               <img 
-                src="/lovable-uploads/drina-bus-logo-transparent.png" 
+                src="/lovable-uploads/drina-bus-logo-hq.png" 
                 alt="Drina Bus Logo" 
                 className="h-12 w-auto drop-shadow-lg hover:opacity-90 transition-opacity"
               />
@@ -242,21 +242,21 @@ const LandingPage = () => {
           {/* Logo */}
           <div className="mb-8 flex justify-center animate-fade-in">
             <img 
-              src="/lovable-uploads/drina-bus-logo-transparent.png" 
+              src="/lovable-uploads/drina-bus-logo-hq.png" 
               alt="Drina Bus" 
               className="h-32 w-auto drop-shadow-2xl"
             />
           </div>
           
-          <h1 className="text-5xl md:text-6xl lg:text-8xl font-bold mb-8 leading-tight drop-shadow-2xl">
+          <h1 className="text-5xl md:text-6xl lg:text-8xl font-bold mb-8 leading-tight drop-shadow-2xl animate-fade-in" style={{ animationDelay: '0.2s', animationFillMode: 'both' }}>
             {t('hero.title')}
           </h1>
           
-          <p className="text-2xl md:text-3xl lg:text-4xl font-light mb-12 text-white/95">
+          <p className="text-2xl md:text-3xl lg:text-4xl font-light mb-12 text-white/95 animate-fade-in" style={{ animationDelay: '0.4s', animationFillMode: 'both' }}>
             {t('hero.subtitle')}
           </p>
 
-          <div className="flex flex-col sm:flex-row gap-6 justify-center items-center">
+          <div className="flex flex-col sm:flex-row gap-6 justify-center items-center animate-fade-in" style={{ animationDelay: '0.6s', animationFillMode: 'both' }}>
             <a 
               href="#fleet" 
               className="bg-green-600 hover:bg-green-700 text-white px-8 py-4 rounded-lg text-lg font-semibold transition-all duration-300 shadow-lg hover:shadow-xl hover:scale-105"
