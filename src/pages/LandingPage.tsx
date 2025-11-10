@@ -3,7 +3,8 @@ import { Card, CardContent } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Dialog, DialogContent } from '@/components/ui/dialog';
 import { supabase } from '@/integrations/supabase/client';
-import { Phone, Mail, Instagram, MapPin, Users, Route, Calendar, X } from 'lucide-react';
+import { Phone, Mail, Instagram, MapPin, Users, Route, Calendar, X, GraduationCap, Compass, Briefcase, Plane, HeartHandshake, Globe } from 'lucide-react';
+import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from '@/components/ui/accordion';
 import heroBackground from '@/assets/hero-river-bus.jpg';
 import WhatsAppButton from '@/components/ui/WhatsAppButton';
 import { useLanguage } from '@/contexts/LanguageContext';
@@ -353,6 +354,104 @@ const LandingPage = () => {
         </div>
       </section>
 
+      {/* Detailed Services Section */}
+      <section className="py-20 px-6 bg-gradient-to-br from-green-50 to-emerald-50 relative overflow-hidden">
+        <div className="absolute inset-0 opacity-5 bg-repeat" style={{ 
+          backgroundImage: `url("data:image/svg+xml,%3Csvg width='40' height='40' viewBox='0 0 40 40' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M20 20.5V18H0v-2h20v-2H0v-2h20v-2H0V8h20V6H0V4h20V2H0V0h22v20h2V0h2v20h2V0h2v20h2V0h2v20h2V0h2v20h2v2H20v-1.5zM0 20h2v20H0V20zm4 0h2v20H4V20zm4 0h2v20H8V20zm4 0h2v20h-2V20zm4 0h2v20h-2V20zm4 4h20v2H20v-2zm0 4h20v2H20v-2zm0 4h20v2H20v-2zm0 4h20v2H20v-2z' fill='%23059669' fill-opacity='1' fill-rule='evenodd'/%3E%3C/svg%3E")`,
+        }} />
+        
+        <div className="max-w-7xl mx-auto relative">
+          <div className="text-center mb-16">
+            <h2 className="text-3xl md:text-4xl lg:text-5xl font-bold text-gray-900 mb-4">
+              {t('detailedServices.title')}
+            </h2>
+            <p className="text-lg text-gray-600 max-w-3xl mx-auto">
+              {t('detailedServices.subtitle')}
+            </p>
+          </div>
+
+          <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
+            {/* School Excursions */}
+            <Card className="group hover:shadow-2xl transition-all duration-300 border-2 hover:border-green-300 bg-white/80 backdrop-blur-sm">
+              <CardContent className="p-8">
+                <div className="w-16 h-16 bg-gradient-to-br from-green-500 to-emerald-600 rounded-2xl flex items-center justify-center mx-auto mb-6 group-hover:scale-110 transition-transform shadow-lg">
+                  <GraduationCap className="h-8 w-8 text-white" />
+                </div>
+                <h3 className="text-xl font-bold text-gray-900 mb-3 text-center">{t('detailedServices.excursions.title')}</h3>
+                <p className="text-gray-600 leading-relaxed text-center">
+                  {t('detailedServices.excursions.desc')}
+                </p>
+              </CardContent>
+            </Card>
+
+            {/* Day Trips */}
+            <Card className="group hover:shadow-2xl transition-all duration-300 border-2 hover:border-green-300 bg-white/80 backdrop-blur-sm">
+              <CardContent className="p-8">
+                <div className="w-16 h-16 bg-gradient-to-br from-emerald-500 to-green-600 rounded-2xl flex items-center justify-center mx-auto mb-6 group-hover:scale-110 transition-transform shadow-lg">
+                  <Compass className="h-8 w-8 text-white" />
+                </div>
+                <h3 className="text-xl font-bold text-gray-900 mb-3 text-center">{t('detailedServices.dayTrips.title')}</h3>
+                <p className="text-gray-600 leading-relaxed text-center">
+                  {t('detailedServices.dayTrips.desc')}
+                </p>
+              </CardContent>
+            </Card>
+
+            {/* Corporate Transport */}
+            <Card className="group hover:shadow-2xl transition-all duration-300 border-2 hover:border-green-300 bg-white/80 backdrop-blur-sm">
+              <CardContent className="p-8">
+                <div className="w-16 h-16 bg-gradient-to-br from-green-600 to-emerald-700 rounded-2xl flex items-center justify-center mx-auto mb-6 group-hover:scale-110 transition-transform shadow-lg">
+                  <Briefcase className="h-8 w-8 text-white" />
+                </div>
+                <h3 className="text-xl font-bold text-gray-900 mb-3 text-center">{t('detailedServices.corporate.title')}</h3>
+                <p className="text-gray-600 leading-relaxed text-center">
+                  {t('detailedServices.corporate.desc')}
+                </p>
+              </CardContent>
+            </Card>
+
+            {/* International Charter */}
+            <Card className="group hover:shadow-2xl transition-all duration-300 border-2 hover:border-green-300 bg-white/80 backdrop-blur-sm">
+              <CardContent className="p-8">
+                <div className="w-16 h-16 bg-gradient-to-br from-emerald-600 to-green-700 rounded-2xl flex items-center justify-center mx-auto mb-6 group-hover:scale-110 transition-transform shadow-lg">
+                  <Globe className="h-8 w-8 text-white" />
+                </div>
+                <h3 className="text-xl font-bold text-gray-900 mb-3 text-center">{t('detailedServices.international.title')}</h3>
+                <p className="text-gray-600 leading-relaxed text-center">
+                  {t('detailedServices.international.desc')}
+                </p>
+              </CardContent>
+            </Card>
+
+            {/* Airport Transfer */}
+            <Card className="group hover:shadow-2xl transition-all duration-300 border-2 hover:border-green-300 bg-white/80 backdrop-blur-sm">
+              <CardContent className="p-8">
+                <div className="w-16 h-16 bg-gradient-to-br from-green-500 to-emerald-500 rounded-2xl flex items-center justify-center mx-auto mb-6 group-hover:scale-110 transition-transform shadow-lg">
+                  <Plane className="h-8 w-8 text-white" />
+                </div>
+                <h3 className="text-xl font-bold text-gray-900 mb-3 text-center">{t('detailedServices.airport.title')}</h3>
+                <p className="text-gray-600 leading-relaxed text-center">
+                  {t('detailedServices.airport.desc')}
+                </p>
+              </CardContent>
+            </Card>
+
+            {/* Weddings & Events */}
+            <Card className="group hover:shadow-2xl transition-all duration-300 border-2 hover:border-green-300 bg-white/80 backdrop-blur-sm">
+              <CardContent className="p-8">
+                <div className="w-16 h-16 bg-gradient-to-br from-emerald-500 to-green-600 rounded-2xl flex items-center justify-center mx-auto mb-6 group-hover:scale-110 transition-transform shadow-lg">
+                  <HeartHandshake className="h-8 w-8 text-white" />
+                </div>
+                <h3 className="text-xl font-bold text-gray-900 mb-3 text-center">{t('detailedServices.events.title')}</h3>
+                <p className="text-gray-600 leading-relaxed text-center">
+                  {t('detailedServices.events.desc')}
+                </p>
+              </CardContent>
+            </Card>
+          </div>
+        </div>
+      </section>
+
       {/* Fleet Section */}
       <section id="fleet" className="py-20 px-6 bg-gray-50 scroll-mt-20">
         <div className="max-w-6xl mx-auto">
@@ -584,6 +683,76 @@ const LandingPage = () => {
               </div>
             ))}
           </div>
+        </div>
+      </section>
+
+      {/* FAQ Section */}
+      <section className="py-20 px-6 bg-white">
+        <div className="max-w-4xl mx-auto">
+          <div className="text-center mb-16">
+            <h2 className="text-3xl md:text-4xl lg:text-5xl font-bold text-gray-900 mb-4">
+              {t('faq.title')}
+            </h2>
+            <p className="text-lg text-gray-600 max-w-2xl mx-auto">
+              {t('faq.subtitle')}
+            </p>
+          </div>
+
+          <Accordion type="single" collapsible className="space-y-4">
+            <AccordionItem value="item-1" className="border-2 border-gray-200 rounded-lg px-6 hover:border-green-300 transition-colors">
+              <AccordionTrigger className="text-left text-lg font-semibold text-gray-900 hover:text-green-600">
+                {t('faq.q1')}
+              </AccordionTrigger>
+              <AccordionContent className="text-gray-600 leading-relaxed pt-4">
+                {t('faq.a1')}
+              </AccordionContent>
+            </AccordionItem>
+
+            <AccordionItem value="item-2" className="border-2 border-gray-200 rounded-lg px-6 hover:border-green-300 transition-colors">
+              <AccordionTrigger className="text-left text-lg font-semibold text-gray-900 hover:text-green-600">
+                {t('faq.q2')}
+              </AccordionTrigger>
+              <AccordionContent className="text-gray-600 leading-relaxed pt-4">
+                {t('faq.a2')}
+              </AccordionContent>
+            </AccordionItem>
+
+            <AccordionItem value="item-3" className="border-2 border-gray-200 rounded-lg px-6 hover:border-green-300 transition-colors">
+              <AccordionTrigger className="text-left text-lg font-semibold text-gray-900 hover:text-green-600">
+                {t('faq.q3')}
+              </AccordionTrigger>
+              <AccordionContent className="text-gray-600 leading-relaxed pt-4">
+                {t('faq.a3')}
+              </AccordionContent>
+            </AccordionItem>
+
+            <AccordionItem value="item-4" className="border-2 border-gray-200 rounded-lg px-6 hover:border-green-300 transition-colors">
+              <AccordionTrigger className="text-left text-lg font-semibold text-gray-900 hover:text-green-600">
+                {t('faq.q4')}
+              </AccordionTrigger>
+              <AccordionContent className="text-gray-600 leading-relaxed pt-4">
+                {t('faq.a4')}
+              </AccordionContent>
+            </AccordionItem>
+
+            <AccordionItem value="item-5" className="border-2 border-gray-200 rounded-lg px-6 hover:border-green-300 transition-colors">
+              <AccordionTrigger className="text-left text-lg font-semibold text-gray-900 hover:text-green-600">
+                {t('faq.q5')}
+              </AccordionTrigger>
+              <AccordionContent className="text-gray-600 leading-relaxed pt-4">
+                {t('faq.a5')}
+              </AccordionContent>
+            </AccordionItem>
+
+            <AccordionItem value="item-6" className="border-2 border-gray-200 rounded-lg px-6 hover:border-green-300 transition-colors">
+              <AccordionTrigger className="text-left text-lg font-semibold text-gray-900 hover:text-green-600">
+                {t('faq.q6')}
+              </AccordionTrigger>
+              <AccordionContent className="text-gray-600 leading-relaxed pt-4">
+                {t('faq.a6')}
+              </AccordionContent>
+            </AccordionItem>
+          </Accordion>
         </div>
       </section>
 
