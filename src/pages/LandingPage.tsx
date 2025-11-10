@@ -6,7 +6,6 @@ import { supabase } from '@/integrations/supabase/client';
 import { Phone, Mail, Instagram, MapPin, Users, Route, Calendar, X } from 'lucide-react';
 import heroBackground from '@/assets/hero-river-bus.jpg';
 import WhatsAppButton from '@/components/ui/WhatsAppButton';
-import LanguageSwitcher from '@/components/ui/LanguageSwitcher';
 import { useLanguage } from '@/contexts/LanguageContext';
 
 interface Vehicle {
@@ -37,7 +36,7 @@ const getVehicleImageFromUploads = (vehicle: Vehicle): string => {
       return '/lovable-uploads/d35b41af-f340-499b-926a-af278cefaf0e.png';
     }
     if (registration === 'T17-M-331') {
-      return '/lovable-uploads/8bb9aa36-5a2f-42ad-a745-79b983ddcf2a.png';
+      return '/lovable-uploads/neoplan-cityliner-2.JPG';
     }
   }
   if (brand === 'Otokar' && model === 'Sultan') {
@@ -49,8 +48,28 @@ const getVehicleImageFromUploads = (vehicle: Vehicle): string => {
   return '';
 };
 
+// Function to get object position for each vehicle to center them properly
+const getVehicleImagePosition = (vehicle: Vehicle): string => {
+  const brand = vehicle.brand?.trim();
+  const model = vehicle.model?.trim();
+  const registration = vehicle.registration?.trim();
+  
+  // Mercedes Vito needs to be positioned higher
+  if (brand === 'Mercedes' && model === 'Vito') {
+    return 'center 25%';
+  }
+  
+  // Neoplan A36 needs to be positioned higher
+  if (brand === 'Neoplan' && model === 'Cityliner' && registration === 'A36-E-349') {
+    return 'center 30%';
+  }
+  
+  // Default center positioning
+  return 'center 40%';
+};
+
 const LandingPage = () => {
-  const { t } = useLanguage();
+  const { t, language, setLanguage } = useLanguage();
   const [vehicles, setVehicles] = useState<Vehicle[]>([]);
   const [galleryImages, setGalleryImages] = useState<GalleryImage[]>([]);
   const [selectedImage, setSelectedImage] = useState<string | null>(null);
@@ -149,7 +168,7 @@ const LandingPage = () => {
         <div className="max-w-7xl mx-auto px-6 py-4">
           <div className="flex items-center justify-between">
             <img 
-              src="/lovable-uploads/drina-bus-logo-hq.png" 
+              src="/lovable-uploads/drina-bus-logo-transparent.png" 
               alt="Drina Bus Logo" 
               className="h-12 w-auto"
             />
@@ -178,12 +197,17 @@ const LandingPage = () => {
               >
                 {t('nav.contact')}
               </a>
+              <button
+                onClick={() => setLanguage(language === 'sr' ? 'en' : 'sr')}
+                className="flex items-center gap-2 text-gray-700 hover:text-green-600 font-medium transition-colors duration-200 border-l border-gray-300 pl-6"
+              >
+                <span className="text-sm">{language === 'sr' ? 'EN' : 'BH'}</span>
+              </button>
             </div>
           </div>
         </div>
       </nav>
 
-      <LanguageSwitcher />
       <WhatsAppButton />
       
       {/* Hero Section */}
@@ -199,7 +223,7 @@ const LandingPage = () => {
         <div className="relative z-10 text-center text-white max-w-5xl mx-auto px-6 py-20">
           <div className="mb-12 animate-fade-in">
             <img 
-              src="/lovable-uploads/drina-bus-logo-hq.png" 
+              src="/lovable-uploads/drina-bus-logo-transparent.png" 
               alt="Drina Bus Logo" 
               className="h-32 md:h-40 w-auto mx-auto mb-8 drop-shadow-2xl"
             />
@@ -297,6 +321,7 @@ const LandingPage = () => {
               <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 lg:gap-8">
                 {vehicles.slice(0, 3).map((vehicle) => {
                   const vehicleImage = getVehicleImageFromUploads(vehicle);
+                  const imagePosition = getVehicleImagePosition(vehicle);
                   
                   return (
                     <Card 
@@ -308,8 +333,8 @@ const LandingPage = () => {
                           <img 
                             src={vehicleImage}
                             alt={`${vehicle.brand} ${vehicle.model} - Drina Bus`}
-                            className="w-full h-full object-cover object-center group-hover:scale-110 transition-transform duration-300"
-                            style={{ objectPosition: 'center 40%' }}
+                            className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-300"
+                            style={{ objectPosition: imagePosition }}
                             loading="lazy"
                             width="400"
                             height="225"
@@ -365,6 +390,7 @@ const LandingPage = () => {
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-6 lg:gap-8 max-w-2xl">
                     {vehicles.slice(3, 5).map((vehicle) => {
                       const vehicleImage = getVehicleImageFromUploads(vehicle);
+                      const imagePosition = getVehicleImagePosition(vehicle);
                       
                       return (
                         <Card 
@@ -376,8 +402,8 @@ const LandingPage = () => {
                               <img 
                                 src={vehicleImage}
                                 alt={`${vehicle.brand} ${vehicle.model} - Drina Bus`}
-                                className="w-full h-full object-cover object-center group-hover:scale-110 transition-transform duration-300"
-                                style={{ objectPosition: 'center 40%' }}
+                                className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-300"
+                                style={{ objectPosition: imagePosition }}
                                 loading="lazy"
                                 width="400"
                                 height="225"
