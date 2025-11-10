@@ -181,9 +181,10 @@ const LandingPage = () => {
               className="cursor-pointer"
             >
               <img 
-                src="/lovable-uploads/drina-bus-logo-hq.png" 
+                src="/lovable-uploads/drina-bus-logo-transparent.png" 
                 alt="Drina Bus Logo" 
                 className="h-12 w-auto drop-shadow-lg hover:opacity-90 transition-opacity"
+                style={{ filter: 'contrast(1.2) brightness(0.95) saturate(1.1)' }}
               />
             </a>
             <div className="flex items-center gap-8">
@@ -242,9 +243,10 @@ const LandingPage = () => {
           {/* Logo */}
           <div className="mb-8 flex justify-center animate-fade-in">
             <img 
-              src="/lovable-uploads/drina-bus-logo-hq.png" 
+              src="/lovable-uploads/drina-bus-logo-transparent.png" 
               alt="Drina Bus" 
               className="h-32 w-auto drop-shadow-2xl"
+              style={{ filter: 'contrast(1.2) brightness(0.95) saturate(1.1)' }}
             />
           </div>
           
