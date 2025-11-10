@@ -4,7 +4,7 @@ import { Badge } from '@/components/ui/badge';
 import { Dialog, DialogContent } from '@/components/ui/dialog';
 import { supabase } from '@/integrations/supabase/client';
 import { Phone, Mail, Instagram, MapPin, Users, Route, Calendar, X } from 'lucide-react';
-import heroBackground from '@/assets/hero-drina-bus.jpg';
+import heroBackground from '@/assets/hero-neoplan.jpg';
 import WhatsAppButton from '@/components/ui/WhatsAppButton';
 import { useLanguage } from '@/contexts/LanguageContext';
 
@@ -59,9 +59,9 @@ const getVehicleImagePosition = (vehicle: Vehicle): string => {
     return 'center 70%';
   }
   
-  // Neoplan A36 - kontra smjer (gore umjesto dolje)
+  // Neoplan A36 - pomaknut još 10% prema gore (sa 25% na 15%)
   if (brand === 'Neoplan' && model === 'Cityliner' && registration === 'A36-E-349') {
-    return 'center 25%';
+    return 'center 15%';
   }
   
   // Neoplan T17 - same as Vito (70%)
