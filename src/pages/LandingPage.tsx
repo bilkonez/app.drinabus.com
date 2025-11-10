@@ -257,16 +257,16 @@ const LandingPage = () => {
         <div className="relative z-10 text-center text-white max-w-6xl mx-auto px-6 py-20">
           {/* Logo with creative white banner */}
           <div className="mb-12 flex justify-center animate-fade-in">
-            <div className="relative px-16 py-8 bg-white rounded-2xl shadow-2xl transform hover:scale-105 transition-transform duration-300">
+            <div className="relative px-16 py-8 bg-white rounded-2xl shadow-2xl transform hover:scale-105 transition-transform duration-300 animate-scale-in" style={{ animationDelay: '0.1s', animationFillMode: 'both' }}>
               {/* Green accent lines */}
-              <div className="absolute -top-1 left-8 right-8 h-1 bg-gradient-to-r from-transparent via-green-600 to-transparent rounded-full" />
-              <div className="absolute -bottom-1 left-8 right-8 h-1 bg-gradient-to-r from-transparent via-emerald-600 to-transparent rounded-full" />
+              <div className="absolute -top-1 left-8 right-8 h-1 bg-gradient-to-r from-transparent via-green-600 to-transparent rounded-full animate-fade-in" style={{ animationDelay: '0.5s', animationFillMode: 'both' }} />
+              <div className="absolute -bottom-1 left-8 right-8 h-1 bg-gradient-to-r from-transparent via-emerald-600 to-transparent rounded-full animate-fade-in" style={{ animationDelay: '0.5s', animationFillMode: 'both' }} />
               
               {/* Decorative corner elements */}
-              <div className="absolute -top-2 -left-2 w-4 h-4 border-t-2 border-l-2 border-green-600 rounded-tl-lg" />
-              <div className="absolute -top-2 -right-2 w-4 h-4 border-t-2 border-r-2 border-green-600 rounded-tr-lg" />
-              <div className="absolute -bottom-2 -left-2 w-4 h-4 border-b-2 border-l-2 border-emerald-600 rounded-bl-lg" />
-              <div className="absolute -bottom-2 -right-2 w-4 h-4 border-b-2 border-r-2 border-emerald-600 rounded-br-lg" />
+              <div className="absolute -top-2 -left-2 w-4 h-4 border-t-2 border-l-2 border-green-600 rounded-tl-lg animate-fade-in" style={{ animationDelay: '0.6s', animationFillMode: 'both' }} />
+              <div className="absolute -top-2 -right-2 w-4 h-4 border-t-2 border-r-2 border-green-600 rounded-tr-lg animate-fade-in" style={{ animationDelay: '0.6s', animationFillMode: 'both' }} />
+              <div className="absolute -bottom-2 -left-2 w-4 h-4 border-b-2 border-l-2 border-emerald-600 rounded-bl-lg animate-fade-in" style={{ animationDelay: '0.7s', animationFillMode: 'both' }} />
+              <div className="absolute -bottom-2 -right-2 w-4 h-4 border-b-2 border-r-2 border-emerald-600 rounded-br-lg animate-fade-in" style={{ animationDelay: '0.7s', animationFillMode: 'both' }} />
               
               {/* Subtle pattern background */}
               <div className="absolute inset-0 opacity-5 rounded-2xl" style={{
@@ -277,7 +277,8 @@ const LandingPage = () => {
               <img 
                 src="/lovable-uploads/drina-bus-logo-transparent.png" 
                 alt="Drina Bus" 
-                className="relative h-24 md:h-32 w-auto"
+                className="relative h-24 md:h-32 w-auto animate-fade-in"
+                style={{ animationDelay: '0.3s', animationFillMode: 'both' }}
               />
             </div>
           </div>
