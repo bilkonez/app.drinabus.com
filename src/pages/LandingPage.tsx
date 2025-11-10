@@ -36,7 +36,7 @@ const getVehicleImageFromUploads = (vehicle: Vehicle): string => {
       return '/lovable-uploads/d35b41af-f340-499b-926a-af278cefaf0e.png';
     }
     if (registration === 'T17-M-331') {
-      return '/lovable-uploads/neoplan-cityliner-2.JPG';
+      return '/lovable-uploads/8bb9aa36-5a2f-42ad-a745-79b983ddcf2a.png';
     }
   }
   if (brand === 'Otokar' && model === 'Sultan') {
@@ -54,14 +54,14 @@ const getVehicleImagePosition = (vehicle: Vehicle): string => {
   const model = vehicle.model?.trim();
   const registration = vehicle.registration?.trim();
   
-  // Mercedes Vito needs to be positioned higher
+  // Mercedes Vito needs to be positioned higher (towards top)
   if (brand === 'Mercedes' && model === 'Vito') {
-    return 'center 25%';
+    return 'center 20%';
   }
   
-  // Neoplan A36 needs to be positioned higher
+  // Neoplan A36 needs to be positioned higher (towards top)
   if (brand === 'Neoplan' && model === 'Cityliner' && registration === 'A36-E-349') {
-    return 'center 30%';
+    return 'center 25%';
   }
   
   // Default center positioning
@@ -164,14 +164,12 @@ const LandingPage = () => {
   return (
     <div className="min-h-screen bg-background">
       {/* Navigation Bar */}
-      <nav className="fixed top-0 left-0 right-0 z-50 bg-white/95 backdrop-blur-sm shadow-md">
+      <nav className="fixed top-0 left-0 right-0 z-50 bg-white/80 backdrop-blur-md shadow-sm border-b border-gray-200/50">
         <div className="max-w-7xl mx-auto px-6 py-4">
           <div className="flex items-center justify-between">
-            <img 
-              src="/lovable-uploads/drina-bus-logo-transparent.png" 
-              alt="Drina Bus Logo" 
-              className="h-12 w-auto"
-            />
+            <h1 className="text-2xl font-bold bg-gradient-to-r from-green-600 to-emerald-600 bg-clip-text text-transparent">
+              DRINA BUS
+            </h1>
             <div className="flex items-center gap-8">
               <a 
                 href="#fleet" 
