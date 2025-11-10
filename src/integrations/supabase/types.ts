@@ -737,14 +737,9 @@ export type Database = {
       }
     }
     Functions: {
-      gen_daily_insights: {
-        Args: Record<PropertyKey, never>
-        Returns: undefined
-      }
-      is_admin: {
-        Args: Record<PropertyKey, never>
-        Returns: boolean
-      }
+      gen_daily_insights: { Args: never; Returns: undefined }
+      is_admin: { Args: never; Returns: boolean }
+      is_admin_user: { Args: { check_user_id?: string }; Returns: boolean }
     }
     Enums: {
       [_ in never]: never
