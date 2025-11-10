@@ -129,6 +129,7 @@ const LandingPage = () => {
         { url: '/lovable-uploads/mercedes-vito-1.jpeg', alt: 'Mercedes Vito - Drina Bus' },
         { url: '/lovable-uploads/mercedes-sprinter-2.jpeg', alt: 'Mercedes Sprinter - Drina Bus' },
         { url: '/lovable-uploads/neoplan-cityliner-2.JPG', alt: 'Neoplan Cityliner - Drina Bus' },
+        { url: '/lovable-uploads/sprinter-mountain.jpg', alt: 'Mercedes Sprinter na planini - Drina Bus' },
       ];
 
       // Fetch images from both vehicles and gallery folders
