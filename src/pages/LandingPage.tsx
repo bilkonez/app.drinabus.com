@@ -64,9 +64,9 @@ const getVehicleImagePosition = (vehicle: Vehicle): string => {
     return 'center 55%';
   }
   
-  // Neoplan T17 - centriran i zumiran
+  // Neoplan T17 - pomaknut udesno i zumiran
   if (brand === 'Neoplan' && model === 'Cityliner' && registration === 'T17-M-331') {
-    return 'center center';
+    return '55% center';
   }
   
   // Default center positioning
