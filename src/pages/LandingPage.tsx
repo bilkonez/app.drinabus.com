@@ -240,18 +240,29 @@ const LandingPage = () => {
         
         {/* Content */}
         <div className="relative z-10 text-center text-white max-w-6xl mx-auto px-6 py-20">
-          {/* Logo with white background strip */}
-          <div className="mb-8 flex justify-center animate-fade-in">
-            <div className="relative">
-              {/* White background strip */}
-              <div className="absolute inset-0 -inset-x-12 bg-white rounded-lg shadow-2xl" 
-                   style={{ top: '-10px', bottom: '-10px' }} 
-              />
+          {/* Logo with creative white banner */}
+          <div className="mb-12 flex justify-center animate-fade-in">
+            <div className="relative px-16 py-8 bg-white rounded-2xl shadow-2xl transform hover:scale-105 transition-transform duration-300">
+              {/* Green accent lines */}
+              <div className="absolute -top-1 left-8 right-8 h-1 bg-gradient-to-r from-transparent via-green-600 to-transparent rounded-full" />
+              <div className="absolute -bottom-1 left-8 right-8 h-1 bg-gradient-to-r from-transparent via-emerald-600 to-transparent rounded-full" />
+              
+              {/* Decorative corner elements */}
+              <div className="absolute -top-2 -left-2 w-4 h-4 border-t-2 border-l-2 border-green-600 rounded-tl-lg" />
+              <div className="absolute -top-2 -right-2 w-4 h-4 border-t-2 border-r-2 border-green-600 rounded-tr-lg" />
+              <div className="absolute -bottom-2 -left-2 w-4 h-4 border-b-2 border-l-2 border-emerald-600 rounded-bl-lg" />
+              <div className="absolute -bottom-2 -right-2 w-4 h-4 border-b-2 border-r-2 border-emerald-600 rounded-br-lg" />
+              
+              {/* Subtle pattern background */}
+              <div className="absolute inset-0 opacity-5 rounded-2xl" style={{
+                backgroundImage: `url("data:image/svg+xml,%3Csvg width='20' height='20' viewBox='0 0 20 20' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='%23059669' fill-opacity='1' fill-rule='evenodd'%3E%3Ccircle cx='3' cy='3' r='1'/%3E%3Ccircle cx='13' cy='13' r='1'/%3E%3C/g%3E%3C/svg%3E")`
+              }} />
+              
               {/* Logo */}
               <img 
                 src="/lovable-uploads/drina-bus-logo-transparent.png" 
                 alt="Drina Bus" 
-                className="relative h-32 w-auto"
+                className="relative h-24 md:h-32 w-auto"
               />
             </div>
           </div>
