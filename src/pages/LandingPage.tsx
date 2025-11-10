@@ -89,6 +89,11 @@ const LandingPage = () => {
         { url: '/lovable-uploads/6a6efc97-e912-4097-b4a0-48f7d46ec0d3.png', alt: 'Otokar Sultan - Drina Bus' },
         { url: '/lovable-uploads/5f35d25b-dac7-4c14-a056-aaa834f9d22f.png', alt: 'Mercedes Vito - Drina Bus' },
         { url: '/lovable-uploads/1bc6f777-073d-4e8d-be07-8473954f5e95.png', alt: 'Autobus - Drina Bus' },
+        { url: '/lovable-uploads/mercedes-sprinter-1.jpeg', alt: 'Mercedes Sprinter - Drina Bus' },
+        { url: '/lovable-uploads/neoplan-cityliner-1.JPG', alt: 'Neoplan Cityliner - Drina Bus' },
+        { url: '/lovable-uploads/mercedes-vito-1.jpeg', alt: 'Mercedes Vito - Drina Bus' },
+        { url: '/lovable-uploads/mercedes-sprinter-2.jpeg', alt: 'Mercedes Sprinter - Drina Bus' },
+        { url: '/lovable-uploads/neoplan-cityliner-2.JPG', alt: 'Neoplan Cityliner - Drina Bus' },
       ];
 
       // Fetch images from both vehicles and gallery folders
@@ -155,7 +160,7 @@ const LandingPage = () => {
         <div className="relative z-10 text-center text-white max-w-5xl mx-auto px-6 py-20">
           <div className="mb-12 animate-fade-in">
             <img 
-              src="/lovable-uploads/6dd2d576-8aab-4bef-bf5a-0c7d8a00f49f.png" 
+              src="/lovable-uploads/drina-bus-logo-transparent.png" 
               alt="Drina Bus Logo" 
               className="h-32 md:h-40 w-auto mx-auto mb-8 drop-shadow-2xl"
             />

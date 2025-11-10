@@ -35,29 +35,92 @@
     <meta name="apple-mobile-web-app-status-bar-style" content="default">
     <meta name="apple-mobile-web-app-title" content="Drina Bus">
     
-    <!-- Structured Data -->
+    <!-- Structured Data (Schema.org) -->
     <script type="application/ld+json">
     {
       "@context": "https://schema.org",
       "@type": "TransportationCompany",
       "name": "Drina Bus",
-      "description": "Linijski i vanlinijski prevoz putnika",
+      "description": "Linijski i vanlinijski prevoz putnika - Siguran i udoban prevoz",
       "url": "https://drinabus.com",
       "logo": "/lovable-uploads/6dd2d576-8aab-4bef-bf5a-0c7d8a00f49f.png",
+      "image": "/lovable-uploads/6dd2d576-8aab-4bef-bf5a-0c7d8a00f49f.png",
+      "telephone": "+387 62 888 702",
+      "email": "drinabus@hotmail.com",
       "address": {
         "@type": "PostalAddress",
+        "streetAddress": "",
         "addressLocality": "Ustikolina",
+        "addressRegion": "Foča",
         "addressCountry": "BA"
+      },
+      "geo": {
+        "@type": "GeoCoordinates",
+        "latitude": "43.5",
+        "longitude": "18.8"
       },
       "contactPoint": {
         "@type": "ContactPoint",
         "telephone": "+387 62 888 702",
         "contactType": "customer service",
-        "email": "drinabus@hotmail.com"
+        "email": "drinabus@hotmail.com",
+        "availableLanguage": ["Bosnian", "English"]
       },
       "sameAs": [
         "https://www.instagram.com/drinabus"
+      ],
+      "areaServed": {
+        "@type": "Country",
+        "name": "Bosnia and Herzegovina"
+      },
+      "serviceType": ["Linijski prevoz putnika", "Vanlinijski prevoz putnika", "Charter bus services"],
+      "priceRange": "$$"
+    }
+    </script>
+    
+    <!-- BreadcrumbList Schema -->
+    <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@type": "BreadcrumbList",
+      "itemListElement": [
+        {
+          "@type": "ListItem",
+          "position": 1,
+          "name": "Početna",
+          "item": "https://drinabus.com"
+        },
+        {
+          "@type": "ListItem",
+          "position": 2,
+          "name": "Vozni park",
+          "item": "https://drinabus.com#fleet"
+        },
+        {
+          "@type": "ListItem",
+          "position": 3,
+          "name": "Kontakt",
+          "item": "https://drinabus.com#contact"
+        }
       ]
+    }
+    </script>
+    
+    <!-- Service Schema -->
+    <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@type": "Service",
+      "serviceType": "Prevoz putnika",
+      "provider": {
+        "@type": "TransportationCompany",
+        "name": "Drina Bus"
+      },
+      "areaServed": {
+        "@type": "Country",
+        "name": "Bosnia and Herzegovina"
+      },
+      "description": "Profesionalan linijski i vanlinijski prevoz putnika sa modernom flotom autobusa"
     }
     </script>
   </head>

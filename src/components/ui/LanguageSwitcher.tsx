@@ -14,7 +14,7 @@ const LanguageSwitcher = () => {
         className="bg-white/90 backdrop-blur-sm hover:bg-white shadow-lg gap-2"
       >
         <Globe className="h-4 w-4" />
-        <span className="font-semibold">{language === 'sr' ? 'EN' : 'SR'}</span>
+        <span className="font-semibold">{language === 'sr' ? 'EN' : 'BH'}</span>
       </Button>
     </div>
   );
