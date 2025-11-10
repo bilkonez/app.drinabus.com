@@ -310,50 +310,6 @@ const LandingPage = () => {
 
       </section>
 
-      {/* Services Section */}
-      <section className="py-20 px-6 bg-white relative overflow-hidden">
-        <div className="absolute inset-0 opacity-5 bg-repeat" style={{ 
-          backgroundImage: `url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%23059669' fill-opacity='1'%3E%3Cpath d='M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E")`,
-          backgroundSize: '60px 60px'
-        }} />
-        <div className="max-w-6xl mx-auto">
-          <div className="text-center mb-16">
-            <h2 className="text-3xl md:text-4xl font-bold text-gray-900 mb-4">
-              {t('services.title')}
-            </h2>
-            <p className="text-lg text-gray-600 max-w-2xl mx-auto">
-              {t('services.subtitle')}
-            </p>
-          </div>
-
-          <div className="grid md:grid-cols-2 gap-8">
-            <Card className="group hover:shadow-xl transition-all duration-300 border-2 hover:border-green-200">
-              <CardContent className="p-8 text-center">
-                <div className="w-16 h-16 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-6 group-hover:bg-green-200 transition-colors">
-                  <Route className="h-8 w-8 text-green-600" />
-                </div>
-                <h3 className="text-2xl font-bold text-gray-900 mb-4">{t('services.regular.title')}</h3>
-                <p className="text-gray-600 leading-relaxed">
-                  {t('services.regular.desc')}
-                </p>
-              </CardContent>
-            </Card>
-
-            <Card className="group hover:shadow-xl transition-all duration-300 border-2 hover:border-green-200">
-              <CardContent className="p-8 text-center">
-                <div className="w-16 h-16 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-6 group-hover:bg-green-200 transition-colors">
-                  <Calendar className="h-8 w-8 text-green-600" />
-                </div>
-                <h3 className="text-2xl font-bold text-gray-900 mb-4">{t('services.charter.title')}</h3>
-                <p className="text-gray-600 leading-relaxed">
-                  {t('services.charter.desc')}
-                </p>
-              </CardContent>
-            </Card>
-          </div>
-        </div>
-      </section>
-
       {/* Detailed Services Section */}
       <section className="py-20 px-6 bg-gradient-to-br from-green-50 to-emerald-50 relative overflow-hidden">
         <div className="absolute inset-0 opacity-5 bg-repeat" style={{ 
@@ -371,10 +327,23 @@ const LandingPage = () => {
           </div>
 
           <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
-            {/* School Excursions */}
+            {/* Regular Transport */}
             <Card className="group hover:shadow-2xl transition-all duration-300 border-2 hover:border-green-300 bg-white/80 backdrop-blur-sm">
               <CardContent className="p-8">
                 <div className="w-16 h-16 bg-gradient-to-br from-green-500 to-emerald-600 rounded-2xl flex items-center justify-center mx-auto mb-6 group-hover:scale-110 transition-transform shadow-lg">
+                  <Route className="h-8 w-8 text-white" />
+                </div>
+                <h3 className="text-xl font-bold text-gray-900 mb-3 text-center">{t('detailedServices.regular.title')}</h3>
+                <p className="text-gray-600 leading-relaxed text-center">
+                  {t('detailedServices.regular.desc')}
+                </p>
+              </CardContent>
+            </Card>
+
+            {/* School Excursions */}
+            <Card className="group hover:shadow-2xl transition-all duration-300 border-2 hover:border-green-300 bg-white/80 backdrop-blur-sm">
+              <CardContent className="p-8">
+                <div className="w-16 h-16 bg-gradient-to-br from-emerald-500 to-green-600 rounded-2xl flex items-center justify-center mx-auto mb-6 group-hover:scale-110 transition-transform shadow-lg">
                   <GraduationCap className="h-8 w-8 text-white" />
                 </div>
                 <h3 className="text-xl font-bold text-gray-900 mb-3 text-center">{t('detailedServices.excursions.title')}</h3>
@@ -387,7 +356,7 @@ const LandingPage = () => {
             {/* Day Trips */}
             <Card className="group hover:shadow-2xl transition-all duration-300 border-2 hover:border-green-300 bg-white/80 backdrop-blur-sm">
               <CardContent className="p-8">
-                <div className="w-16 h-16 bg-gradient-to-br from-emerald-500 to-green-600 rounded-2xl flex items-center justify-center mx-auto mb-6 group-hover:scale-110 transition-transform shadow-lg">
+                <div className="w-16 h-16 bg-gradient-to-br from-green-600 to-emerald-700 rounded-2xl flex items-center justify-center mx-auto mb-6 group-hover:scale-110 transition-transform shadow-lg">
                   <Compass className="h-8 w-8 text-white" />
                 </div>
                 <h3 className="text-xl font-bold text-gray-900 mb-3 text-center">{t('detailedServices.dayTrips.title')}</h3>
@@ -400,7 +369,7 @@ const LandingPage = () => {
             {/* Corporate Transport */}
             <Card className="group hover:shadow-2xl transition-all duration-300 border-2 hover:border-green-300 bg-white/80 backdrop-blur-sm">
               <CardContent className="p-8">
-                <div className="w-16 h-16 bg-gradient-to-br from-green-600 to-emerald-700 rounded-2xl flex items-center justify-center mx-auto mb-6 group-hover:scale-110 transition-transform shadow-lg">
+                <div className="w-16 h-16 bg-gradient-to-br from-emerald-600 to-green-700 rounded-2xl flex items-center justify-center mx-auto mb-6 group-hover:scale-110 transition-transform shadow-lg">
                   <Briefcase className="h-8 w-8 text-white" />
                 </div>
                 <h3 className="text-xl font-bold text-gray-900 mb-3 text-center">{t('detailedServices.corporate.title')}</h3>
@@ -413,7 +382,7 @@ const LandingPage = () => {
             {/* International Charter */}
             <Card className="group hover:shadow-2xl transition-all duration-300 border-2 hover:border-green-300 bg-white/80 backdrop-blur-sm">
               <CardContent className="p-8">
-                <div className="w-16 h-16 bg-gradient-to-br from-emerald-600 to-green-700 rounded-2xl flex items-center justify-center mx-auto mb-6 group-hover:scale-110 transition-transform shadow-lg">
+                <div className="w-16 h-16 bg-gradient-to-br from-green-500 to-emerald-600 rounded-2xl flex items-center justify-center mx-auto mb-6 group-hover:scale-110 transition-transform shadow-lg">
                   <Globe className="h-8 w-8 text-white" />
                 </div>
                 <h3 className="text-xl font-bold text-gray-900 mb-3 text-center">{t('detailedServices.international.title')}</h3>
@@ -426,25 +395,12 @@ const LandingPage = () => {
             {/* Airport Transfer */}
             <Card className="group hover:shadow-2xl transition-all duration-300 border-2 hover:border-green-300 bg-white/80 backdrop-blur-sm">
               <CardContent className="p-8">
-                <div className="w-16 h-16 bg-gradient-to-br from-green-500 to-emerald-500 rounded-2xl flex items-center justify-center mx-auto mb-6 group-hover:scale-110 transition-transform shadow-lg">
+                <div className="w-16 h-16 bg-gradient-to-br from-emerald-500 to-green-600 rounded-2xl flex items-center justify-center mx-auto mb-6 group-hover:scale-110 transition-transform shadow-lg">
                   <Plane className="h-8 w-8 text-white" />
                 </div>
                 <h3 className="text-xl font-bold text-gray-900 mb-3 text-center">{t('detailedServices.airport.title')}</h3>
                 <p className="text-gray-600 leading-relaxed text-center">
                   {t('detailedServices.airport.desc')}
-                </p>
-              </CardContent>
-            </Card>
-
-            {/* Weddings & Events */}
-            <Card className="group hover:shadow-2xl transition-all duration-300 border-2 hover:border-green-300 bg-white/80 backdrop-blur-sm">
-              <CardContent className="p-8">
-                <div className="w-16 h-16 bg-gradient-to-br from-emerald-500 to-green-600 rounded-2xl flex items-center justify-center mx-auto mb-6 group-hover:scale-110 transition-transform shadow-lg">
-                  <HeartHandshake className="h-8 w-8 text-white" />
-                </div>
-                <h3 className="text-xl font-bold text-gray-900 mb-3 text-center">{t('detailedServices.events.title')}</h3>
-                <p className="text-gray-600 leading-relaxed text-center">
-                  {t('detailedServices.events.desc')}
                 </p>
               </CardContent>
             </Card>
