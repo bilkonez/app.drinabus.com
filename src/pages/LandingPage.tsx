@@ -226,15 +226,18 @@ const LandingPage = () => {
       
       {/* Hero Section */}
       <section className="relative min-h-screen flex items-center justify-center overflow-hidden">
-        <div 
-          className="absolute inset-0 bg-cover bg-center bg-no-repeat"
-          style={{ 
-            backgroundImage: `url(${heroBackground})`
-          }}
-        />
-        <div className="absolute inset-0 bg-gradient-to-b from-black/70 via-black/40 to-black/70" />
+        {/* Animated Gradient Background */}
+        <div className="absolute inset-0 bg-gradient-to-br from-green-900 via-green-700 to-emerald-800">
+          {/* Animated Gradient Orbs */}
+          <div className="absolute top-0 -left-1/4 w-full h-full bg-gradient-to-br from-green-500/30 to-transparent rounded-full blur-3xl animate-gradient-shift" />
+          <div className="absolute bottom-0 -right-1/4 w-full h-full bg-gradient-to-tl from-emerald-600/30 to-transparent rounded-full blur-3xl animate-gradient-shift-reverse" />
+          <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-3/4 h-3/4 bg-gradient-to-r from-green-400/20 via-transparent to-emerald-500/20 rounded-full blur-3xl animate-gradient-shift" style={{ animationDelay: '5s' }} />
+        </div>
         
-        <div className="relative z-10 text-center text-white max-w-5xl mx-auto px-6 py-20">
+        {/* Overlay for better text readability */}
+        <div className="absolute inset-0 bg-gradient-to-b from-black/40 via-black/20 to-black/50" />
+        
+        <div className="relative z-10 text-center text-white max-w-5xl mx-auto px-6 py-20 animate-float">
           
           <h1 className="text-5xl md:text-6xl lg:text-8xl font-bold mb-8 leading-tight text-shadow-lg">
             {t('hero.title')}
