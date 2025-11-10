@@ -699,15 +699,6 @@ const LandingPage = () => {
                 {t('faq.a5')}
               </AccordionContent>
             </AccordionItem>
-
-            <AccordionItem value="item-6" className="border-2 border-gray-200 rounded-lg px-6 hover:border-green-300 transition-colors">
-              <AccordionTrigger className="text-left text-lg font-semibold text-gray-900 hover:text-green-600">
-                {t('faq.q6')}
-              </AccordionTrigger>
-              <AccordionContent className="text-gray-600 leading-relaxed pt-4">
-                {t('faq.a6')}
-              </AccordionContent>
-            </AccordionItem>
           </Accordion>
         </div>
       </section>
