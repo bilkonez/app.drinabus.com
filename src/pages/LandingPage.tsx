@@ -228,6 +228,21 @@ const LandingPage = () => {
       <section className="relative min-h-screen flex items-center justify-center overflow-hidden">
         {/* Animated Gradient Background */}
         <div className="absolute inset-0 bg-gradient-to-br from-green-900 via-green-700 to-emerald-800">
+          {/* Logo Pattern Background */}
+          <div className="absolute inset-0 opacity-5">
+            <img 
+              src="/logo-icon.jpg" 
+              alt="" 
+              className="absolute top-1/4 left-1/4 w-96 h-96 object-contain animate-float opacity-30"
+              style={{ animationDelay: '1s', animationDuration: '8s' }}
+            />
+            <img 
+              src="/logo-icon.jpg" 
+              alt="" 
+              className="absolute bottom-1/4 right-1/4 w-64 h-64 object-contain animate-float opacity-20"
+              style={{ animationDelay: '3s', animationDuration: '10s' }}
+            />
+          </div>
           {/* Animated Gradient Orbs */}
           <div className="absolute top-0 -left-1/4 w-full h-full bg-gradient-to-br from-green-500/30 to-transparent rounded-full blur-3xl animate-gradient-shift" />
           <div className="absolute bottom-0 -right-1/4 w-full h-full bg-gradient-to-tl from-emerald-600/30 to-transparent rounded-full blur-3xl animate-gradient-shift-reverse" />
