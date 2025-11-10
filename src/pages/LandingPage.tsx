@@ -226,21 +226,15 @@ const LandingPage = () => {
       
       {/* Hero Section */}
       <section className="relative min-h-screen flex items-center justify-center overflow-hidden">
-        {/* Modern Gradient Background */}
-        <div className="absolute inset-0 bg-gradient-to-br from-emerald-600 via-green-700 to-green-900">
-          {/* Animated shapes */}
-          <div className="absolute top-20 left-10 w-72 h-72 bg-white/5 rounded-full blur-3xl animate-pulse" />
-          <div className="absolute bottom-20 right-10 w-96 h-96 bg-emerald-400/10 rounded-full blur-3xl animate-pulse" style={{ animationDelay: '1s' }} />
-          <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] h-[600px] bg-green-500/5 rounded-full blur-3xl" />
-        </div>
-
-        {/* Decorative Logo */}
-        <div className="absolute top-1/4 right-10 opacity-10">
+        {/* Blurred Bus Gallery Background */}
+        <div className="absolute inset-0">
           <img 
-            src="/lovable-uploads/drina-bus-logo-transparent.png" 
-            alt="" 
-            className="w-64 h-64 object-contain animate-float"
+            src="/lovable-uploads/1bc6f777-073d-4e8d-be07-8473954f5e95.png" 
+            alt="Drina Bus Fleet" 
+            className="w-full h-full object-cover scale-110 blur-sm"
           />
+          {/* Green Overlay */}
+          <div className="absolute inset-0 bg-gradient-to-br from-green-900/80 via-emerald-800/75 to-green-900/85" />
         </div>
         
         {/* Content */}
@@ -254,7 +248,7 @@ const LandingPage = () => {
             />
           </div>
           
-          <h1 className="text-5xl md:text-6xl lg:text-8xl font-bold mb-8 leading-tight text-shadow-lg">
+          <h1 className="text-5xl md:text-6xl lg:text-8xl font-bold mb-8 leading-tight drop-shadow-2xl">
             {t('hero.title')}
           </h1>
           
