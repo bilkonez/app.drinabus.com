@@ -3,7 +3,7 @@ import { Card, CardContent } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Dialog, DialogContent } from '@/components/ui/dialog';
 import { supabase } from '@/integrations/supabase/client';
-import { Phone, Mail, Instagram, MapPin, Users, Route, Calendar, X, GraduationCap, Compass, Briefcase, Plane, HeartHandshake, Globe } from 'lucide-react';
+import { Phone, Mail, Instagram, MapPin, Users, Route, Calendar, X, GraduationCap, Compass, Briefcase, Plane, HeartHandshake, Globe, Menu } from 'lucide-react';
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from '@/components/ui/accordion';
 import heroBackground from '@/assets/hero-river-bus.jpg';
 import WhatsAppButton from '@/components/ui/WhatsAppButton';
@@ -81,6 +81,7 @@ const LandingPage = () => {
   const [selectedImage, setSelectedImage] = useState<string | null>(null);
   const [loading, setLoading] = useState(true);
   const [scrollY, setScrollY] = useState(0);
+  const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
 
   useEffect(() => {
     fetchVehicles();
@@ -197,7 +198,9 @@ const LandingPage = () => {
                 style={{ filter: 'contrast(1.2) brightness(0.95) saturate(1.1)' }}
               />
             </a>
-            <div className="flex items-center gap-6">
+            
+            {/* Desktop Navigation */}
+            <div className="hidden lg:flex items-center gap-6">
               <a 
                 href="#services" 
                 className="text-white hover:text-green-400 font-medium transition-colors duration-200 drop-shadow-lg"
@@ -241,7 +244,76 @@ const LandingPage = () => {
                 <span className="text-sm">{language === 'sr' ? 'EN' : 'BH'}</span>
               </button>
             </div>
+
+            {/* Mobile Menu Button */}
+            <div className="lg:hidden flex items-center gap-4">
+              <button
+                onClick={() => setLanguage(language === 'sr' ? 'en' : 'sr')}
+                className="text-white hover:text-green-400 font-medium transition-colors duration-200 drop-shadow-lg"
+              >
+                <span className="text-sm">{language === 'sr' ? 'EN' : 'BH'}</span>
+              </button>
+              <button
+                onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
+                className="text-white hover:text-green-400 transition-colors duration-200"
+                aria-label="Toggle menu"
+              >
+                {mobileMenuOpen ? (
+                  <X className="h-6 w-6" />
+                ) : (
+                  <Menu className="h-6 w-6" />
+                )}
+              </button>
+            </div>
           </div>
+
+          {/* Mobile Menu */}
+          {mobileMenuOpen && (
+            <div className="lg:hidden mt-4 pb-4 flex flex-col gap-4 animate-fade-in">
+              <a 
+                href="#services" 
+                onClick={() => setMobileMenuOpen(false)}
+                className="text-white hover:text-green-400 font-medium transition-colors duration-200 drop-shadow-lg py-2"
+              >
+                {t('nav.services')}
+              </a>
+              <a 
+                href="#fleet" 
+                onClick={() => setMobileMenuOpen(false)}
+                className="text-white hover:text-green-400 font-medium transition-colors duration-200 drop-shadow-lg py-2"
+              >
+                {t('nav.fleet')}
+              </a>
+              <a 
+                href="#about" 
+                onClick={() => setMobileMenuOpen(false)}
+                className="text-white hover:text-green-400 font-medium transition-colors duration-200 drop-shadow-lg py-2"
+              >
+                {t('nav.about')}
+              </a>
+              <a 
+                href="#gallery" 
+                onClick={() => setMobileMenuOpen(false)}
+                className="text-white hover:text-green-400 font-medium transition-colors duration-200 drop-shadow-lg py-2"
+              >
+                {t('nav.gallery')}
+              </a>
+              <a 
+                href="#faq" 
+                onClick={() => setMobileMenuOpen(false)}
+                className="text-white hover:text-green-400 font-medium transition-colors duration-200 drop-shadow-lg py-2"
+              >
+                {t('nav.faq')}
+              </a>
+              <a 
+                href="#contact" 
+                onClick={() => setMobileMenuOpen(false)}
+                className="text-white hover:text-green-400 font-medium transition-colors duration-200 drop-shadow-lg py-2"
+              >
+                {t('nav.contact')}
+              </a>
+            </div>
+          )}
         </div>
       </nav>
 
