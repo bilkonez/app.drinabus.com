@@ -197,7 +197,13 @@ const LandingPage = () => {
                 style={{ filter: 'contrast(1.2) brightness(0.95) saturate(1.1)' }}
               />
             </a>
-            <div className="flex items-center gap-8">
+            <div className="flex items-center gap-6">
+              <a 
+                href="#services" 
+                className="text-white hover:text-green-400 font-medium transition-colors duration-200 drop-shadow-lg"
+              >
+                {t('nav.services')}
+              </a>
               <a 
                 href="#fleet" 
                 className="text-white hover:text-green-400 font-medium transition-colors duration-200 drop-shadow-lg"
@@ -215,6 +221,12 @@ const LandingPage = () => {
                 className="text-white hover:text-green-400 font-medium transition-colors duration-200 drop-shadow-lg"
               >
                 {t('nav.gallery')}
+              </a>
+              <a 
+                href="#faq" 
+                className="text-white hover:text-green-400 font-medium transition-colors duration-200 drop-shadow-lg"
+              >
+                {t('nav.faq')}
               </a>
               <a 
                 href="#contact" 
@@ -311,7 +323,7 @@ const LandingPage = () => {
       </section>
 
       {/* Detailed Services Section */}
-      <section className="py-20 px-6 bg-gradient-to-br from-green-50 to-emerald-50 relative overflow-hidden">
+      <section id="services" className="py-20 px-6 bg-gradient-to-br from-green-50 to-emerald-50 relative overflow-hidden scroll-mt-20">
         <div className="absolute inset-0 opacity-5 bg-repeat" style={{ 
           backgroundImage: `url("data:image/svg+xml,%3Csvg width='40' height='40' viewBox='0 0 40 40' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M20 20.5V18H0v-2h20v-2H0v-2h20v-2H0V8h20V6H0V4h20V2H0V0h22v20h2V0h2v20h2V0h2v20h2V0h2v20h2V0h2v20h2v2H20v-1.5zM0 20h2v20H0V20zm4 0h2v20H4V20zm4 0h2v20H8V20zm4 0h2v20h-2V20zm4 0h2v20h-2V20zm4 4h20v2H20v-2zm0 4h20v2H20v-2zm0 4h20v2H20v-2zm0 4h20v2H20v-2z' fill='%23059669' fill-opacity='1' fill-rule='evenodd'/%3E%3C/svg%3E")`,
         }} />
@@ -643,7 +655,7 @@ const LandingPage = () => {
       </section>
 
       {/* FAQ Section */}
-      <section className="py-20 px-6 bg-white">
+      <section id="faq" className="py-20 px-6 bg-white scroll-mt-20">
         <div className="max-w-4xl mx-auto">
           <div className="text-center mb-16">
             <h2 className="text-3xl md:text-4xl lg:text-5xl font-bold text-gray-900 mb-4">

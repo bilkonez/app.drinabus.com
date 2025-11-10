@@ -11,9 +11,11 @@ interface LanguageContextType {
 const translations = {
   sr: {
     // Navigation
+    'nav.services': 'Usluge',
     'nav.fleet': 'Vozni park',
     'nav.about': 'O nama',
     'nav.gallery': 'Galerija',
+    'nav.faq': 'FAQ',
     'nav.contact': 'Kontakt',
     
     // Hero
@@ -94,9 +96,11 @@ const translations = {
   },
   en: {
     // Navigation
+    'nav.services': 'Services',
     'nav.fleet': 'Fleet',
     'nav.about': 'About',
     'nav.gallery': 'Gallery',
+    'nav.faq': 'FAQ',
     'nav.contact': 'Contact',
     
     // Hero
