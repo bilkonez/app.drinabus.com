@@ -226,37 +226,33 @@ const LandingPage = () => {
       
       {/* Hero Section */}
       <section className="relative min-h-screen flex items-center justify-center overflow-hidden">
-        {/* Bus Image Background */}
-        <div className="absolute inset-0">
+        {/* Modern Gradient Background */}
+        <div className="absolute inset-0 bg-gradient-to-br from-emerald-600 via-green-700 to-green-900">
+          {/* Animated shapes */}
+          <div className="absolute top-20 left-10 w-72 h-72 bg-white/5 rounded-full blur-3xl animate-pulse" />
+          <div className="absolute bottom-20 right-10 w-96 h-96 bg-emerald-400/10 rounded-full blur-3xl animate-pulse" style={{ animationDelay: '1s' }} />
+          <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] h-[600px] bg-green-500/5 rounded-full blur-3xl" />
+        </div>
+
+        {/* Decorative Logo */}
+        <div className="absolute top-1/4 right-10 opacity-10">
           <img 
-            src="/lovable-uploads/neoplan-cityliner-t17.jpg" 
-            alt="Drina Bus Neoplan" 
-            className="w-full h-full object-cover"
+            src="/lovable-uploads/drina-bus-logo-transparent.png" 
+            alt="" 
+            className="w-64 h-64 object-contain animate-float"
           />
-          {/* Green Gradient Overlay */}
-          <div className="absolute inset-0 bg-gradient-to-br from-green-900/85 via-green-800/75 to-emerald-900/85" />
-          {/* Diagonal Pattern Overlay */}
-          <div className="absolute inset-0 opacity-10" style={{
-            backgroundImage: `repeating-linear-gradient(
-              45deg,
-              transparent,
-              transparent 35px,
-              rgba(255, 255, 255, 0.1) 35px,
-              rgba(255, 255, 255, 0.1) 70px
-            )`
-          }} />
-          {/* Subtle Logo Watermark */}
-          <div className="absolute inset-0 flex items-center justify-center opacity-5">
-            <img 
-              src="/logo-icon.jpg" 
-              alt="" 
-              className="w-[800px] h-[800px] object-contain"
-            />
-          </div>
         </div>
         
         {/* Content */}
-        <div className="relative z-10 text-center text-white max-w-5xl mx-auto px-6 py-20">
+        <div className="relative z-10 text-center text-white max-w-6xl mx-auto px-6 py-20">
+          {/* Logo */}
+          <div className="mb-8 flex justify-center animate-fade-in">
+            <img 
+              src="/lovable-uploads/drina-bus-logo-transparent.png" 
+              alt="Drina Bus" 
+              className="h-32 w-auto drop-shadow-2xl"
+            />
+          </div>
           
           <h1 className="text-5xl md:text-6xl lg:text-8xl font-bold mb-8 leading-tight text-shadow-lg">
             {t('hero.title')}
