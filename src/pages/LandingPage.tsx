@@ -54,14 +54,19 @@ const getVehicleImagePosition = (vehicle: Vehicle): string => {
   const model = vehicle.model?.trim();
   const registration = vehicle.registration?.trim();
   
-  // Mercedes Vito needs to be positioned lower (towards bottom)
+  // Mercedes Vito - perfect positioning (70%)
   if (brand === 'Mercedes' && model === 'Vito') {
     return 'center 70%';
   }
   
-  // Neoplan A36 needs to be positioned lower (towards bottom)
+  // Neoplan A36 - move 10% more down (from 65% to 75%)
   if (brand === 'Neoplan' && model === 'Cityliner' && registration === 'A36-E-349') {
-    return 'center 65%';
+    return 'center 75%';
+  }
+  
+  // Neoplan T17 - same as Vito (70%)
+  if (brand === 'Neoplan' && model === 'Cityliner' && registration === 'T17-M-331') {
+    return 'center 70%';
   }
   
   // Default center positioning
@@ -222,7 +227,7 @@ const LandingPage = () => {
         
         <div className="relative z-10 text-center text-white max-w-5xl mx-auto px-6 py-20">
           <div className="mb-12 animate-fade-in">
-            <h1 className="text-6xl md:text-7xl lg:text-9xl font-bold bg-gradient-to-r from-green-500 via-emerald-500 to-green-600 bg-clip-text text-transparent drop-shadow-2xl mb-8">
+            <h1 className="text-6xl md:text-7xl lg:text-9xl font-bebas tracking-tighter bg-gradient-to-r from-green-500 via-emerald-500 to-green-600 bg-clip-text text-transparent drop-shadow-2xl mb-8">
               DRINA BUS
             </h1>
           </div>
@@ -458,7 +463,7 @@ const LandingPage = () => {
       </section>
 
       {/* About Us Section */}
-      <section className="py-20 px-6 bg-white">
+      <section id="about" className="py-20 px-6 bg-white scroll-mt-20">
         <div className="max-w-4xl mx-auto text-center">
           <h2 className="text-3xl md:text-4xl font-bold text-gray-900 mb-8">
             {t('about.title')}
@@ -475,7 +480,7 @@ const LandingPage = () => {
       </section>
 
       {/* Gallery Section */}
-      <section className="py-20 px-6 bg-gray-50">
+      <section id="gallery" className="py-20 px-6 bg-gray-50 scroll-mt-20">
         <div className="max-w-6xl mx-auto">
           <div className="text-center mb-16">
             <h2 className="text-3xl md:text-4xl font-bold text-gray-900 mb-4">
