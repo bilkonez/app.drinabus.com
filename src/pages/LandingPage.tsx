@@ -4,7 +4,7 @@ import { Badge } from '@/components/ui/badge';
 import { Dialog, DialogContent } from '@/components/ui/dialog';
 import { supabase } from '@/integrations/supabase/client';
 import { Phone, Mail, Instagram, MapPin, Users, Route, Calendar, X } from 'lucide-react';
-import heroBackground from '@/assets/hero-river-bus.jpg';
+import heroBackground from '@/assets/hero-drina-bus.jpg';
 import WhatsAppButton from '@/components/ui/WhatsAppButton';
 import { useLanguage } from '@/contexts/LanguageContext';
 
@@ -59,9 +59,9 @@ const getVehicleImagePosition = (vehicle: Vehicle): string => {
     return 'center 70%';
   }
   
-  // Neoplan A36 - move 10% more down (from 65% to 75%)
+  // Neoplan A36 - kontra smjer (gore umjesto dolje)
   if (brand === 'Neoplan' && model === 'Cityliner' && registration === 'A36-E-349') {
-    return 'center 75%';
+    return 'center 25%';
   }
   
   // Neoplan T17 - same as Vito (70%)
@@ -226,11 +226,6 @@ const LandingPage = () => {
         <div className="absolute inset-0 bg-gradient-to-b from-black/70 via-black/40 to-black/70" />
         
         <div className="relative z-10 text-center text-white max-w-5xl mx-auto px-6 py-20">
-          <div className="mb-12 animate-fade-in">
-            <h1 className="text-6xl md:text-7xl lg:text-9xl font-bebas tracking-tighter bg-gradient-to-r from-green-500 via-emerald-500 to-green-600 bg-clip-text text-transparent drop-shadow-2xl mb-8">
-              DRINA BUS
-            </h1>
-          </div>
           
           <h1 className="text-5xl md:text-6xl lg:text-8xl font-bold mb-8 leading-tight text-shadow-lg">
             {t('hero.title')}
@@ -336,7 +331,9 @@ const LandingPage = () => {
                           <img 
                             src={vehicleImage}
                             alt={`${vehicle.brand} ${vehicle.model} - Drina Bus`}
-                            className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-300"
+                            className={`w-full h-full object-cover transition-transform duration-300 ${
+                              vehicle.registration === 'T17-M-331' ? 'group-hover:scale-125' : 'group-hover:scale-110'
+                            }`}
                             style={{ objectPosition: imagePosition }}
                             loading="lazy"
                             width="400"
@@ -405,7 +402,9 @@ const LandingPage = () => {
                               <img 
                                 src={vehicleImage}
                                 alt={`${vehicle.brand} ${vehicle.model} - Drina Bus`}
-                                className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-300"
+                                className={`w-full h-full object-cover transition-transform duration-300 ${
+                                  vehicle.registration === 'T17-M-331' ? 'group-hover:scale-125' : 'group-hover:scale-110'
+                                }`}
                                 style={{ objectPosition: imagePosition }}
                                 loading="lazy"
                                 width="400"
