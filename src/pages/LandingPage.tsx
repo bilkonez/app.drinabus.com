@@ -226,53 +226,37 @@ const LandingPage = () => {
       
       {/* Hero Section */}
       <section className="relative min-h-screen flex items-center justify-center overflow-hidden">
-        {/* Animated Gradient Background */}
-        <div className="absolute inset-0 bg-gradient-to-br from-green-900 via-green-700 to-emerald-800">
-          {/* Large Centered Logo Watermark */}
-          <div className="absolute inset-0 flex items-center justify-center">
+        {/* Bus Image Background */}
+        <div className="absolute inset-0">
+          <img 
+            src="/lovable-uploads/neoplan-cityliner-t17.jpg" 
+            alt="Drina Bus Neoplan" 
+            className="w-full h-full object-cover"
+          />
+          {/* Green Gradient Overlay */}
+          <div className="absolute inset-0 bg-gradient-to-br from-green-900/85 via-green-800/75 to-emerald-900/85" />
+          {/* Diagonal Pattern Overlay */}
+          <div className="absolute inset-0 opacity-10" style={{
+            backgroundImage: `repeating-linear-gradient(
+              45deg,
+              transparent,
+              transparent 35px,
+              rgba(255, 255, 255, 0.1) 35px,
+              rgba(255, 255, 255, 0.1) 70px
+            )`
+          }} />
+          {/* Subtle Logo Watermark */}
+          <div className="absolute inset-0 flex items-center justify-center opacity-5">
             <img 
               src="/logo-icon.jpg" 
               alt="" 
-              className="w-[600px] h-[600px] object-contain opacity-20 animate-float"
-              style={{ animationDuration: '6s' }}
+              className="w-[800px] h-[800px] object-contain"
             />
           </div>
-          {/* Logo Pattern Background */}
-          <div className="absolute inset-0">
-            <img 
-              src="/logo-icon.jpg" 
-              alt="" 
-              className="absolute top-10 left-10 w-48 h-48 object-contain animate-float opacity-15"
-              style={{ animationDelay: '1s', animationDuration: '8s' }}
-            />
-            <img 
-              src="/logo-icon.jpg" 
-              alt="" 
-              className="absolute top-20 right-20 w-64 h-64 object-contain animate-float opacity-10"
-              style={{ animationDelay: '2s', animationDuration: '9s' }}
-            />
-            <img 
-              src="/logo-icon.jpg" 
-              alt="" 
-              className="absolute bottom-20 left-32 w-56 h-56 object-contain animate-float opacity-12"
-              style={{ animationDelay: '3s', animationDuration: '10s' }}
-            />
-            <img 
-              src="/logo-icon.jpg" 
-              alt="" 
-              className="absolute bottom-32 right-10 w-40 h-40 object-contain animate-float opacity-15"
-              style={{ animationDelay: '4s', animationDuration: '7s' }}
-            />
-          </div>
-          {/* Animated Gradient Orbs */}
-          <div className="absolute top-0 -left-1/4 w-full h-full bg-gradient-to-br from-green-500/20 to-transparent rounded-full blur-3xl animate-gradient-shift" />
-          <div className="absolute bottom-0 -right-1/4 w-full h-full bg-gradient-to-tl from-emerald-600/20 to-transparent rounded-full blur-3xl animate-gradient-shift-reverse" />
         </div>
         
-        {/* Overlay for better text readability */}
-        <div className="absolute inset-0 bg-gradient-to-b from-black/30 via-transparent to-black/40" />
-        
-        <div className="relative z-10 text-center text-white max-w-5xl mx-auto px-6 py-20 animate-float">
+        {/* Content */}
+        <div className="relative z-10 text-center text-white max-w-5xl mx-auto px-6 py-20">
           
           <h1 className="text-5xl md:text-6xl lg:text-8xl font-bold mb-8 leading-tight text-shadow-lg">
             {t('hero.title')}
