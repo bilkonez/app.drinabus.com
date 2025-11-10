@@ -144,6 +144,45 @@ const LandingPage = () => {
 
   return (
     <div className="min-h-screen bg-background">
+      {/* Navigation Bar */}
+      <nav className="fixed top-0 left-0 right-0 z-50 bg-white/95 backdrop-blur-sm shadow-md">
+        <div className="max-w-7xl mx-auto px-6 py-4">
+          <div className="flex items-center justify-between">
+            <img 
+              src="/lovable-uploads/drina-bus-logo-hq.png" 
+              alt="Drina Bus Logo" 
+              className="h-12 w-auto"
+            />
+            <div className="flex items-center gap-8">
+              <a 
+                href="#fleet" 
+                className="text-gray-700 hover:text-green-600 font-medium transition-colors duration-200"
+              >
+                {t('nav.fleet')}
+              </a>
+              <a 
+                href="#about" 
+                className="text-gray-700 hover:text-green-600 font-medium transition-colors duration-200"
+              >
+                {t('nav.about')}
+              </a>
+              <a 
+                href="#gallery" 
+                className="text-gray-700 hover:text-green-600 font-medium transition-colors duration-200"
+              >
+                {t('nav.gallery')}
+              </a>
+              <a 
+                href="#contact" 
+                className="text-gray-700 hover:text-green-600 font-medium transition-colors duration-200"
+              >
+                {t('nav.contact')}
+              </a>
+            </div>
+          </div>
+        </div>
+      </nav>
+
       <LanguageSwitcher />
       <WhatsAppButton />
       
@@ -160,7 +199,7 @@ const LandingPage = () => {
         <div className="relative z-10 text-center text-white max-w-5xl mx-auto px-6 py-20">
           <div className="mb-12 animate-fade-in">
             <img 
-              src="/lovable-uploads/drina-bus-logo-transparent.png" 
+              src="/lovable-uploads/drina-bus-logo-hq.png" 
               alt="Drina Bus Logo" 
               className="h-32 md:h-40 w-auto mx-auto mb-8 drop-shadow-2xl"
             />
@@ -190,12 +229,6 @@ const LandingPage = () => {
           </div>
         </div>
 
-        {/* Scroll indicator */}
-        <div className="absolute bottom-8 left-1/2 transform -translate-x-1/2 animate-bounce">
-          <div className="w-6 h-10 border-2 border-white/50 rounded-full flex justify-center">
-            <div className="w-1 h-3 bg-white/50 rounded-full mt-2"></div>
-          </div>
-        </div>
       </section>
 
       {/* Services Section */}
@@ -275,7 +308,8 @@ const LandingPage = () => {
                           <img 
                             src={vehicleImage}
                             alt={`${vehicle.brand} ${vehicle.model} - Drina Bus`}
-                            className="w-full h-full object-cover object-center group-hover:scale-105 transition-transform duration-300"
+                            className="w-full h-full object-cover object-center group-hover:scale-110 transition-transform duration-300"
+                            style={{ objectPosition: 'center 40%' }}
                             loading="lazy"
                             width="400"
                             height="225"
@@ -342,7 +376,8 @@ const LandingPage = () => {
                               <img 
                                 src={vehicleImage}
                                 alt={`${vehicle.brand} ${vehicle.model} - Drina Bus`}
-                                className="w-full h-full object-cover object-center group-hover:scale-105 transition-transform duration-300"
+                                className="w-full h-full object-cover object-center group-hover:scale-110 transition-transform duration-300"
+                                style={{ objectPosition: 'center 40%' }}
                                 loading="lazy"
                                 width="400"
                                 height="225"

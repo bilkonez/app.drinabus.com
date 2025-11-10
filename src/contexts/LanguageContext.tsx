@@ -10,6 +10,12 @@ interface LanguageContextType {
 
 const translations = {
   sr: {
+    // Navigation
+    'nav.fleet': 'Vozni park',
+    'nav.about': 'O nama',
+    'nav.gallery': 'Galerija',
+    'nav.contact': 'Kontakt',
+    
     // Hero
     'hero.title': 'Siguran i udoban prevoz',
     'hero.subtitle': 'Povezujemo ljude – lokalno i međunarodno',
@@ -62,6 +68,12 @@ const translations = {
     'footer.rights': 'Sva prava zadržana.',
   },
   en: {
+    // Navigation
+    'nav.fleet': 'Fleet',
+    'nav.about': 'About',
+    'nav.gallery': 'Gallery',
+    'nav.contact': 'Contact',
+    
     // Hero
     'hero.title': 'Safe and comfortable transport',
     'hero.subtitle': 'Connecting people – locally and internationally',
