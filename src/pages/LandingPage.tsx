@@ -79,10 +79,19 @@ const LandingPage = () => {
   const [galleryImages, setGalleryImages] = useState<GalleryImage[]>([]);
   const [selectedImage, setSelectedImage] = useState<string | null>(null);
   const [loading, setLoading] = useState(true);
+  const [scrollY, setScrollY] = useState(0);
 
   useEffect(() => {
     fetchVehicles();
     fetchGalleryImages();
+    
+    // Parallax scroll effect
+    const handleScroll = () => {
+      setScrollY(window.scrollY);
+    };
+    
+    window.addEventListener('scroll', handleScroll, { passive: true });
+    return () => window.removeEventListener('scroll', handleScroll);
   }, []);
 
   const fetchVehicles = async () => {
@@ -227,8 +236,14 @@ const LandingPage = () => {
       
       {/* Hero Section */}
       <section className="relative min-h-screen flex items-center justify-center overflow-hidden">
-        {/* Blurred Bus Gallery Background */}
-        <div className="absolute inset-0">
+        {/* Blurred Bus Gallery Background with Parallax */}
+        <div 
+          className="absolute inset-0"
+          style={{
+            transform: `translateY(${scrollY * 0.5}px)`,
+            transition: 'transform 0.1s ease-out'
+          }}
+        >
           <img 
             src="/lovable-uploads/1bc6f777-073d-4e8d-be07-8473954f5e95.png" 
             alt="Drina Bus Fleet" 
