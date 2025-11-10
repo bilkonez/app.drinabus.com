@@ -240,14 +240,20 @@ const LandingPage = () => {
         
         {/* Content */}
         <div className="relative z-10 text-center text-white max-w-6xl mx-auto px-6 py-20">
-          {/* Logo */}
+          {/* Logo with white background strip */}
           <div className="mb-8 flex justify-center animate-fade-in">
-            <img 
-              src="/lovable-uploads/drina-bus-logo-transparent.png" 
-              alt="Drina Bus" 
-              className="h-32 w-auto drop-shadow-2xl"
-              style={{ filter: 'contrast(1.2) brightness(0.95) saturate(1.1)' }}
-            />
+            <div className="relative">
+              {/* White background strip */}
+              <div className="absolute inset-0 -inset-x-12 bg-white rounded-lg shadow-2xl" 
+                   style={{ top: '-10px', bottom: '-10px' }} 
+              />
+              {/* Logo */}
+              <img 
+                src="/lovable-uploads/drina-bus-logo-transparent.png" 
+                alt="Drina Bus" 
+                className="relative h-32 w-auto"
+              />
+            </div>
           </div>
           
           <h1 className="text-5xl md:text-6xl lg:text-8xl font-bold mb-8 leading-tight drop-shadow-2xl animate-fade-in" style={{ animationDelay: '0.2s', animationFillMode: 'both' }}>
