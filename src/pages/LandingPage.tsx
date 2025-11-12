@@ -238,6 +238,12 @@ const LandingPage = () => {
               >
                 {t('nav.contact')}
               </a>
+              <a 
+                href="#cta" 
+                className="bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded-lg font-semibold transition-all duration-200 shadow-lg hover:shadow-xl hover:scale-105"
+              >
+                {t('nav.booking')}
+              </a>
               <button
                 onClick={() => setLanguage(language === 'sr' ? 'en' : 'sr')}
                 className="flex items-center gap-2 text-white hover:text-green-400 font-medium transition-colors duration-200 border-l border-white/30 pl-6 drop-shadow-lg"
@@ -312,6 +318,13 @@ const LandingPage = () => {
                 className="text-white hover:text-green-400 font-medium transition-colors duration-200 drop-shadow-lg py-2"
               >
                 {t('nav.contact')}
+              </a>
+              <a 
+                href="#cta" 
+                onClick={() => setMobileMenuOpen(false)}
+                className="bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded-lg font-semibold transition-all duration-200 shadow-lg text-center"
+              >
+                {t('nav.booking')}
               </a>
             </div>
           )}

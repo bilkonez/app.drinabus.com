@@ -17,6 +17,7 @@ const translations = {
     'nav.gallery': 'Galerija',
     'nav.faq': 'FAQ',
     'nav.contact': 'Kontakt',
+    'nav.booking': 'Rezervacija',
     
     // Hero
     'hero.title': 'Siguran i udoban prevoz',
@@ -111,6 +112,7 @@ const translations = {
     'nav.gallery': 'Gallery',
     'nav.faq': 'FAQ',
     'nav.contact': 'Contact',
+    'nav.booking': 'Booking',
     
     // Hero
     'hero.title': 'Safe and comfortable transport',
