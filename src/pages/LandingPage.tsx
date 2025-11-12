@@ -204,12 +204,6 @@ const LandingPage = () => {
             {/* Desktop Navigation */}
             <div className="hidden lg:flex items-center gap-6">
               <a 
-                href="#services" 
-                className="text-white hover:text-green-400 font-medium transition-colors duration-200 drop-shadow-lg"
-              >
-                {t('nav.services')}
-              </a>
-              <a 
                 href="#fleet" 
                 className="text-white hover:text-green-400 font-medium transition-colors duration-200 drop-shadow-lg"
               >
@@ -232,12 +226,6 @@ const LandingPage = () => {
                 className="text-white hover:text-green-400 font-medium transition-colors duration-200 drop-shadow-lg"
               >
                 {t('nav.faq')}
-              </a>
-              <a 
-                href="#contact" 
-                className="text-white hover:text-green-400 font-medium transition-colors duration-200 drop-shadow-lg"
-              >
-                {t('nav.contact')}
               </a>
               <a 
                 href="/ponude" 
@@ -285,13 +273,6 @@ const LandingPage = () => {
           {mobileMenuOpen && (
             <div className="lg:hidden mt-4 pb-4 flex flex-col gap-4 animate-fade-in">
               <a 
-                href="#services" 
-                onClick={() => setMobileMenuOpen(false)}
-                className="text-white hover:text-green-400 font-medium transition-colors duration-200 drop-shadow-lg py-2"
-              >
-                {t('nav.services')}
-              </a>
-              <a 
                 href="#fleet" 
                 onClick={() => setMobileMenuOpen(false)}
                 className="text-white hover:text-green-400 font-medium transition-colors duration-200 drop-shadow-lg py-2"
@@ -318,13 +299,6 @@ const LandingPage = () => {
                 className="text-white hover:text-green-400 font-medium transition-colors duration-200 drop-shadow-lg py-2"
               >
                 {t('nav.faq')}
-              </a>
-              <a 
-                href="#contact" 
-                onClick={() => setMobileMenuOpen(false)}
-                className="text-white hover:text-green-400 font-medium transition-colors duration-200 drop-shadow-lg py-2"
-              >
-                {t('nav.contact')}
               </a>
               <a 
                 href="/ponude" 

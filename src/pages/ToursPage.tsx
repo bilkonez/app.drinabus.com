@@ -74,12 +74,6 @@ export default function ToursPage() {
             {/* Desktop Navigation */}
             <div className="hidden lg:flex items-center gap-6">
               <Link 
-                to="/#services" 
-                className="text-white hover:text-green-400 font-medium transition-colors duration-200 drop-shadow-lg"
-              >
-                {t('nav.services')}
-              </Link>
-              <Link 
                 to="/#fleet" 
                 className="text-white hover:text-green-400 font-medium transition-colors duration-200 drop-shadow-lg"
               >
@@ -102,12 +96,6 @@ export default function ToursPage() {
                 className="text-white hover:text-green-400 font-medium transition-colors duration-200 drop-shadow-lg"
               >
                 {t('nav.faq')}
-              </Link>
-              <Link 
-                to="/#contact" 
-                className="text-white hover:text-green-400 font-medium transition-colors duration-200 drop-shadow-lg"
-              >
-                {t('nav.contact')}
               </Link>
               <Link 
                 to="/ponude" 
@@ -155,13 +143,6 @@ export default function ToursPage() {
           {mobileMenuOpen && (
             <div className="lg:hidden mt-4 pb-4 flex flex-col gap-4 animate-fade-in">
               <Link 
-                to="/#services" 
-                onClick={() => setMobileMenuOpen(false)}
-                className="text-white hover:text-green-400 font-medium transition-colors duration-200 drop-shadow-lg py-2"
-              >
-                {t('nav.services')}
-              </Link>
-              <Link 
                 to="/#fleet" 
                 onClick={() => setMobileMenuOpen(false)}
                 className="text-white hover:text-green-400 font-medium transition-colors duration-200 drop-shadow-lg py-2"
@@ -188,13 +169,6 @@ export default function ToursPage() {
                 className="text-white hover:text-green-400 font-medium transition-colors duration-200 drop-shadow-lg py-2"
               >
                 {t('nav.faq')}
-              </Link>
-              <Link 
-                to="/#contact" 
-                onClick={() => setMobileMenuOpen(false)}
-                className="text-white hover:text-green-400 font-medium transition-colors duration-200 drop-shadow-lg py-2"
-              >
-                {t('nav.contact')}
               </Link>
               <Link 
                 to="/ponude" 
