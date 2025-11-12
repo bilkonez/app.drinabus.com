@@ -201,62 +201,14 @@ export default function ToursPage() {
         </div>
       </section>
 
-      {/* Filter Section */}
-      <section className="bg-card border-b border-border py-6">
+      {/* Coming Soon Section */}
+      <section className="py-32">
         <div className="container mx-auto px-4">
-          <div className="flex flex-col sm:flex-row gap-4 items-center justify-between">
-            <div className="flex items-center gap-2 text-muted-foreground">
-              <Filter className="w-5 h-5" />
-              <span className="font-semibold">{t('tours.filter')}</span>
-            </div>
-            
-            <Select value={filterType} onValueChange={setFilterType}>
-              <SelectTrigger className="w-full sm:w-[200px]">
-                <SelectValue />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="all">{t('tours.allTypes')}</SelectItem>
-                <SelectItem value="jednodnevni">{t('tours.oneDay')}</SelectItem>
-                <SelectItem value="vikend">{t('tours.weekend')}</SelectItem>
-                <SelectItem value="vise_dana">{t('tours.multiDay')}</SelectItem>
-                <SelectItem value="sezonski">{t('tours.seasonal')}</SelectItem>
-              </SelectContent>
-            </Select>
+          <div className="text-center">
+            <h2 className="text-4xl md:text-6xl font-bold text-foreground">
+              USKORO..
+            </h2>
           </div>
-        </div>
-      </section>
-
-      {/* Tours Grid */}
-      <section className="py-16">
-        <div className="container mx-auto px-4">
-          {loading ? (
-            <div className="flex items-center justify-center py-20">
-              <Loader2 className="w-8 h-8 animate-spin text-primary" />
-            </div>
-          ) : filteredTours.length === 0 ? (
-            <div className="text-center py-20">
-              <p className="text-xl text-muted-foreground">{t('tours.noResults')}</p>
-            </div>
-          ) : (
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-              {filteredTours.map((tour) => (
-                <TourCard
-                  key={tour.id}
-                  id={tour.id}
-                  slug={tour.slug}
-                  title={tour.title}
-                  shortDescription={tour.short_description}
-                  destination={tour.destination}
-                  tourType={tour.tour_type}
-                  durationDays={tour.duration_days}
-                  price={tour.price}
-                  coverImageUrl={tour.cover_image_url}
-                  maxPassengers={tour.max_passengers}
-                  featured={tour.featured}
-                />
-              ))}
-            </div>
-          )}
         </div>
       </section>
     </div>
