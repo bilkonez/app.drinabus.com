@@ -3,7 +3,7 @@ import { Card, CardContent } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Dialog, DialogContent } from '@/components/ui/dialog';
 import { supabase } from '@/integrations/supabase/client';
-import { Phone, Mail, Instagram, MapPin, Users, Route, Calendar, X, GraduationCap, Compass, Briefcase, Plane, HeartHandshake, Globe, Menu } from 'lucide-react';
+import { Phone, Mail, Instagram, MapPin, Users, Route, Calendar, X, GraduationCap, Compass, Briefcase, Plane, HeartHandshake, Globe, Menu, MessageCircle } from 'lucide-react';
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from '@/components/ui/accordion';
 import heroBackground from '@/assets/hero-river-bus.jpg';
 import WhatsAppButton from '@/components/ui/WhatsAppButton';
@@ -785,6 +785,72 @@ const LandingPage = () => {
               </AccordionContent>
             </AccordionItem>
           </Accordion>
+        </div>
+      </section>
+
+      {/* Call to Action Section */}
+      <section id="cta" className="relative py-24 px-6 bg-gradient-to-br from-green-700 to-emerald-800 text-white overflow-hidden">
+        {/* Background Pattern */}
+        <div className="absolute inset-0 opacity-10 bg-repeat" style={{ 
+          backgroundImage: `url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%23ffffff' fill-opacity='1'%3E%3Cpath d='M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E")`
+        }} />
+        
+        <div className="max-w-5xl mx-auto text-center relative z-10">
+          {/* Trust Badge */}
+          <div className="inline-flex items-center gap-2 bg-white/10 backdrop-blur-sm px-4 py-2 rounded-full mb-8 animate-fade-in">
+            <Badge className="bg-white text-green-700 hover:bg-white/90">
+              ✓ 15+ {t('cta.years')}
+            </Badge>
+            <span className="text-white/90 text-sm">{t('cta.trusted')}</span>
+          </div>
+
+          {/* Main Headline */}
+          <h2 className="text-4xl md:text-5xl lg:text-6xl font-bold mb-6 animate-fade-in drop-shadow-2xl" style={{ animationDelay: '0.1s', animationFillMode: 'both' }}>
+            {t('cta.title')}
+          </h2>
+          
+          {/* Subheadline */}
+          <p className="text-xl md:text-2xl mb-12 text-white/95 max-w-3xl mx-auto leading-relaxed animate-fade-in" style={{ animationDelay: '0.2s', animationFillMode: 'both' }}>
+            {t('cta.subtitle')}
+          </p>
+
+          {/* CTA Buttons */}
+          <div className="flex flex-col sm:flex-row gap-4 justify-center items-center animate-fade-in" style={{ animationDelay: '0.3s', animationFillMode: 'both' }}>
+            {/* Primary CTA - Phone */}
+            <a 
+              href="tel:+38762888702"
+              className="group relative bg-white text-green-700 px-8 py-4 rounded-xl text-lg font-bold transition-all duration-300 shadow-2xl hover:shadow-[0_0_30px_rgba(255,255,255,0.3)] hover:scale-105 flex items-center gap-3 min-w-[200px] justify-center"
+            >
+              <Phone className="h-5 w-5 group-hover:animate-pulse" />
+              <span>{t('cta.callNow')}</span>
+              <div className="absolute inset-0 rounded-xl bg-gradient-to-r from-transparent via-white/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
+            </a>
+
+            {/* Secondary CTA - WhatsApp */}
+            <a 
+              href="https://wa.me/38762888702?text=Zdravo,%20želim%20da%20se%20informišem%20o%20vašim%20uslugama%20prevoza."
+              target="_blank"
+              rel="noopener noreferrer"
+              className="group bg-[#25D366] hover:bg-[#20BA5A] text-white px-8 py-4 rounded-xl text-lg font-bold transition-all duration-300 shadow-xl hover:shadow-2xl hover:scale-105 flex items-center gap-3 min-w-[200px] justify-center"
+            >
+              <MessageCircle className="h-5 w-5 group-hover:animate-pulse" />
+              <span>WhatsApp</span>
+            </a>
+
+            {/* Tertiary CTA - Email */}
+            <a 
+              href="mailto:drinabus@hotmail.com"
+              className="group bg-white/10 backdrop-blur-sm hover:bg-white/20 text-white border-2 border-white/50 px-8 py-4 rounded-xl text-lg font-bold transition-all duration-300 shadow-lg hover:shadow-xl hover:scale-105 flex items-center gap-3 min-w-[200px] justify-center"
+            >
+              <Mail className="h-5 w-5 group-hover:animate-pulse" />
+              <span>{t('cta.email')}</span>
+            </a>
+          </div>
+
+          {/* Additional Info */}
+          <p className="mt-8 text-white/80 text-sm animate-fade-in" style={{ animationDelay: '0.4s', animationFillMode: 'both' }}>
+            {t('cta.response')}
+          </p>
         </div>
       </section>
 

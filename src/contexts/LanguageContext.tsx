@@ -40,6 +40,15 @@ const translations = {
     'detailedServices.airport.title': 'Airport transfer',
     'detailedServices.airport.desc': 'Pouzdan transfer do/sa aerodroma. Dostupni 24/7 sa praćenjem leta i prilagođenim rasporedom.',
     
+    // CTA
+    'cta.years': 'godina iskustva',
+    'cta.trusted': 'Provjerena pouzdanost',
+    'cta.title': 'Spremni za putovanje?',
+    'cta.subtitle': 'Kontaktirajte nas danas za najbolju ponudu i besplatnu konsultaciju',
+    'cta.callNow': 'Pozovite nas',
+    'cta.email': 'Email',
+    'cta.response': 'Odgovaramo u roku od 24 sata',
+    
     // FAQ
     'faq.title': 'Najčešća pitanja',
     'faq.subtitle': 'Odgovori na pitanja koja nam najčešće postavljaju',
@@ -124,6 +133,15 @@ const translations = {
     'detailedServices.international.desc': 'Transport to Croatia, Serbia, Slovenia, Montenegro, Albania, North Macedonia and other European destinations. Experienced drivers and comfortable buses.',
     'detailedServices.airport.title': 'Airport Transfer',
     'detailedServices.airport.desc': 'Reliable transfer to/from airports. Available 24/7 with flight tracking and flexible scheduling.',
+    
+    // CTA
+    'cta.years': 'years of experience',
+    'cta.trusted': 'Proven reliability',
+    'cta.title': 'Ready to travel?',
+    'cta.subtitle': 'Contact us today for the best offer and free consultation',
+    'cta.callNow': 'Call Now',
+    'cta.email': 'Email',
+    'cta.response': 'We respond within 24 hours',
     
     // FAQ
     'faq.title': 'Frequently Asked Questions',
