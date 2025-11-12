@@ -23,6 +23,7 @@ const translations = {
     'hero.title': 'Siguran i udoban prevoz',
     'hero.subtitle': 'Povezujemo ljude – lokalno i međunarodno',
     'hero.viewFleet': 'Pogledaj vozni park',
+    'hero.viewTours': 'Pogledaj ponudu',
     'hero.bookNow': 'Rezervišite sada',
     
     // Detailed Services
@@ -103,6 +104,38 @@ const translations = {
     
     // Footer
     'footer.rights': 'Sva prava zadržana.',
+    
+    // Tours
+    'tours.title': 'Naše Ponude Putovanja',
+    'tours.subtitle': 'Otkrijte svijet sa nama - od jednodnevnih izleta do višednevnih aranžmana',
+    'tours.filter': 'Filtriraj ponude',
+    'tours.allTypes': 'Svi tipovi',
+    'tours.oneDay': 'Jednodnevni',
+    'tours.weekend': 'Vikend',
+    'tours.multiDay': 'Višednevni',
+    'tours.seasonal': 'Sezonski',
+    'tours.destination': 'Destinacija',
+    'tours.duration': 'Trajanje',
+    'tours.price': 'Cijena',
+    'tours.days': 'dana',
+    'tours.day': 'dan',
+    'tours.from': 'Od',
+    'tours.learnMore': 'Saznaj više',
+    'tours.included': 'Šta je uključeno',
+    'tours.notIncluded': 'Šta nije uključeno',
+    'tours.bookNow': 'Rezerviši sada',
+    'tours.contactUs': 'Kontaktirajte nas',
+    'tours.noResults': 'Nema dostupnih ponuda',
+    'tours.backToTours': 'Nazad na ponude',
+    'tours.tourDetails': 'Detalji putovanja',
+    'tours.overview': 'Pregled',
+    'tours.program': 'Program',
+    'tours.info': 'Informacije',
+    'tours.departureCity': 'Polazak iz',
+    'tours.maxPassengers': 'Maksimalno putnika',
+    'tours.availability': 'Dostupno',
+    'tours.priceNote': 'Napomena o cijeni',
+    'tours.allTours': 'Sve ponude',
   },
   en: {
     // Navigation
@@ -118,6 +151,7 @@ const translations = {
     'hero.title': 'Safe and comfortable transport',
     'hero.subtitle': 'Connecting people – locally and internationally',
     'hero.viewFleet': 'View our fleet',
+    'hero.viewTours': 'View offers',
     'hero.bookNow': 'Book now',
     
     // Detailed Services
@@ -198,6 +232,38 @@ const translations = {
     
     // Footer
     'footer.rights': 'All rights reserved.',
+    
+    // Tours
+    'tours.title': 'Our Travel Offers',
+    'tours.subtitle': 'Discover the world with us - from day trips to multi-day tours',
+    'tours.filter': 'Filter offers',
+    'tours.allTypes': 'All types',
+    'tours.oneDay': 'Day trip',
+    'tours.weekend': 'Weekend',
+    'tours.multiDay': 'Multi-day',
+    'tours.seasonal': 'Seasonal',
+    'tours.destination': 'Destination',
+    'tours.duration': 'Duration',
+    'tours.price': 'Price',
+    'tours.days': 'days',
+    'tours.day': 'day',
+    'tours.from': 'From',
+    'tours.learnMore': 'Learn more',
+    'tours.included': "What's included",
+    'tours.notIncluded': "What's not included",
+    'tours.bookNow': 'Book now',
+    'tours.contactUs': 'Contact us',
+    'tours.noResults': 'No available offers',
+    'tours.backToTours': 'Back to offers',
+    'tours.tourDetails': 'Tour details',
+    'tours.overview': 'Overview',
+    'tours.program': 'Program',
+    'tours.info': 'Information',
+    'tours.departureCity': 'Departure from',
+    'tours.maxPassengers': 'Maximum passengers',
+    'tours.availability': 'Available',
+    'tours.priceNote': 'Price note',
+    'tours.allTours': 'All offers',
   }
 };
 

@@ -450,6 +450,113 @@ export type Database = {
         }
         Relationships: []
       }
+      tour_images: {
+        Row: {
+          caption: string | null
+          created_at: string | null
+          display_order: number | null
+          id: string
+          image_url: string
+          tour_package_id: string | null
+        }
+        Insert: {
+          caption?: string | null
+          created_at?: string | null
+          display_order?: number | null
+          id?: string
+          image_url: string
+          tour_package_id?: string | null
+        }
+        Update: {
+          caption?: string | null
+          created_at?: string | null
+          display_order?: number | null
+          id?: string
+          image_url?: string
+          tour_package_id?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "tour_images_tour_package_id_fkey"
+            columns: ["tour_package_id"]
+            isOneToOne: false
+            referencedRelation: "tour_packages"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      tour_packages: {
+        Row: {
+          available_from: string | null
+          available_to: string | null
+          cover_image_url: string | null
+          created_at: string | null
+          departure_city: string | null
+          destination: string
+          duration_days: number
+          featured: boolean | null
+          full_description: string | null
+          id: string
+          included_services: string[] | null
+          max_passengers: number | null
+          not_included: string[] | null
+          price: number | null
+          price_note: string | null
+          short_description: string
+          slug: string
+          status: string | null
+          title: string
+          tour_type: string
+          updated_at: string | null
+        }
+        Insert: {
+          available_from?: string | null
+          available_to?: string | null
+          cover_image_url?: string | null
+          created_at?: string | null
+          departure_city?: string | null
+          destination: string
+          duration_days: number
+          featured?: boolean | null
+          full_description?: string | null
+          id?: string
+          included_services?: string[] | null
+          max_passengers?: number | null
+          not_included?: string[] | null
+          price?: number | null
+          price_note?: string | null
+          short_description: string
+          slug: string
+          status?: string | null
+          title: string
+          tour_type: string
+          updated_at?: string | null
+        }
+        Update: {
+          available_from?: string | null
+          available_to?: string | null
+          cover_image_url?: string | null
+          created_at?: string | null
+          departure_city?: string | null
+          destination?: string
+          duration_days?: number
+          featured?: boolean | null
+          full_description?: string | null
+          id?: string
+          included_services?: string[] | null
+          max_passengers?: number | null
+          not_included?: string[] | null
+          price?: number | null
+          price_note?: string | null
+          short_description?: string
+          slug?: string
+          status?: string | null
+          title?: string
+          tour_type?: string
+          updated_at?: string | null
+        }
+        Relationships: []
+      }
       vehicle_deadlines: {
         Row: {
           fire_extinguisher_expiry: string | null

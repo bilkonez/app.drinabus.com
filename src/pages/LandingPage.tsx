@@ -398,10 +398,10 @@ const LandingPage = () => {
               {t('hero.viewFleet')}
             </a>
             <a 
-              href="#cta" 
+              href="/ponude" 
               className="bg-white/10 backdrop-blur-sm hover:bg-white/20 text-white border-2 border-white/50 px-8 py-4 rounded-lg text-lg font-semibold transition-all duration-300 shadow-lg hover:shadow-xl hover:scale-105"
             >
-              {t('hero.bookNow')}
+              {t('hero.viewTours')}
             </a>
           </div>
         </div>
