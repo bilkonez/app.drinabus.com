@@ -859,11 +859,6 @@ const LandingPage = () => {
               <span>{t('cta.email')}</span>
             </a>
           </div>
-
-          {/* Additional Info */}
-          <p className="mt-8 text-white/80 text-sm animate-fade-in" style={{ animationDelay: '0.4s', animationFillMode: 'both' }}>
-            {t('cta.response')}
-          </p>
         </div>
       </section>
 
