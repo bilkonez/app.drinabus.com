@@ -216,12 +216,6 @@ const LandingPage = () => {
                 {t('nav.fleet')}
               </a>
               <a 
-                href="/ponude" 
-                className="text-white hover:text-green-400 font-medium transition-colors duration-200 drop-shadow-lg"
-              >
-                Ponude
-              </a>
-              <a 
                 href="#about" 
                 className="text-white hover:text-green-400 font-medium transition-colors duration-200 drop-shadow-lg"
               >
@@ -244,6 +238,12 @@ const LandingPage = () => {
                 className="text-white hover:text-green-400 font-medium transition-colors duration-200 drop-shadow-lg"
               >
                 {t('nav.contact')}
+              </a>
+              <a 
+                href="/ponude" 
+                className="bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded-lg font-semibold transition-all duration-200 shadow-lg hover:shadow-xl hover:scale-105"
+              >
+                {t('nav.tours')}
               </a>
               <a 
                 href="#cta" 
@@ -299,13 +299,6 @@ const LandingPage = () => {
                 {t('nav.fleet')}
               </a>
               <a 
-                href="/ponude" 
-                onClick={() => setMobileMenuOpen(false)}
-                className="text-white hover:text-green-400 font-medium transition-colors duration-200 drop-shadow-lg py-2"
-              >
-                Ponude
-              </a>
-              <a 
                 href="#about" 
                 onClick={() => setMobileMenuOpen(false)}
                 className="text-white hover:text-green-400 font-medium transition-colors duration-200 drop-shadow-lg py-2"
@@ -332,6 +325,13 @@ const LandingPage = () => {
                 className="text-white hover:text-green-400 font-medium transition-colors duration-200 drop-shadow-lg py-2"
               >
                 {t('nav.contact')}
+              </a>
+              <a 
+                href="/ponude" 
+                onClick={() => setMobileMenuOpen(false)}
+                className="bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded-lg font-semibold transition-all duration-200 shadow-lg text-center"
+              >
+                {t('nav.tours')}
               </a>
               <a 
                 href="#cta" 

@@ -86,12 +86,6 @@ export default function ToursPage() {
                 {t('nav.fleet')}
               </Link>
               <Link 
-                to="/ponude" 
-                className="text-green-400 font-semibold transition-colors duration-200 drop-shadow-lg border-b-2 border-green-400"
-              >
-                Ponude
-              </Link>
-              <Link 
                 to="/#about" 
                 className="text-white hover:text-green-400 font-medium transition-colors duration-200 drop-shadow-lg"
               >
@@ -114,6 +108,18 @@ export default function ToursPage() {
                 className="text-white hover:text-green-400 font-medium transition-colors duration-200 drop-shadow-lg"
               >
                 {t('nav.contact')}
+              </Link>
+              <Link 
+                to="/ponude" 
+                className="bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded-lg font-semibold transition-all duration-200 shadow-lg hover:shadow-xl hover:scale-105"
+              >
+                {t('nav.tours')}
+              </Link>
+              <Link 
+                to="/#cta" 
+                className="bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded-lg font-semibold transition-all duration-200 shadow-lg hover:shadow-xl hover:scale-105"
+              >
+                {t('nav.booking')}
               </Link>
               <button
                 onClick={() => setLanguage(language === 'sr' ? 'en' : 'sr')}
@@ -163,13 +169,6 @@ export default function ToursPage() {
                 {t('nav.fleet')}
               </Link>
               <Link 
-                to="/ponude" 
-                onClick={() => setMobileMenuOpen(false)}
-                className="text-green-400 font-semibold transition-colors duration-200 drop-shadow-lg py-2"
-              >
-                Ponude
-              </Link>
-              <Link 
                 to="/#about" 
                 onClick={() => setMobileMenuOpen(false)}
                 className="text-white hover:text-green-400 font-medium transition-colors duration-200 drop-shadow-lg py-2"
@@ -196,6 +195,20 @@ export default function ToursPage() {
                 className="text-white hover:text-green-400 font-medium transition-colors duration-200 drop-shadow-lg py-2"
               >
                 {t('nav.contact')}
+              </Link>
+              <Link 
+                to="/ponude" 
+                onClick={() => setMobileMenuOpen(false)}
+                className="bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded-lg font-semibold transition-all duration-200 shadow-lg text-center"
+              >
+                {t('nav.tours')}
+              </Link>
+              <Link 
+                to="/#cta" 
+                onClick={() => setMobileMenuOpen(false)}
+                className="bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded-lg font-semibold transition-all duration-200 shadow-lg text-center"
+              >
+                {t('nav.booking')}
               </Link>
             </div>
           )}
