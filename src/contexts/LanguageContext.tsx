@@ -22,7 +22,7 @@ const translations = {
     'hero.title': 'Siguran i udoban prevoz',
     'hero.subtitle': 'Povezujemo ljude – lokalno i međunarodno',
     'hero.viewFleet': 'Pogledaj vozni park',
-    'hero.contact': 'Kontaktirajte nas',
+    'hero.bookNow': 'Rezervišite sada',
     
     // Detailed Services
     'detailedServices.title': 'Naše usluge',
@@ -116,7 +116,7 @@ const translations = {
     'hero.title': 'Safe and comfortable transport',
     'hero.subtitle': 'Connecting people – locally and internationally',
     'hero.viewFleet': 'View our fleet',
-    'hero.contact': 'Contact us',
+    'hero.bookNow': 'Book now',
     
     // Detailed Services
     'detailedServices.title': 'Our Services',
