@@ -8,6 +8,7 @@ import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from '@/
 import heroBackground from '@/assets/hero-river-bus.jpg';
 import WhatsAppButton from '@/components/ui/WhatsAppButton';
 import { useLanguage } from '@/contexts/LanguageContext';
+import { FeaturedTours } from '@/components/tours/FeaturedTours';
 
 interface Vehicle {
   id: string;
@@ -215,6 +216,12 @@ const LandingPage = () => {
                 {t('nav.fleet')}
               </a>
               <a 
+                href="/ponude" 
+                className="text-white hover:text-green-400 font-medium transition-colors duration-200 drop-shadow-lg"
+              >
+                Ponude
+              </a>
+              <a 
                 href="#about" 
                 className="text-white hover:text-green-400 font-medium transition-colors duration-200 drop-shadow-lg"
               >
@@ -290,6 +297,13 @@ const LandingPage = () => {
                 className="text-white hover:text-green-400 font-medium transition-colors duration-200 drop-shadow-lg py-2"
               >
                 {t('nav.fleet')}
+              </a>
+              <a 
+                href="/ponude" 
+                onClick={() => setMobileMenuOpen(false)}
+                className="text-white hover:text-green-400 font-medium transition-colors duration-200 drop-shadow-lg py-2"
+              >
+                Ponude
               </a>
               <a 
                 href="#about" 
@@ -505,6 +519,9 @@ const LandingPage = () => {
           </div>
         </div>
       </section>
+
+      {/* Featured Tours Section */}
+      <FeaturedTours />
 
       {/* Fleet Section */}
       <section id="fleet" className="py-20 px-6 bg-gray-50 scroll-mt-20">
