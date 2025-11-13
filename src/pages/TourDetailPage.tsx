@@ -3,6 +3,8 @@ import { useParams, Link, useNavigate } from 'react-router-dom';
 import { supabase } from '@/integrations/supabase/client';
 import { useLanguage } from '@/contexts/LanguageContext';
 import { ArrowLeft, MapPin, Calendar, Users, Phone, Mail, CheckCircle, XCircle, Loader2 } from 'lucide-react';
+import { format } from 'date-fns';
+import { bs } from 'date-fns/locale';
 
 interface TourPackage {
   id: string;
@@ -13,6 +15,7 @@ interface TourPackage {
   destination: string;
   tour_type: string;
   duration_days: number;
+  available_from: string;
   price: number | null;
   price_note: string | null;
   departure_city: string;
@@ -170,9 +173,9 @@ export default function TourDetailPage() {
                 <div className="flex items-center gap-3 text-muted-foreground">
                   <Calendar className="w-5 h-5 text-primary" />
                   <div>
-                    <div className="text-xs text-muted-foreground">{t('tours.duration')}</div>
+                    <div className="text-xs text-muted-foreground">{t('tours.travelDate')}</div>
                     <div className="font-semibold text-foreground">
-                      {tour.duration_days} {tour.duration_days === 1 ? t('tours.day') : t('tours.days')}
+                      {format(new Date(tour.available_from), 'd. MMMM yyyy.', { locale: bs })}
                     </div>
                   </div>
                 </div>
@@ -184,16 +187,6 @@ export default function TourDetailPage() {
                     <div className="font-semibold text-foreground">{tour.departure_city}</div>
                   </div>
                 </div>
-
-                {tour.max_passengers && (
-                  <div className="flex items-center gap-3 text-muted-foreground">
-                    <Users className="w-5 h-5 text-primary" />
-                    <div>
-                      <div className="text-xs text-muted-foreground">{t('tours.maxPassengers')}</div>
-                      <div className="font-semibold text-foreground">{tour.max_passengers}</div>
-                    </div>
-                  </div>
-                )}
               </div>
 
               {/* CTA Buttons */}

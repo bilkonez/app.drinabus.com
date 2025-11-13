@@ -5,7 +5,7 @@ import { ArrowRight, Loader2, ChevronLeft, ChevronRight, MapPin, Calendar, Users
 import { Link } from 'react-router-dom';
 import useEmblaCarousel from 'embla-carousel-react';
 import { format } from 'date-fns';
-import { sr } from 'date-fns/locale';
+import { bs } from 'date-fns/locale';
 
 interface TourPackage {
   id: string;
@@ -24,7 +24,7 @@ interface TourPackage {
 }
 
 export const FeaturedTours = () => {
-  const { t, language } = useLanguage();
+  const { t } = useLanguage();
   const [tours, setTours] = useState<TourPackage[]>([]);
   const [loading, setLoading] = useState(true);
   const [emblaRef, emblaApi] = useEmblaCarousel({ loop: true, align: 'center' });
@@ -170,16 +170,10 @@ export const FeaturedTours = () => {
                               <Calendar className="w-5 h-5 text-primary" />
                               <span className="font-semibold">
                                 {format(new Date(tour.available_from), 'd. MMMM yyyy.', { 
-                                  locale: language === 'sr' ? sr : undefined 
+                                  locale: bs
                                 })}
                               </span>
                             </div>
-                            {tour.max_passengers && (
-                              <div className="flex items-center gap-2">
-                                <Users className="w-5 h-5 text-primary" />
-                                <span className="font-semibold">{tour.max_passengers} putnika</span>
-                              </div>
-                            )}
                             {tour.price && (
                               <div className="ml-auto">
                                 <div className="text-sm text-muted-foreground">{t('tours.from')}</div>
