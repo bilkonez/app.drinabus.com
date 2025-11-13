@@ -20,7 +20,8 @@ import {
   Clock,
   Wrench,
   Plus,
-  CheckCircle
+  CheckCircle,
+  Plane
 } from "lucide-react";
 import { toast } from "@/hooks/use-toast";
 import VehicleManagement from "@/components/admin/VehicleManagement";
@@ -29,6 +30,7 @@ import RideManagement from "@/components/admin/RideManagement";
 import MaintenanceManagement from "@/components/admin/MaintenanceManagement";
 import RemindersTab from "@/components/admin/RemindersTab";
 import ReportsTab from "@/components/admin/ReportsTab";
+import TourPackageManagement from "@/components/admin/TourPackageManagement";
 import { AddCostModal } from "@/components/ui/AddCostModal";
 import { formatDate, formatTime } from "@/lib/dateUtils";
 
@@ -537,7 +539,7 @@ const Dashboard = () => {
       <div className="container mx-auto px-4 py-6">
         <Tabs value={activeTab} onValueChange={setActiveTab} className="space-y-4 md:space-y-6">
           <div className="overflow-x-auto">
-            <TabsList className="grid w-full min-w-[700px] md:min-w-0 grid-cols-7 text-xs md:text-sm">
+            <TabsList className="grid w-full min-w-[800px] md:min-w-0 grid-cols-8 text-xs md:text-sm">
               <TabsTrigger value="overview" className="flex items-center gap-1 md:gap-2 px-2 md:px-4">
                 <TrendingUp className="h-3 w-3 md:h-4 md:w-4" />
                 <span className="hidden sm:inline">Pregled</span>
@@ -572,6 +574,11 @@ const Dashboard = () => {
                 <FileText className="h-3 w-3 md:h-4 md:w-4" />
                 <span className="hidden lg:inline">Izvještaji</span>
                 <span className="lg:hidden">Rep.</span>
+              </TabsTrigger>
+              <TabsTrigger value="tours" className="flex items-center gap-1 md:gap-2 px-2 md:px-4">
+                <Plane className="h-3 w-3 md:h-4 md:w-4" />
+                <span className="hidden lg:inline">Ponude</span>
+                <span className="lg:hidden">Ture</span>
               </TabsTrigger>
             </TabsList>
           </div>
@@ -909,6 +916,10 @@ const Dashboard = () => {
 
           <TabsContent value="reports">
             <ReportsTab />
+          </TabsContent>
+
+          <TabsContent value="tours">
+            <TourPackageManagement />
           </TabsContent>
         </Tabs>
 
