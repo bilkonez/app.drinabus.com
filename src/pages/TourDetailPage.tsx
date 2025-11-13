@@ -197,7 +197,7 @@ export default function TourDetailPage() {
               {/* CTA Buttons */}
               <div className="space-y-3 pt-6 border-t border-border">
                 <a
-                  href={`https://wa.me/38765400789?text=${encodeURIComponent(`Poštovani, zanima me ponuda: ${tour.title}`)}`}
+                  href={`https://wa.me/38762888702?text=${encodeURIComponent(`Poštovani, zanima me ponuda: ${tour.title}`)}`}
                   target="_blank"
                   rel="noopener noreferrer"
                   className="w-full flex items-center justify-center gap-2 bg-[#25D366] hover:bg-[#20BA5A] text-white py-3 rounded-md font-semibold transition-colors"
@@ -207,7 +207,7 @@ export default function TourDetailPage() {
                 </a>
                 
                 <a
-                  href="tel:+38765400789"
+                  href="tel:+38762888702"
                   className="w-full flex items-center justify-center gap-2 bg-secondary text-secondary-foreground py-3 rounded-md font-semibold hover:bg-secondary/90 transition-colors"
                 >
                   <Phone className="w-4 h-4" />
