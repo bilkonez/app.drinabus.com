@@ -4,6 +4,8 @@ import { useLanguage } from '@/contexts/LanguageContext';
 import { ArrowRight, Loader2, ChevronLeft, ChevronRight, MapPin, Calendar, Users } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import useEmblaCarousel from 'embla-carousel-react';
+import { format } from 'date-fns';
+import { sr } from 'date-fns/locale';
 
 interface TourPackage {
   id: string;
@@ -14,6 +16,7 @@ interface TourPackage {
   destination: string;
   tour_type: string;
   duration_days: number;
+  available_from: string;
   price: number | null;
   cover_image_url: string | null;
   max_passengers: number | null;
@@ -21,7 +24,7 @@ interface TourPackage {
 }
 
 export const FeaturedTours = () => {
-  const { t } = useLanguage();
+  const { t, language } = useLanguage();
   const [tours, setTours] = useState<TourPackage[]>([]);
   const [loading, setLoading] = useState(true);
   const [emblaRef, emblaApi] = useEmblaCarousel({ loop: true, align: 'center' });
@@ -165,12 +168,16 @@ export const FeaturedTours = () => {
                           <div className="flex items-center gap-6 mb-6 pb-6 border-t border-border pt-6">
                             <div className="flex items-center gap-2">
                               <Calendar className="w-5 h-5 text-primary" />
-                              <span className="font-semibold">{tour.duration_days} {tour.duration_days === 1 ? t('tours.day') : t('tours.days')}</span>
+                              <span className="font-semibold">
+                                {format(new Date(tour.available_from), 'd. MMMM yyyy.', { 
+                                  locale: language === 'sr' ? sr : undefined 
+                                })}
+                              </span>
                             </div>
                             {tour.max_passengers && (
                               <div className="flex items-center gap-2">
                                 <Users className="w-5 h-5 text-primary" />
-                                <span className="font-semibold">{tour.max_passengers}</span>
+                                <span className="font-semibold">{tour.max_passengers} putnika</span>
                               </div>
                             )}
                             {tour.price && (

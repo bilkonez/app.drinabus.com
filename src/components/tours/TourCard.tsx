@@ -1,6 +1,8 @@
 import { MapPin, Calendar, Users } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import { useLanguage } from '@/contexts/LanguageContext';
+import { format } from 'date-fns';
+import { sr } from 'date-fns/locale';
 
 interface TourCardProps {
   id: string;
@@ -9,7 +11,7 @@ interface TourCardProps {
   shortDescription: string;
   destination: string;
   tourType: string;
-  durationDays: number;
+  availableFrom: string;
   price: number | null;
   coverImageUrl: string | null;
   maxPassengers: number | null;
@@ -22,13 +24,17 @@ export const TourCard = ({
   shortDescription,
   destination,
   tourType,
-  durationDays,
+  availableFrom,
   price,
   coverImageUrl,
   maxPassengers,
   featured
 }: TourCardProps) => {
-  const { t } = useLanguage();
+  const { t, language } = useLanguage();
+  
+  const formattedDate = format(new Date(availableFrom), 'd. MMMM yyyy.', { 
+    locale: language === 'sr' ? sr : undefined 
+  });
 
   const typeLabels: Record<string, string> = {
     jednodnevni: t('tours.oneDay'),
@@ -77,15 +83,15 @@ export const TourCard = ({
 
         {/* Info Row */}
         <div className="flex items-center justify-between pt-4 border-t border-border">
-          <div className="flex items-center gap-4 text-sm text-muted-foreground">
+          <div className="flex flex-col gap-2 text-sm text-muted-foreground">
             <div className="flex items-center gap-1">
               <Calendar className="w-4 h-4" />
-              <span>{durationDays} {durationDays === 1 ? t('tours.day') : t('tours.days')}</span>
+              <span>{formattedDate}</span>
             </div>
             {maxPassengers && (
               <div className="flex items-center gap-1">
                 <Users className="w-4 h-4" />
-                <span>{maxPassengers}</span>
+                <span>{maxPassengers} putnika</span>
               </div>
             )}
           </div>

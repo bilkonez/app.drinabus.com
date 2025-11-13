@@ -15,6 +15,7 @@ interface TourPackage {
   destination: string;
   tour_type: string;
   duration_days: number;
+  available_from: string;
   price: number | null;
   cover_image_url: string | null;
   max_passengers: number | null;
@@ -225,7 +226,7 @@ export default function ToursPage() {
                   shortDescription={tour.short_description}
                   destination={tour.destination}
                   tourType={tour.tour_type}
-                  durationDays={tour.duration_days}
+                  availableFrom={tour.available_from}
                   price={tour.price}
                   coverImageUrl={tour.cover_image_url}
                   maxPassengers={tour.max_passengers}

@@ -49,6 +49,7 @@ const translations = {
     'cta.title': 'Spremni za putovanje?',
     'cta.subtitle': 'Kontaktirajte nas danas za najbolju ponudu i besplatnu konsultaciju',
     'cta.callNow': 'Pozovite nas',
+    'cta.phone': '+387 62 888 702',
     'cta.email': 'Email',
     'cta.response': 'Odgovaramo u roku od 24 sata',
     
@@ -178,6 +179,7 @@ const translations = {
     'cta.title': 'Ready to travel?',
     'cta.subtitle': 'Contact us today for the best offer and free consultation',
     'cta.callNow': 'Call Now',
+    'cta.phone': '+387 62 888 702',
     'cta.email': 'Email',
     'cta.response': 'We respond within 24 hours',
     
