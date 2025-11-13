@@ -111,9 +111,14 @@ export default function TourDetailPage() {
             {/* Full Description */}
             {tour.full_description && (
               <div className="prose prose-lg max-w-none">
-                <p className="text-foreground leading-relaxed whitespace-pre-line">
-                  {tour.full_description}
-                </p>
+                <div 
+                  className="text-foreground leading-relaxed whitespace-pre-line"
+                  dangerouslySetInnerHTML={{
+                    __html: tour.full_description
+                      .replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>')
+                      .replace(/\n/g, '<br />')
+                  }}
+                />
               </div>
             )}
 
