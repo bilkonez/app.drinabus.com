@@ -201,14 +201,39 @@ export default function ToursPage() {
         </div>
       </section>
 
-      {/* Coming Soon Section */}
-      <section className="py-32">
+      {/* Tours Grid */}
+      <section className="py-16">
         <div className="container mx-auto px-4">
-          <div className="text-center">
-            <h2 className="text-4xl md:text-6xl font-bold text-foreground">
-              USKORO..
-            </h2>
-          </div>
+          {loading ? (
+            <div className="flex items-center justify-center py-20">
+              <Loader2 className="w-8 h-8 animate-spin text-primary" />
+            </div>
+          ) : tours.length === 0 ? (
+            <div className="text-center py-20">
+              <h2 className="text-4xl md:text-6xl font-bold text-foreground">
+                USKORO..
+              </h2>
+            </div>
+          ) : (
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+              {tours.map((tour) => (
+                <TourCard
+                  key={tour.id}
+                  id={tour.id}
+                  slug={tour.slug}
+                  title={tour.title}
+                  shortDescription={tour.short_description}
+                  destination={tour.destination}
+                  tourType={tour.tour_type}
+                  durationDays={tour.duration_days}
+                  price={tour.price}
+                  coverImageUrl={tour.cover_image_url}
+                  maxPassengers={tour.max_passengers}
+                  featured={tour.featured}
+                />
+              ))}
+            </div>
+          )}
         </div>
       </section>
     </div>
