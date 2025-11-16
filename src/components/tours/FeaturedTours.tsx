@@ -121,9 +121,9 @@ export const FeaturedTours = () => {
               {tours.map((tour) => (
                 <div key={tour.id} className="flex-[0_0_100%] min-w-0 px-2 md:px-4">
                   {/* Tour Card with fixed height like Zagreb card */}
-                  <div className="max-w-3xl mx-auto bg-card rounded-xl overflow-hidden shadow-lg md:shadow-xl hover:shadow-xl md:hover:shadow-2xl transition-all duration-500 h-[560px] md:h-[500px] flex flex-col">
-                    {/* Image Section - reduced aspect ratio to leave more space for content */}
-                    <div className="relative aspect-[16/9] overflow-hidden flex-shrink-0">
+                  <div className="max-w-3xl mx-auto bg-card rounded-xl overflow-hidden shadow-lg md:shadow-xl hover:shadow-xl md:hover:shadow-2xl transition-all duration-500 h-[580px] md:h-[520px] flex flex-col">
+                    {/* Image Section - fixed height to ensure content below is visible */}
+                    <div className="relative h-48 md:h-56 overflow-hidden flex-shrink-0">
                       <img
                         src={tour.cover_image_url || '/placeholder.svg'}
                         alt={tour.title}
