@@ -101,14 +101,14 @@ export const FeaturedTours = () => {
   }
 
   return (
-    <section className="py-20 px-6 bg-gradient-to-br from-background to-secondary/10 relative">
+    <section className="py-16 md:py-20 px-4 md:px-6 bg-gradient-to-br from-background to-secondary/10 relative">
       <div className="container mx-auto">
         {/* Header */}
-        <div className="text-center mb-12 animate-fade-in">
-          <h2 className="text-4xl md:text-5xl font-bold text-foreground mb-4">
+        <div className="text-center mb-8 md:mb-12 animate-fade-in">
+          <h2 className="text-3xl md:text-5xl font-bold text-foreground mb-3 md:mb-4">
             {t('tours.title')}
           </h2>
-          <p className="text-xl text-muted-foreground max-w-3xl mx-auto">
+          <p className="text-lg md:text-xl text-muted-foreground max-w-3xl mx-auto px-4">
             {t('tours.subtitle')}
           </p>
         </div>
@@ -119,78 +119,75 @@ export const FeaturedTours = () => {
           <div className="overflow-hidden" ref={emblaRef}>
             <div className="flex">
               {tours.map((tour) => (
-                <div key={tour.id} className="flex-[0_0_100%] min-w-0 px-4">
-                  {/* Large Tour Card */}
-                  <div className="max-w-5xl mx-auto bg-card rounded-2xl overflow-hidden shadow-2xl hover:shadow-3xl transition-all duration-500">
-                    <div className="grid md:grid-cols-2 gap-0">
-                      {/* Image Section */}
-                      <div className="relative aspect-[4/3] md:aspect-auto overflow-hidden">
-                        <img
-                          src={tour.cover_image_url || '/placeholder.svg'}
-                          alt={tour.title}
-                          className="w-full h-full object-cover hover:scale-110 transition-transform duration-700"
-                        />
-                        {/* Type Badge */}
-                        <div className="absolute top-6 left-6 bg-primary text-primary-foreground px-4 py-2 rounded-full text-sm font-bold shadow-lg">
-                          {typeLabels[tour.tour_type] || tour.tour_type}
+                <div key={tour.id} className="flex-[0_0_100%] min-w-0 px-2 md:px-4">
+                  {/* Compact Tour Card - optimized for mobile and desktop */}
+                  <div className="max-w-3xl mx-auto bg-card rounded-xl overflow-hidden shadow-lg md:shadow-xl hover:shadow-xl md:hover:shadow-2xl transition-all duration-500">
+                    {/* Image Section */}
+                    <div className="relative aspect-[16/10] md:aspect-[16/9] overflow-hidden">
+                      <img
+                        src={tour.cover_image_url || '/placeholder.svg'}
+                        alt={tour.title}
+                        className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700"
+                      />
+                      {/* Type Badge */}
+                      <div className="absolute top-3 left-3 md:top-4 md:left-4 bg-primary/95 backdrop-blur-sm text-primary-foreground px-3 py-1.5 rounded-full text-xs md:text-sm font-semibold shadow-lg">
+                        {typeLabels[tour.tour_type]}
+                      </div>
+                      {/* Featured Badge */}
+                      <div className="absolute top-3 right-3 md:top-4 md:right-4 bg-accent/95 backdrop-blur-sm text-accent-foreground px-3 py-1.5 rounded-full text-xs md:text-sm font-semibold shadow-lg flex items-center gap-1.5">
+                        <span className="text-yellow-400">⭐</span>
+                        <span className="hidden sm:inline">{t('tours.featured')}</span>
+                        <span className="sm:hidden">Top</span>
+                      </div>
+                    </div>
+
+                    {/* Content Section */}
+                    <div className="p-4 md:p-6">
+                      <div className="mb-4">
+                        <h3 className="text-xl md:text-2xl font-bold text-foreground mb-3 group-hover:text-primary transition-colors line-clamp-2">
+                          {tour.title}
+                        </h3>
+                        
+                        <div className="flex items-center gap-2 text-muted-foreground mb-3">
+                          <MapPin className="w-4 h-4 md:w-5 md:h-5 text-primary flex-shrink-0" />
+                          <span className="text-sm md:text-base truncate">{tour.destination}</span>
                         </div>
-                        {/* Featured Badge */}
-                        <div className="absolute top-6 right-6 bg-accent text-accent-foreground px-4 py-2 rounded-full text-sm font-bold shadow-lg">
-                          ⭐ Top ponuda
-                        </div>
+
+                        <p className="text-muted-foreground text-sm md:text-base leading-relaxed line-clamp-2">
+                          {tour.short_description}
+                        </p>
                       </div>
 
-                      {/* Content Section */}
-                      <div className="p-8 md:p-10 flex flex-col justify-between">
-                        <div>
-                          <h3 className="text-3xl md:text-4xl font-bold text-foreground mb-4">
-                            {tour.title}
-                          </h3>
-                          
-                          <div className="flex items-center gap-2 text-muted-foreground mb-6">
-                            <MapPin className="w-5 h-5 text-primary" />
-                            <span className="text-lg">{tour.destination}</span>
+                      {/* Info Grid */}
+                      <div className="grid grid-cols-2 gap-3 mb-4">
+                        {/* Date */}
+                        <div className="flex items-center gap-2 p-2.5 md:p-3 bg-secondary/50 rounded-lg">
+                          <Calendar className="w-4 h-4 md:w-5 md:h-5 text-primary flex-shrink-0" />
+                          <div className="min-w-0">
+                            <div className="text-xs text-muted-foreground">{t('tours.startDate')}</div>
+                            <div className="text-xs md:text-sm font-semibold truncate">{format(new Date(tour.available_from), 'd. MMM', { locale: bs })}</div>
                           </div>
-
-                          <p className="text-muted-foreground text-lg mb-6 leading-relaxed">
-                            {tour.short_description}
-                          </p>
-
-                          {tour.full_description && (
-                            <p className="text-muted-foreground mb-8 leading-relaxed line-clamp-3">
-                              {tour.full_description}
-                            </p>
-                          )}
                         </div>
 
-                        {/* Info & CTA */}
-                        <div>
-                          <div className="flex items-center gap-6 mb-6 pb-6 border-t border-border pt-6">
-                            <div className="flex items-center gap-2">
-                              <Calendar className="w-5 h-5 text-primary" />
-                              <span className="font-semibold">
-                                {format(new Date(tour.available_from), 'd. MMMM yyyy.', { 
-                                  locale: bs
-                                })}
-                              </span>
+                        {/* Price */}
+                        {tour.price && (
+                          <div className="flex items-center gap-2 p-2.5 md:p-3 bg-primary/10 rounded-lg border border-primary/20">
+                            <div className="flex-1 min-w-0">
+                              <div className="text-xs text-muted-foreground">{t('tours.from')}</div>
+                              <div className="text-lg md:text-xl font-bold text-primary truncate">{tour.price.toFixed(0)} KM</div>
                             </div>
-                            {tour.price && (
-                              <div className="ml-auto">
-                                <div className="text-sm text-muted-foreground">{t('tours.from')}</div>
-                                <div className="text-3xl font-bold text-primary">{tour.price.toFixed(0)} KM</div>
-                              </div>
-                            )}
                           </div>
-
-                          <Link
-                            to={`/ponude/${tour.slug}`}
-                            className="w-full bg-primary text-primary-foreground py-4 px-6 rounded-lg font-bold text-lg hover:bg-primary/90 transition-all transform hover:scale-105 shadow-lg flex items-center justify-center gap-2"
-                          >
-                            {t('tours.learnMore')}
-                            <ArrowRight className="w-5 h-5" />
-                          </Link>
-                        </div>
+                        )}
                       </div>
+
+                      {/* CTA Button */}
+                      <Link 
+                        to={`/ponude/${tour.slug}`}
+                        className="w-full inline-flex items-center justify-center gap-2 bg-primary text-primary-foreground py-2.5 md:py-3 px-4 md:px-6 rounded-lg font-semibold text-sm md:text-base hover:bg-primary/90 transition-all duration-300 hover:gap-3 group/btn shadow-md hover:shadow-lg"
+                      >
+                        <span>{t('tours.learnMore')}</span>
+                        <ArrowRight className="w-4 h-4 group-hover/btn:translate-x-1 transition-transform" />
+                      </Link>
                     </div>
                   </div>
                 </div>
@@ -203,48 +200,48 @@ export const FeaturedTours = () => {
             <>
               <button
                 onClick={scrollPrev}
-                className="absolute left-0 top-1/2 -translate-y-1/2 z-10 bg-background/90 backdrop-blur-sm hover:bg-background text-foreground p-3 md:p-4 rounded-full shadow-xl hover:shadow-2xl transition-all hover:scale-110 border border-border"
+                className="absolute left-1 md:left-0 top-1/2 -translate-y-1/2 bg-background/80 backdrop-blur-sm hover:bg-background text-foreground p-2 md:p-3 rounded-full shadow-lg hover:shadow-xl transition-all duration-300 hover:scale-110 z-10"
                 aria-label="Previous tour"
               >
-                <ChevronLeft className="w-6 h-6 md:w-8 md:h-8" />
+                <ChevronLeft className="w-5 h-5 md:w-6 md:h-6" />
               </button>
               <button
                 onClick={scrollNext}
-                className="absolute right-0 top-1/2 -translate-y-1/2 z-10 bg-background/90 backdrop-blur-sm hover:bg-background text-foreground p-3 md:p-4 rounded-full shadow-xl hover:shadow-2xl transition-all hover:scale-110 border border-border"
+                className="absolute right-1 md:right-0 top-1/2 -translate-y-1/2 bg-background/80 backdrop-blur-sm hover:bg-background text-foreground p-2 md:p-3 rounded-full shadow-lg hover:shadow-xl transition-all duration-300 hover:scale-110 z-10"
                 aria-label="Next tour"
               >
-                <ChevronRight className="w-6 h-6 md:w-8 md:h-8" />
+                <ChevronRight className="w-5 h-5 md:w-6 md:h-6" />
               </button>
             </>
           )}
-
-          {/* Dots Indicator */}
-          {tours.length > 1 && (
-            <div className="flex justify-center gap-2 mt-8">
-              {tours.map((_, index) => (
-                <button
-                  key={index}
-                  onClick={() => emblaApi?.scrollTo(index)}
-                  className={`w-3 h-3 rounded-full transition-all ${
-                    index === selectedIndex 
-                      ? 'bg-primary w-8' 
-                      : 'bg-muted-foreground/30 hover:bg-muted-foreground/50'
-                  }`}
-                  aria-label={`Go to tour ${index + 1}`}
-                />
-              ))}
-            </div>
-          )}
         </div>
 
+        {/* Dots Navigation */}
+        {tours.length > 1 && (
+          <div className="flex justify-center gap-2 mt-6">
+            {tours.map((_, index) => (
+              <button
+                key={index}
+                onClick={() => emblaApi?.scrollTo(index)}
+                className={`h-2 rounded-full transition-all duration-300 ${
+                  index === selectedIndex 
+                    ? 'bg-primary w-6 md:w-8' 
+                    : 'bg-muted-foreground/30 hover:bg-muted-foreground/50 w-2'
+                }`}
+                aria-label={`Go to tour ${index + 1}`}
+              />
+            ))}
+          </div>
+        )}
+
         {/* View All Button */}
-        <div className="text-center mt-12 animate-fade-in" style={{ animationDelay: '0.2s', animationFillMode: 'both' }}>
+        <div className="text-center mt-8 md:mt-12">
           <Link
             to="/ponude"
-            className="inline-flex items-center gap-2 bg-secondary text-secondary-foreground px-8 py-4 rounded-full font-semibold text-lg hover:bg-secondary/90 transition-all transform hover:scale-105 shadow-lg"
+            className="inline-flex items-center gap-2 bg-secondary text-secondary-foreground hover:bg-secondary/80 px-6 md:px-8 py-3 md:py-4 rounded-lg font-semibold text-sm md:text-base transition-all duration-300 hover:gap-3 shadow-md hover:shadow-lg"
           >
-            {t('tours.allTours')}
-            <ArrowRight className="w-5 h-5" />
+            <span>{t('tours.viewAll')}</span>
+            <ArrowRight className="w-4 h-4 md:w-5 md:h-5" />
           </Link>
         </div>
       </div>
