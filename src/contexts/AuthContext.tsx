@@ -2,8 +2,6 @@ import { createContext, useContext, useEffect, useState } from 'react';
 import { User, Session } from '@supabase/supabase-js';
 import { supabase } from '@/integrations/supabase/client';
 
-const ADMIN_UID = '32029762-6ded-4cd7-8ad8-d7c1b9883ca3';
-
 interface AuthContextType {
   user: User | null;
   session: Session | null;
@@ -30,28 +28,53 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
   const [user, setUser] = useState<User | null>(null);
   const [session, setSession] = useState<Session | null>(null);
   const [loading, setLoading] = useState(true);
+  const [isAdmin, setIsAdmin] = useState(false);
 
   useEffect(() => {
     // Get initial session
-    supabase.auth.getSession().then(({ data: { session } }) => {
+    supabase.auth.getSession().then(async ({ data: { session } }) => {
       setSession(session);
       setUser(session?.user ?? null);
+      
+      // Check admin status from database
+      if (session?.user) {
+        const { data } = await supabase
+          .from('admins')
+          .select('user_id')
+          .eq('user_id', session.user.id)
+          .single();
+        setIsAdmin(!!data);
+      } else {
+        setIsAdmin(false);
+      }
+      
       setLoading(false);
     });
 
     // Listen for auth changes
     const { data: { subscription } } = supabase.auth.onAuthStateChange(
-      (event, session) => {
+      async (event, session) => {
         setSession(session);
         setUser(session?.user ?? null);
+        
+        // Check admin status on auth change
+        if (session?.user) {
+          const { data } = await supabase
+            .from('admins')
+            .select('user_id')
+            .eq('user_id', session.user.id)
+            .single();
+          setIsAdmin(!!data);
+        } else {
+          setIsAdmin(false);
+        }
+        
         setLoading(false);
       }
     );
 
     return () => subscription.unsubscribe();
   }, []);
-
-  const isAdmin = user?.id === ADMIN_UID;
 
   return (
     <AuthContext.Provider value={{ user, session, loading, isAdmin }}>
