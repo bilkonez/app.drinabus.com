@@ -46,7 +46,7 @@ export const TourCard = ({
   return (
     <Link 
       to={`/ponude/${slug}`}
-      className="group block bg-card rounded-lg overflow-hidden shadow-md hover:shadow-xl transition-all duration-300 hover:-translate-y-1"
+      className="group flex flex-col bg-card rounded-lg overflow-hidden shadow-md hover:shadow-xl transition-all duration-300 hover:-translate-y-1 h-full"
     >
       {/* Image */}
       <div className="relative aspect-video overflow-hidden">
@@ -67,7 +67,7 @@ export const TourCard = ({
       </div>
 
       {/* Content */}
-      <div className="p-5 flex flex-col h-full">
+      <div className="p-5 flex flex-col flex-grow">
         <h3 className="text-xl font-bold text-foreground mb-2 group-hover:text-primary transition-colors">
           {title}
         </h3>
@@ -82,23 +82,21 @@ export const TourCard = ({
         </p>
 
         {/* Date Info */}
-        <div className="flex items-center gap-1 pt-4 border-t border-border mb-4">
+        <div className="flex items-center gap-1 pt-4 border-t border-border">
           <Calendar className="w-4 h-4" />
           <span className="text-sm text-muted-foreground">{formattedDate}</span>
         </div>
 
-        {/* Price and CTA Row - pushed to bottom */}
-        <div className="flex items-center justify-between gap-4 mt-auto pt-4 border-t border-border">
-          {price ? (
-            <div className="text-right">
+        {/* Price and CTA Row - always at bottom */}
+        <div className="flex items-center justify-between gap-4 mt-4 pt-4 border-t border-border">
+          {price && (
+            <div className="text-left">
               <div className="text-xs text-muted-foreground">{t('tours.from')}</div>
               <div className="text-2xl font-bold text-primary">{price.toFixed(0)} KM</div>
             </div>
-          ) : (
-            <div className="flex-1" />
           )}
           
-          <button className="bg-primary text-primary-foreground py-2 rounded-md font-semibold hover:bg-primary/90 transition-colors px-4 whitespace-nowrap">
+          <button className="bg-primary text-primary-foreground py-2 px-4 rounded-md font-semibold hover:bg-primary/90 transition-colors whitespace-nowrap">
             {t('tours.learnMore')}
           </button>
         </div>
