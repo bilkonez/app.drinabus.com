@@ -5,6 +5,7 @@ import { useLanguage } from '@/contexts/LanguageContext';
 import { ArrowLeft, MapPin, Calendar, Users, Phone, Mail, CheckCircle, XCircle, Loader2 } from 'lucide-react';
 import { format } from 'date-fns';
 import { bs } from 'date-fns/locale';
+import ReactMarkdown from 'react-markdown';
 
 interface TourPackage {
   id: string;
@@ -111,14 +112,9 @@ export default function TourDetailPage() {
             {/* Full Description */}
             {tour.full_description && (
               <div className="prose prose-lg max-w-none">
-                <div 
-                  className="text-foreground leading-relaxed whitespace-pre-line"
-                  dangerouslySetInnerHTML={{
-                    __html: tour.full_description
-                      .replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>')
-                      .replace(/\n/g, '<br />')
-                  }}
-                />
+                <div className="text-foreground leading-relaxed">
+                  <ReactMarkdown>{tour.full_description}</ReactMarkdown>
+                </div>
               </div>
             )}
 
