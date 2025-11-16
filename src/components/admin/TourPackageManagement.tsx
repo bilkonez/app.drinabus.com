@@ -15,6 +15,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { toast } from "@/hooks/use-toast";
 import { format } from "date-fns";
 import { cn } from "@/lib/utils";
+import { RichTextEditor } from "./RichTextEditor";
 
 interface TourPackage {
   id: string;
@@ -519,10 +520,10 @@ const TourPackageManagement = () => {
                 {/* Kratak opis */}
                 <div className="col-span-2">
                   <Label htmlFor="short_description">Kratak opis *</Label>
-                  <Textarea
+                  <RichTextEditor
                     id="short_description"
                     value={formData.short_description}
-                    onChange={(e) => handleInputChange("short_description", e.target.value)}
+                    onChange={(value) => handleInputChange("short_description", value)}
                     placeholder="Uživajte u čarima zimskog Zagreba..."
                     rows={3}
                   />
@@ -531,10 +532,10 @@ const TourPackageManagement = () => {
                 {/* Pun opis */}
                 <div className="col-span-2">
                   <Label htmlFor="full_description">Pun opis</Label>
-                  <Textarea
+                  <RichTextEditor
                     id="full_description"
                     value={formData.full_description}
-                    onChange={(e) => handleInputChange("full_description", e.target.value)}
+                    onChange={(value) => handleInputChange("full_description", value)}
                     placeholder="Detaljan opis ponude..."
                     rows={6}
                   />
