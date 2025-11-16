@@ -24,6 +24,9 @@ export const useAuth = () => {
   return context;
 };
 
+const ADMIN_CACHE_KEY = 'drina_admin_status';
+const ADMIN_CACHE_DURATION = 5 * 60 * 1000; // 5 minutes
+
 export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
   const [user, setUser] = useState<User | null>(null);
   const [session, setSession] = useState<Session | null>(null);
@@ -31,8 +34,18 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
   const [isAdmin, setIsAdmin] = useState(false);
 
   useEffect(() => {
-    const checkAdminStatus = async (userId: string) => {
+    const checkAdminStatus = async (userId: string): Promise<boolean> => {
       try {
+        // Check cache first
+        const cached = localStorage.getItem(ADMIN_CACHE_KEY);
+        if (cached) {
+          const { userId: cachedUserId, isAdmin, timestamp } = JSON.parse(cached);
+          if (cachedUserId === userId && Date.now() - timestamp < ADMIN_CACHE_DURATION) {
+            return isAdmin;
+          }
+        }
+
+        // Query database
         const { data, error } = await supabase
           .from('admins')
           .select('user_id')
@@ -44,7 +57,16 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
           return false;
         }
         
-        return !!data;
+        const adminStatus = !!data;
+        
+        // Cache result
+        localStorage.setItem(ADMIN_CACHE_KEY, JSON.stringify({
+          userId,
+          isAdmin: adminStatus,
+          timestamp: Date.now()
+        }));
+        
+        return adminStatus;
       } catch (error) {
         console.error('Error checking admin status:', error);
         return false;
@@ -55,15 +77,14 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
     supabase.auth.getSession().then(async ({ data: { session } }) => {
       setSession(session);
       setUser(session?.user ?? null);
-      setLoading(false); // Set loading false immediately
+      setLoading(false);
       
-      // Check admin status from database in background
+      // Check admin status in background
       if (session?.user) {
-        checkAdminStatus(session.user.id).then(isAdminUser => {
-          setIsAdmin(isAdminUser);
-        });
+        checkAdminStatus(session.user.id).then(setIsAdmin);
       } else {
         setIsAdmin(false);
+        localStorage.removeItem(ADMIN_CACHE_KEY);
       }
     }).catch((error) => {
       console.error('Error getting session:', error);
@@ -77,13 +98,11 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
         setUser(session?.user ?? null);
         setLoading(false);
         
-        // Check admin status on auth change in background
         if (session?.user) {
-          checkAdminStatus(session.user.id).then(isAdminUser => {
-            setIsAdmin(isAdminUser);
-          });
+          checkAdminStatus(session.user.id).then(setIsAdmin);
         } else {
           setIsAdmin(false);
+          localStorage.removeItem(ADMIN_CACHE_KEY);
         }
       }
     );
