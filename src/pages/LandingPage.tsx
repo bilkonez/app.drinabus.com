@@ -129,7 +129,7 @@ const LandingPage = () => {
 
   const fetchGalleryImages = async () => {
     try {
-      // Static uploaded images
+      // Static uploaded images - show immediately
       const staticImages: GalleryImage[] = [
         { url: '/lovable-uploads/feb19f81-e937-43e1-b3f8-1b29065267b6.png', alt: 'Mercedes Sprinter - Drina Bus' },
         { url: '/lovable-uploads/d35b41af-f340-499b-926a-af278cefaf0e.png', alt: 'Neoplan Cityliner - Drina Bus' },
@@ -145,28 +145,35 @@ const LandingPage = () => {
         { url: '/lovable-uploads/sprinter-mountain.jpg', alt: 'Mercedes Sprinter na planini - Drina Bus' },
       ];
 
-      // Fetch images from both vehicles and gallery folders
-      const [vehiclesRes, galleryRes] = await Promise.all([
+      // Set static images immediately
+      setGalleryImages(staticImages);
+
+      // Fetch storage images in background (no need to wait)
+      Promise.all([
         supabase.storage.from('media').list('vehicles', { limit: 100 }),
         supabase.storage.from('media').list('gallery', { limit: 500 })
-      ]);
+      ]).then(([vehiclesRes, galleryRes]) => {
+        const vehicleImages = (vehiclesRes.data || [])
+          .filter(file => file.name.match(/\.(jpg|jpeg|png|webp)$/i))
+          .map(file => ({
+            url: supabase.storage.from('media').getPublicUrl(`vehicles/${file.name}`).data.publicUrl,
+            alt: `Drina Bus - ${file.name.replace(/\.[^/.]+$/, '').replace(/_/g, ' ')}`
+          }));
 
-      const vehicleImages = (vehiclesRes.data || [])
-        .filter(file => file.name.match(/\.(jpg|jpeg|png|webp)$/i))
-        .map(file => ({
-          url: supabase.storage.from('media').getPublicUrl(`vehicles/${file.name}`).data.publicUrl,
-          alt: `Drina Bus - ${file.name.replace(/\.[^/.]+$/, '').replace(/_/g, ' ')}`
-        }));
+        const galleryImagesFromStorage = (galleryRes.data || [])
+          .filter(file => file.name.match(/\.(jpg|jpeg|png|webp)$/i))
+          .map(file => ({
+            url: supabase.storage.from('media').getPublicUrl(`gallery/${file.name}`).data.publicUrl,
+            alt: `Drina Bus - ${file.name.replace(/\.[^/.]+$/, '').replace(/_/g, ' ')}`
+          }));
 
-      const galleryImages = (galleryRes.data || [])
-        .filter(file => file.name.match(/\.(jpg|jpeg|png|webp)$/i))
-        .map(file => ({
-          url: supabase.storage.from('media').getPublicUrl(`gallery/${file.name}`).data.publicUrl,
-          alt: `Drina Bus - ${file.name.replace(/\.[^/.]+$/, '').replace(/_/g, ' ')}`
-        }));
-
-      const allImages = [...staticImages, ...vehicleImages, ...galleryImages].filter(img => img.url);
-      setGalleryImages(allImages);
+        const allImages = [...staticImages, ...vehicleImages, ...galleryImagesFromStorage].filter(img => img.url);
+        if (allImages.length > staticImages.length) {
+          setGalleryImages(allImages);
+        }
+      }).catch(() => {
+        // Ignore errors, keep static images
+      });
     } catch (error) {
       console.error('Error fetching gallery images:', error);
     }
