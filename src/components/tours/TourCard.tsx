@@ -86,25 +86,25 @@ export const TourCard = ({
 
         {/* Bottom content - always at same position */}
         <div className="flex flex-col gap-4 mt-4">
-          {/* Date Info */}
-          <div className="flex items-center gap-1 pt-4 border-t border-border">
-            <Calendar className="w-4 h-4" />
-            <span className="text-sm text-muted-foreground">{formattedDate}</span>
-          </div>
-
-          {/* Price and CTA Row */}
-          <div className="flex items-center justify-between gap-4 pt-4 border-t border-border">
+          {/* Date and Price Row */}
+          <div className="flex items-center justify-between pt-4 border-t border-border">
+            <div className="flex items-center gap-1">
+              <Calendar className="w-4 h-4" />
+              <span className="text-sm text-muted-foreground">{formattedDate}</span>
+            </div>
+            
             {price && (
-              <div className="text-left">
+              <div className="text-right">
                 <div className="text-xs text-muted-foreground">{t('tours.from')}</div>
                 <div className="text-2xl font-bold text-primary">{price.toFixed(0)} KM</div>
               </div>
             )}
-            
-            <button className="bg-primary text-primary-foreground py-2 px-4 rounded-md font-semibold hover:bg-primary/90 transition-colors whitespace-nowrap">
-              {t('tours.learnMore')}
-            </button>
           </div>
+
+          {/* CTA Button - full width at bottom */}
+          <button className="w-full bg-primary text-primary-foreground py-3 rounded-md font-semibold hover:bg-primary/90 transition-colors text-base">
+            {t('tours.learnMore')}
+          </button>
         </div>
       </div>
     </Link>
