@@ -81,25 +81,25 @@ export const TourCard = ({
           {shortDescription}
         </p>
 
-        {/* Info Row */}
-        <div className="flex items-center justify-between pt-4 border-t border-border">
-          <div className="flex items-center gap-1">
-            <Calendar className="w-4 h-4" />
-            <span className="text-sm text-muted-foreground">{formattedDate}</span>
-          </div>
-          
+        {/* Date Info */}
+        <div className="flex items-center gap-1 pt-4 border-t border-border">
+          <Calendar className="w-4 h-4" />
+          <span className="text-sm text-muted-foreground">{formattedDate}</span>
+        </div>
+
+        {/* Price and CTA Row */}
+        <div className="flex items-center justify-between gap-3 mt-4">
           {price && (
-            <div className="text-right">
+            <div className="flex flex-col">
               <div className="text-xs text-muted-foreground">{t('tours.from')}</div>
               <div className="text-2xl font-bold text-primary">{price.toFixed(0)} KM</div>
             </div>
           )}
+          
+          <button className="flex-1 bg-primary text-primary-foreground py-2 px-4 rounded-md font-semibold hover:bg-primary/90 transition-colors whitespace-nowrap">
+            {t('tours.learnMore')}
+          </button>
         </div>
-
-        {/* CTA */}
-        <button className="mt-4 w-full bg-primary text-primary-foreground py-2 rounded-md font-semibold hover:bg-primary/90 transition-colors">
-          {t('tours.learnMore')}
-        </button>
       </div>
     </Link>
   );
