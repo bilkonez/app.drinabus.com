@@ -31,6 +31,25 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
   const [isAdmin, setIsAdmin] = useState(false);
 
   useEffect(() => {
+    const checkAdminStatus = async (userId: string) => {
+      try {
+        const { data, error } = await supabase
+          .from('admins')
+          .select('user_id')
+          .eq('user_id', userId)
+          .single();
+        
+        if (error && error.code !== 'PGRST116') {
+          console.error('Error checking admin status:', error);
+        }
+        
+        return !!data;
+      } catch (error) {
+        console.error('Error checking admin status:', error);
+        return false;
+      }
+    };
+
     // Get initial session
     supabase.auth.getSession().then(async ({ data: { session } }) => {
       setSession(session);
@@ -38,16 +57,15 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
       
       // Check admin status from database
       if (session?.user) {
-        const { data } = await supabase
-          .from('admins')
-          .select('user_id')
-          .eq('user_id', session.user.id)
-          .single();
-        setIsAdmin(!!data);
+        const isAdminUser = await checkAdminStatus(session.user.id);
+        setIsAdmin(isAdminUser);
       } else {
         setIsAdmin(false);
       }
       
+      setLoading(false);
+    }).catch((error) => {
+      console.error('Error getting session:', error);
       setLoading(false);
     });
 
@@ -59,12 +77,8 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
         
         // Check admin status on auth change
         if (session?.user) {
-          const { data } = await supabase
-            .from('admins')
-            .select('user_id')
-            .eq('user_id', session.user.id)
-            .single();
-          setIsAdmin(!!data);
+          const isAdminUser = await checkAdminStatus(session.user.id);
+          setIsAdmin(isAdminUser);
         } else {
           setIsAdmin(false);
         }
