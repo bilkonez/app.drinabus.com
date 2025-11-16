@@ -67,7 +67,7 @@ export const TourCard = ({
       </div>
 
       {/* Content */}
-      <div className="p-5">
+      <div className="p-5 flex flex-col h-full">
         <h3 className="text-xl font-bold text-foreground mb-2 group-hover:text-primary transition-colors">
           {title}
         </h3>
@@ -82,21 +82,23 @@ export const TourCard = ({
         </p>
 
         {/* Date Info */}
-        <div className="flex items-center gap-1 pt-4 border-t border-border">
+        <div className="flex items-center gap-1 pt-4 border-t border-border mb-4">
           <Calendar className="w-4 h-4" />
           <span className="text-sm text-muted-foreground">{formattedDate}</span>
         </div>
 
-        {/* Price and CTA Row */}
-        <div className="flex items-center justify-between gap-4 mt-4">
-          {price && (
-            <div className="flex items-baseline gap-2">
-              <span className="text-xs text-muted-foreground">{t('tours.from')}</span>
-              <span className="text-2xl font-bold text-primary">{price.toFixed(0)} KM</span>
+        {/* Price and CTA Row - pushed to bottom */}
+        <div className="flex items-center justify-between gap-4 mt-auto pt-4 border-t border-border">
+          {price ? (
+            <div className="text-right">
+              <div className="text-xs text-muted-foreground">{t('tours.from')}</div>
+              <div className="text-2xl font-bold text-primary">{price.toFixed(0)} KM</div>
             </div>
+          ) : (
+            <div className="flex-1" />
           )}
           
-          <button className="bg-primary text-primary-foreground py-2.5 px-6 rounded-md font-semibold hover:bg-primary/90 transition-colors whitespace-nowrap">
+          <button className="bg-primary text-primary-foreground py-2 rounded-md font-semibold hover:bg-primary/90 transition-colors px-4 whitespace-nowrap">
             {t('tours.learnMore')}
           </button>
         </div>
