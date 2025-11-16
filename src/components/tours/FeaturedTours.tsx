@@ -120,10 +120,10 @@ export const FeaturedTours = () => {
             <div className="flex">
               {tours.map((tour) => (
                 <div key={tour.id} className="flex-[0_0_100%] min-w-0 px-2 md:px-4">
-                  {/* Compact Tour Card - fixed height like Zagreb card */}
-                  <div className="max-w-3xl mx-auto bg-card rounded-xl overflow-hidden shadow-lg md:shadow-xl hover:shadow-xl md:hover:shadow-2xl transition-all duration-500 h-[480px] md:h-[420px] flex flex-col">
-                    {/* Image Section */}
-                    <div className="relative aspect-[16/10] md:aspect-[16/9] overflow-hidden flex-shrink-0">
+                  {/* Tour Card with fixed height like Zagreb card */}
+                  <div className="max-w-3xl mx-auto bg-card rounded-xl overflow-hidden shadow-lg md:shadow-xl hover:shadow-xl md:hover:shadow-2xl transition-all duration-500 h-[560px] md:h-[500px] flex flex-col">
+                    {/* Image Section - reduced aspect ratio to leave more space for content */}
+                    <div className="relative aspect-[16/9] overflow-hidden flex-shrink-0">
                       <img
                         src={tour.cover_image_url || '/placeholder.svg'}
                         alt={tour.title}
@@ -141,52 +141,53 @@ export const FeaturedTours = () => {
                       </div>
                     </div>
 
-                    {/* Content Section - fills remaining space */}
-                    <div className="p-4 md:p-5 flex flex-col flex-1 min-h-0">
-                      <div className="mb-3 flex-shrink-0">
-                        <h3 className="text-lg md:text-xl font-bold text-foreground mb-2 group-hover:text-primary transition-colors line-clamp-2">
+                    {/* Content Section - all info below image */}
+                    <div className="p-5 md:p-6 flex flex-col flex-1">
+                      {/* Title and Description */}
+                      <div className="mb-4 flex-shrink-0">
+                        <h3 className="text-xl md:text-2xl font-bold text-foreground mb-3 group-hover:text-primary transition-colors line-clamp-2">
                           {tour.title}
                         </h3>
                         
-                        <div className="flex items-center gap-2 text-muted-foreground mb-2">
+                        <div className="flex items-center gap-2 text-muted-foreground mb-3">
                           <MapPin className="w-4 h-4 text-primary flex-shrink-0" />
-                          <span className="text-sm truncate">{tour.destination}</span>
+                          <span className="text-sm md:text-base truncate">{tour.destination}</span>
                         </div>
 
-                        <p className="text-muted-foreground text-sm leading-relaxed line-clamp-2">
+                        <p className="text-muted-foreground text-sm md:text-base leading-relaxed line-clamp-2">
                           {tour.short_description}
                         </p>
                       </div>
 
-                      {/* Info Grid */}
-                      <div className="grid grid-cols-2 gap-2 mb-3 flex-shrink-0">
+                      {/* Info Grid - Date and Price */}
+                      <div className="grid grid-cols-2 gap-3 mb-4 flex-shrink-0">
                         {/* Date */}
-                        <div className="flex items-center gap-2 p-2 bg-secondary/50 rounded-lg">
-                          <Calendar className="w-4 h-4 text-primary flex-shrink-0" />
+                        <div className="flex items-center gap-2 p-3 bg-secondary/50 rounded-lg">
+                          <Calendar className="w-5 h-5 text-primary flex-shrink-0" />
                           <div className="min-w-0">
                             <div className="text-xs text-muted-foreground">{t('tours.startDate')}</div>
-                            <div className="text-xs font-semibold truncate">{format(new Date(tour.available_from), 'd. MMM', { locale: bs })}</div>
+                            <div className="text-sm font-semibold truncate">{format(new Date(tour.available_from), 'd. MMM', { locale: bs })}</div>
                           </div>
                         </div>
 
                         {/* Price */}
                         {tour.price && (
-                          <div className="flex items-center gap-2 p-2 bg-primary/10 rounded-lg border border-primary/20">
+                          <div className="flex items-center gap-2 p-3 bg-primary/10 rounded-lg border border-primary/20">
                             <div className="flex-1 min-w-0">
                               <div className="text-xs text-muted-foreground">{t('tours.from')}</div>
-                              <div className="text-base md:text-lg font-bold text-primary truncate">{tour.price.toFixed(0)} KM</div>
+                              <div className="text-lg md:text-xl font-bold text-primary truncate">{tour.price.toFixed(0)} KM</div>
                             </div>
                           </div>
                         )}
                       </div>
 
-                      {/* CTA Button - at bottom */}
+                      {/* CTA Button - pushed to bottom */}
                       <Link 
                         to={`/ponude/${tour.slug}`}
-                        className="w-full inline-flex items-center justify-center gap-2 bg-primary text-primary-foreground py-2 md:py-2.5 px-4 rounded-lg font-semibold text-sm hover:bg-primary/90 transition-all duration-300 hover:gap-3 group/btn shadow-md hover:shadow-lg mt-auto"
+                        className="w-full inline-flex items-center justify-center gap-2 bg-primary text-primary-foreground py-3 px-6 rounded-lg font-semibold text-base hover:bg-primary/90 transition-all duration-300 hover:gap-3 group/btn shadow-md hover:shadow-lg mt-auto"
                       >
                         <span>{t('tours.learnMore')}</span>
-                        <ArrowRight className="w-4 h-4 group-hover/btn:translate-x-1 transition-transform" />
+                        <ArrowRight className="w-5 h-5 group-hover/btn:translate-x-1 transition-transform" />
                       </Link>
                     </div>
                   </div>
