@@ -10,7 +10,7 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from 
 import { Badge } from "@/components/ui/badge";
 import { Calendar } from "@/components/ui/calendar";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
-import { Plus, Edit, Trash2, CalendarIcon, MapPin, DollarSign } from "lucide-react";
+import { Plus, Edit, Trash2, CalendarIcon, MapPin, DollarSign, Upload, X } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "@/hooks/use-toast";
 import { format } from "date-fns";
@@ -50,6 +50,7 @@ const TourPackageManagement = () => {
   const [notIncludedInput, setNotIncludedInput] = useState("");
   const [availableFromDate, setAvailableFromDate] = useState<Date>();
   const [availableToDate, setAvailableToDate] = useState<Date>();
+  const [uploadingImage, setUploadingImage] = useState(false);
   
   const [formData, setFormData] = useState({
     title: "",
@@ -95,6 +96,74 @@ const TourPackageManagement = () => {
       });
     } finally {
       setLoading(false);
+    }
+  };
+
+  const handleImageUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+
+    // Validate file type
+    if (!file.type.startsWith('image/')) {
+      toast({
+        title: "Greška",
+        description: "Molimo izaberite sliku",
+        variant: "destructive",
+      });
+      return;
+    }
+
+    // Validate file size (max 5MB)
+    if (file.size > 5 * 1024 * 1024) {
+      toast({
+        title: "Greška",
+        description: "Slika je prevelika. Maksimalna veličina je 5MB.",
+        variant: "destructive",
+      });
+      return;
+    }
+
+    setUploadingImage(true);
+    try {
+      // Create unique filename
+      const fileExt = file.name.split('.').pop();
+      const fileName = `${Math.random().toString(36).substring(2)}-${Date.now()}.${fileExt}`;
+      const filePath = `tour-covers/${fileName}`;
+
+      // Upload to Supabase Storage
+      const { error: uploadError } = await supabase.storage
+        .from('media')
+        .upload(filePath, file, {
+          cacheControl: '3600',
+          upsert: false
+        });
+
+      if (uploadError) throw uploadError;
+
+      // Get public URL
+      const { data: { publicUrl } } = supabase.storage
+        .from('media')
+        .getPublicUrl(filePath);
+
+      // Update form data with the new URL
+      setFormData(prev => ({
+        ...prev,
+        cover_image_url: publicUrl
+      }));
+
+      toast({
+        title: "Uspešno",
+        description: "Slika je uspešno uploadovana",
+      });
+    } catch (error) {
+      console.error("Error uploading image:", error);
+      toast({
+        title: "Greška",
+        description: "Nije moguće uploadovati sliku",
+        variant: "destructive",
+      });
+    } finally {
+      setUploadingImage(false);
     }
   };
 
@@ -506,15 +575,76 @@ const TourPackageManagement = () => {
                   />
                 </div>
 
-                {/* Cover slika URL */}
-                <div className="col-span-2">
-                  <Label htmlFor="cover_image_url">URL cover slike</Label>
-                  <Input
-                    id="cover_image_url"
-                    value={formData.cover_image_url}
-                    onChange={(e) => handleInputChange("cover_image_url", e.target.value)}
-                    placeholder="/lovable-uploads/image.jpg"
-                  />
+                {/* Cover slika */}
+                <div className="col-span-2 space-y-4">
+                  <div>
+                    <Label>Cover slika</Label>
+                    <div className="flex gap-2 items-start">
+                      <div className="flex-1">
+                        <Input
+                          id="image-upload"
+                          type="file"
+                          accept="image/*"
+                          onChange={handleImageUpload}
+                          disabled={uploadingImage}
+                          className="hidden"
+                        />
+                        <Button
+                          type="button"
+                          variant="outline"
+                          onClick={() => document.getElementById('image-upload')?.click()}
+                          disabled={uploadingImage}
+                          className="w-full"
+                        >
+                          <Upload className="mr-2 h-4 w-4" />
+                          {uploadingImage ? "Uploadujem..." : "Upload sa računara"}
+                        </Button>
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* Preview and URL field */}
+                  {formData.cover_image_url && (
+                    <div className="space-y-2">
+                      <div className="relative rounded-lg overflow-hidden border">
+                        <img 
+                          src={formData.cover_image_url} 
+                          alt="Cover preview" 
+                          className="w-full h-48 object-cover"
+                        />
+                        <Button
+                          type="button"
+                          variant="destructive"
+                          size="icon"
+                          className="absolute top-2 right-2"
+                          onClick={() => handleInputChange("cover_image_url", "")}
+                        >
+                          <X className="h-4 w-4" />
+                        </Button>
+                      </div>
+                      <Input
+                        value={formData.cover_image_url}
+                        onChange={(e) => handleInputChange("cover_image_url", e.target.value)}
+                        placeholder="Ili unesite URL slike"
+                        className="text-sm"
+                      />
+                    </div>
+                  )}
+
+                  {/* Show URL input if no image */}
+                  {!formData.cover_image_url && (
+                    <div>
+                      <Label htmlFor="cover_image_url" className="text-sm text-muted-foreground">
+                        Ili unesite URL
+                      </Label>
+                      <Input
+                        id="cover_image_url"
+                        value={formData.cover_image_url}
+                        onChange={(e) => handleInputChange("cover_image_url", e.target.value)}
+                        placeholder="/lovable-uploads/image.jpg"
+                      />
+                    </div>
+                  )}
                 </div>
 
                 {/* Kratak opis */}
