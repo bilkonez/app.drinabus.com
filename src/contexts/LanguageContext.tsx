@@ -139,6 +139,11 @@ const translations = {
     'tours.availability': 'Dostupno',
     'tours.priceNote': 'Napomena o cijeni',
     'tours.allTours': 'Sve ponude',
+    'tours.startDate': 'Polazak',
+    'tours.featured': 'Istaknuto',
+    'tours.capacity': 'Kapacitet',
+    'tours.people': 'osoba',
+    'tours.viewAll': 'Pogledaj sve ponude',
   },
   en: {
     // Navigation
@@ -270,6 +275,11 @@ const translations = {
     'tours.availability': 'Available',
     'tours.priceNote': 'Price note',
     'tours.allTours': 'All offers',
+    'tours.startDate': 'Departure',
+    'tours.featured': 'Featured',
+    'tours.capacity': 'Capacity',
+    'tours.people': 'people',
+    'tours.viewAll': 'View all offers',
   }
 };
 
