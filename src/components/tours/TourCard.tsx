@@ -88,15 +88,15 @@ export const TourCard = ({
         </div>
 
         {/* Price and CTA Row */}
-        <div className="flex items-center justify-between gap-3 mt-4">
+        <div className="flex items-center justify-between gap-4 mt-4">
           {price && (
-            <div className="flex flex-col">
-              <div className="text-xs text-muted-foreground">{t('tours.from')}</div>
-              <div className="text-2xl font-bold text-primary">{price.toFixed(0)} KM</div>
+            <div className="flex items-baseline gap-2">
+              <span className="text-xs text-muted-foreground">{t('tours.from')}</span>
+              <span className="text-2xl font-bold text-primary">{price.toFixed(0)} KM</span>
             </div>
           )}
           
-          <button className="flex-1 bg-primary text-primary-foreground py-2 px-4 rounded-md font-semibold hover:bg-primary/90 transition-colors whitespace-nowrap">
+          <button className="bg-primary text-primary-foreground py-2.5 px-6 rounded-md font-semibold hover:bg-primary/90 transition-colors whitespace-nowrap">
             {t('tours.learnMore')}
           </button>
         </div>
