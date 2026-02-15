@@ -560,14 +560,20 @@ const LandingPage = () => {
                             onError={(e) => {
                               const target = e.target as HTMLImageElement;
                               target.style.display = 'none';
-                              target.parentElement!.innerHTML = `
-                                <div class="w-full h-full bg-gradient-to-br from-green-400 to-emerald-600 flex items-center justify-center">
-                                  <div class="text-white text-center">
-                                    <div class="text-4xl mb-2">🚌</div>
-                                    <p class="text-sm opacity-80">${t('fleet.busImage')}</p>
-                                  </div>
-                                </div>
-                              `;
+                              const fallback = document.createElement('div');
+                              fallback.className = 'w-full h-full bg-gradient-to-br from-green-400 to-emerald-600 flex items-center justify-center';
+                              const inner = document.createElement('div');
+                              inner.className = 'text-white text-center';
+                              const emoji = document.createElement('div');
+                              emoji.className = 'text-4xl mb-2';
+                              emoji.textContent = '🚌';
+                              const label = document.createElement('p');
+                              label.className = 'text-sm opacity-80';
+                              label.textContent = t('fleet.busImage');
+                              inner.appendChild(emoji);
+                              inner.appendChild(label);
+                              fallback.appendChild(inner);
+                              target.parentElement!.replaceChildren(fallback);
                             }}
                           />
                         ) : (
@@ -631,14 +637,20 @@ const LandingPage = () => {
                                 onError={(e) => {
                                   const target = e.target as HTMLImageElement;
                                   target.style.display = 'none';
-                                  target.parentElement!.innerHTML = `
-                                    <div class="w-full h-full bg-gradient-to-br from-green-400 to-emerald-600 flex items-center justify-center">
-                                      <div class="text-white text-center">
-                                        <div class="text-4xl mb-2">🚌</div>
-                                        <p class="text-sm opacity-80">${t('fleet.busImage')}</p>
-                                      </div>
-                                    </div>
-                                  `;
+                                  const fallback = document.createElement('div');
+                                  fallback.className = 'w-full h-full bg-gradient-to-br from-green-400 to-emerald-600 flex items-center justify-center';
+                                  const inner = document.createElement('div');
+                                  inner.className = 'text-white text-center';
+                                  const emoji = document.createElement('div');
+                                  emoji.className = 'text-4xl mb-2';
+                                  emoji.textContent = '🚌';
+                                  const label = document.createElement('p');
+                                  label.className = 'text-sm opacity-80';
+                                  label.textContent = t('fleet.busImage');
+                                  inner.appendChild(emoji);
+                                  inner.appendChild(label);
+                                  fallback.appendChild(inner);
+                                  target.parentElement!.replaceChildren(fallback);
                                 }}
                               />
                             ) : (
