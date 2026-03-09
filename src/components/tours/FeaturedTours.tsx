@@ -101,7 +101,7 @@ export const FeaturedTours = () => {
   }
 
   return (
-    <section className="pt-20 pb-28 md:pt-28 md:pb-36 px-4 md:px-6 bg-gradient-to-br from-primary/5 via-background to-accent/10 relative overflow-hidden">
+    <section className="pt-14 pb-20 md:pt-20 md:pb-24 px-4 md:px-6 bg-gradient-to-br from-primary/5 via-background to-accent/10 relative overflow-hidden">
       {/* Decorative background elements */}
       <div className="absolute inset-0 pointer-events-none">
         <div className="absolute top-0 left-1/4 w-72 h-72 bg-primary/5 rounded-full blur-3xl" />
