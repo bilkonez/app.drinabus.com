@@ -101,16 +101,29 @@ export const FeaturedTours = () => {
   }
 
   return (
-    <section className="py-16 md:py-20 px-4 md:px-6 bg-gradient-to-br from-background to-secondary/10 relative">
-      <div className="container mx-auto">
+    <section className="py-20 md:py-28 px-4 md:px-6 bg-gradient-to-br from-primary/5 via-background to-accent/10 relative overflow-hidden">
+      {/* Decorative background elements */}
+      <div className="absolute inset-0 pointer-events-none">
+        <div className="absolute top-0 left-1/4 w-72 h-72 bg-primary/5 rounded-full blur-3xl" />
+        <div className="absolute bottom-0 right-1/4 w-96 h-96 bg-accent/5 rounded-full blur-3xl" />
+      </div>
+
+      <div className="container mx-auto relative z-10">
         {/* Header */}
-        <div className="text-center mb-8 md:mb-12 animate-fade-in">
-          <h2 className="text-3xl md:text-5xl font-bold text-foreground mb-3 md:mb-4">
+        <div className="text-center mb-12 md:mb-16 animate-fade-in">
+          <div className="inline-flex items-center gap-2 bg-primary/10 border border-primary/20 text-primary px-4 py-1.5 rounded-full text-sm font-semibold mb-5 backdrop-blur-sm">
+            <span>🌍</span>
+            <span>{t('tours.featured')}</span>
+          </div>
+          <h2 className="text-4xl md:text-6xl font-bold text-foreground mb-4 md:mb-5 tracking-tight">
             {t('tours.title')}
           </h2>
-          <p className="text-lg md:text-xl text-muted-foreground max-w-3xl mx-auto px-4">
+          <p className="text-lg md:text-xl text-muted-foreground max-w-2xl mx-auto px-4 leading-relaxed">
             {t('tours.subtitle')}
           </p>
+          <div className="mt-6 flex justify-center">
+            <div className="h-1 w-20 bg-gradient-to-r from-primary/60 to-accent/60 rounded-full" />
+          </div>
         </div>
 
         {/* Carousel Container */}
