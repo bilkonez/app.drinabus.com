@@ -34,7 +34,7 @@ const getVehicleImageFromUploads = (vehicle: Vehicle): string => {
     return '/lovable-uploads/feb19f81-e937-43e1-b3f8-1b29065267b6.png';
   }
   if (brand === 'Neoplan' && model === 'Cityliner') {
-    if (registration === 'A36-E-349') {
+    if (registration === 'A36-E-349' || registration === 'A36-O-419') {
       return '/lovable-uploads/d35b41af-f340-499b-926a-af278cefaf0e.png';
     }
     if (registration === 'T17-M-331') {
@@ -62,7 +62,7 @@ const getVehicleImagePosition = (vehicle: Vehicle): string => {
   }
   
   // Neoplan A36 - gurnut prema dolje (55%)
-  if (brand === 'Neoplan' && model === 'Cityliner' && registration === 'A36-E-349') {
+  if (brand === 'Neoplan' && model === 'Cityliner' && (registration === 'A36-E-349' || registration === 'A36-O-419')) {
     return 'center 55%';
   }
   
