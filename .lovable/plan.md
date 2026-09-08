@@ -1,21 +1,20 @@
-# Popravka domene drinabus.com — status
+# Slika za Neoplan A36-O-419 — dijagnoza i rješenje
 
-## Trenutno stanje (nakon uplate)
+## Dijagnoza (potvrđena)
 
-- Nameserveri vraćeni na registrar (Namecheap): `pdns1/pdns2.registrar-servers.com` — parking servis uklonjen
-- `www.drinabus.com` → `185.158.133.1` (Lovable) — ispravno
-- Objе adrese (drinabus.com i www.drinabus.com) odgovaraju HTTP 200 i poslužuju Drina Bus sajt — potvrđeno učitavanje naslova stranice
+- Kod sadrži ispravno mapiranje: `A36-O-419` → slika `d35b41af-...png` (dodano ranije)
+- Baza podataka sadrži tačnu registraciju `A36-O-419` za Neoplan Cityliner
+- Slika postoji i učitava se na sajtu (HTTP 200)
+- **Ali**: objavljena verzija sajta (drinabus.com) NE sadrži ovu ispravku — provjerom objavljene JS datoteke potvrđeno da registracija `A36-O-419` ne postoji u njoj (0 pogodaka)
 
-## Preostali korak (preporuka)
+**Zaključak**: Ispravka je napravljena u kodu, ali sajt nakon toga nije ponovo objavljen. Frontend izmjene postaju vidljive tek nakon klika na "Update" u Publish dijalogu.
 
-- Korijenski A zapis (`@` → drinabus.com) kod nekih DNS resolvera još vraća stare parking IP adrese (`104.219.250.37`, `2.59.170.20`) — vjerovatno radi se o propagaciji/cache-u, ali za svaki slučaj:
-  - U Namecheap DNS podešavanjima provjeriti da **A zapis za host `@`** pokazuje na `185.158.133.1`
-- Lovable automatski obnavlja SSL certifikat; status domene vraća se u Active
+## Rješenje
 
-## Šta radim ja
-
-- Nakon kratkog vremena ponovo provjeravam A zapis za korijensku domenu i potvrđujem da svugdje pokazuje na Lovable
+1. Ponovo objaviti sajt (Publish → Update) — time objavljena verzija dobija sve najnovije izmjene, uključujući mapiranje slike za A36-O-419
+2. Nakon objave potvrditi da se slika prikazuje na drinabus.com u sekciji voznog parka
 
 ## Napomena
 
-- Nema promjena u kodu — problem je bio u DNS-u domene (parking nameserveri nakon isteka), sada riješen uplatom
+- Nema izmjena koda — samo ponovna objava
+- Ako želite, mogu pokrenuti objavu — samo potvrdite
