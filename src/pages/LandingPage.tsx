@@ -32,7 +32,7 @@ const getVehicleImageFromUploads = (vehicle: Vehicle): string => {
   const registration = vehicle.registration?.trim();
 
   if (brand === 'MAN' && model === 'Lion Coach') {
-    return manLionCoachImage.url;
+    return ;
   }
   
   if (brand === 'Mercedes' && model === 'Sprinter') {
