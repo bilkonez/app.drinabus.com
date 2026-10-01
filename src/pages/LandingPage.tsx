@@ -128,7 +128,21 @@ const LandingPage = () => {
         .order('created_at', { ascending: false });
 
       if (error) throw error;
-      setVehicles(data || []);
+
+      // Fixed display order: MAN Lion Coach, Neoplan Cityliner, Otokar Sultan, Mercedes Sprinter, Mercedes Vito
+      const orderMap: Record<string, number> = {
+        'MAN|Lion Coach': 0,
+        'Neoplan|Cityliner': 1,
+        'Otokar|Sultan': 2,
+        'Mercedes|Sprinter': 3,
+        'Mercedes|Vito': 4,
+      };
+      const sorted = (data || []).sort((a, b) => {
+        const ka = orderMap[`${a.brand?.trim()}|${a.model?.trim()}`] ?? 99;
+        const kb = orderMap[`${b.brand?.trim()}|${b.model?.trim()}`] ?? 99;
+        return ka - kb;
+      });
+      setVehicles(sorted);
     } catch (error) {
       console.error('Error fetching vehicles:', error);
     } finally {
