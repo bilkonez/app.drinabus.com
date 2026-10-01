@@ -1,20 +1,20 @@
-# Slika za Neoplan A36-O-419 — dijagnoza i rješenje
+# Novi MAN Lion’s Coach u voznom parku
 
-## Dijagnoza (potvrđena)
+## Izmjene
 
-- Kod sadrži ispravno mapiranje: `A36-O-419` → slika `d35b41af-...png` (dodano ranije)
-- Baza podataka sadrži tačnu registraciju `A36-O-419` za Neoplan Cityliner
-- Slika postoji i učitava se na sajtu (HTTP 200)
-- **Ali**: objavljena verzija sajta (drinabus.com) NE sadrži ovu ispravku — provjerom objavljene JS datoteke potvrđeno da registracija `A36-O-419` ne postoji u njoj (0 pogodaka)
+1. Dodati novi autobus u evidenciju vozila:
+   - marka: **MAN**
+   - model: **Lion’s Coach**
+   - kapacitet: **50 sjedišta**
+   - status: dostupan i operativan
+   - registracija: privremena interna vrijednost zbog obaveznog polja, ali se neće prikazivati posjetiocima
+2. Postaviti poslanu fotografiju kao sliku ovog autobusa i prilagoditi njen kadar kartici.
+3. Prikazati novi autobus kao prvu karticu u sekciji **Vozni park**; ostala vozila ostaju iza njega.
+4. Sakriti red registracije samo za ovaj autobus dok tablice ne stignu.
+5. Provjeriti prikaz na računaru i telefonu te potvrditi da se slika, naziv i 50 sjedišta pravilno vide.
 
-**Zaključak**: Ispravka je napravljena u kodu, ali sajt nakon toga nije ponovo objavljen. Frontend izmjene postaju vidljive tek nakon klika na "Update" u Publish dijalogu.
+## Tehnički detalji
 
-## Rješenje
-
-1. Ponovo objaviti sajt (Publish → Update) — time objavljena verzija dobija sve najnovije izmjene, uključujući mapiranje slike za A36-O-419
-2. Nakon objave potvrditi da se slika prikazuje na drinabus.com u sekciji voznog parka
-
-## Napomena
-
-- Nema izmjena koda — samo ponovna objava
-- Ako želite, mogu pokrenuti objavu — samo potvrdite
+- Fotografija će biti spremljena kroz projektni sistem za slike.
+- Redoslijed vozila će se učitavati od najnovijeg prema starijim, pa će novi autobus biti na vrhu.
+- Podatak u bazi kasnije se može zamijeniti stvarnom registracijom kroz postojeći administratorski panel.
