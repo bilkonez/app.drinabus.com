@@ -633,8 +633,10 @@ const LandingPage = () => {
               {/* Second row - 2 cards centered */}
               {vehicles.length > 3 && (
                 <div className="flex justify-center">
-                  <div className="grid grid-cols-1 md:grid-cols-2 gap-6 lg:gap-8 max-w-2xl">
-                    {vehicles.slice(3, 5).map((vehicle) => {
+                  <div className={`grid grid-cols-1 md:grid-cols-2 gap-6 lg:gap-8 w-full ${
+                    vehicles.length - 3 === 2 ? 'max-w-2xl' : vehicles.length - 3 === 1 ? 'max-w-sm md:grid-cols-1' : 'lg:grid-cols-3'
+                  }`}>
+                    {vehicles.slice(3).map((vehicle) => {
                       const vehicleImage = getVehicleImageFromUploads(vehicle);
                       const imagePosition = getVehicleImagePosition(vehicle);
                       
