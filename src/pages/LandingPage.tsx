@@ -9,6 +9,7 @@ import heroBackground from '@/assets/hero-river-bus.jpg';
 import WhatsAppButton from '@/components/ui/WhatsAppButton';
 import { useLanguage } from '@/contexts/LanguageContext';
 import { FeaturedTours } from '@/components/tours/FeaturedTours';
+import manLionCoachImage from '@/assets/man-lions-coach.jpeg.asset.json';
 
 interface Vehicle {
   id: string;
@@ -29,6 +30,10 @@ const getVehicleImageFromUploads = (vehicle: Vehicle): string => {
   const brand = vehicle.brand?.trim();
   const model = vehicle.model?.trim();
   const registration = vehicle.registration?.trim();
+
+  if (brand === 'MAN' && model === 'Lion Coach') {
+    return manLionCoachImage.url;
+  }
   
   if (brand === 'Mercedes' && model === 'Sprinter') {
     return '/lovable-uploads/feb19f81-e937-43e1-b3f8-1b29065267b6.png';
@@ -55,6 +60,10 @@ const getVehicleImagePosition = (vehicle: Vehicle): string => {
   const brand = vehicle.brand?.trim();
   const model = vehicle.model?.trim();
   const registration = vehicle.registration?.trim();
+
+  if (brand === 'MAN' && model === 'Lion Coach') {
+    return 'center 58%';
+  }
   
   // Mercedes Vito - perfect positioning (70%)
   if (brand === 'Mercedes' && model === 'Vito') {
@@ -116,7 +125,7 @@ const LandingPage = () => {
         .select('id, brand, model, registration, seats, is_operational')
         .eq('status', 'dostupno')
         .eq('is_operational', true) // Only show operational vehicles
-        .order('brand');
+        .order('created_at', { ascending: false });
 
       if (error) throw error;
       setVehicles(data || []);
@@ -180,6 +189,9 @@ const LandingPage = () => {
   };
 
   const getVehicleDescription = (brand: string, model: string) => {
+    if (brand === 'MAN' && model === 'Lion Coach') {
+      return t('vehicle.default');
+    }
     if (brand === 'Neoplan' && model === 'Cityliner') {
       return t('vehicle.neoplan');
     }
@@ -196,7 +208,16 @@ const LandingPage = () => {
   };
 
   // Adjust vehicle capacity (reduce by 1)
-  const getAdjustedCapacity = (seats: number) => Math.max(1, seats - 1);
+  const getAdjustedCapacity = (vehicle: Vehicle) => {
+    if (vehicle.brand?.trim() === 'MAN' && vehicle.model?.trim() === 'Lion Coach') {
+      return vehicle.seats;
+    }
+    return Math.max(1, vehicle.seats - 1);
+  };
+
+  const shouldShowRegistration = (vehicle: Vehicle) => (
+    vehicle.registration && vehicle.registration !== 'REGISTRACIJA-NAKNADNO' && vehicle.registration !== vehicle.model
+  );
 
   return (
     <div className="min-h-screen bg-background">
@@ -588,7 +609,7 @@ const LandingPage = () => {
                       <CardContent className="p-6">
                         <h3 className="text-xl font-bold text-gray-900 mb-2">
                           {vehicle.brand} {vehicle.model}
-                          {vehicle.registration && vehicle.registration !== vehicle.model && (
+                          {shouldShowRegistration(vehicle) && (
                             <span className="text-sm font-normal text-gray-500 block">
                               {vehicle.registration}
                             </span>
@@ -597,7 +618,7 @@ const LandingPage = () => {
                         <div className="flex items-center gap-2 mb-3">
                           <Badge variant="secondary" className="flex items-center gap-1">
                             <Users className="h-3 w-3" />
-                            {getAdjustedCapacity(vehicle.seats)} {t('fleet.seats')}
+                            {getAdjustedCapacity(vehicle)} {t('fleet.seats')}
                           </Badge>
                         </div>
                         <p className="text-gray-600 text-sm leading-relaxed">
@@ -665,7 +686,7 @@ const LandingPage = () => {
                           <CardContent className="p-6">
                             <h3 className="text-xl font-bold text-gray-900 mb-2">
                               {vehicle.brand} {vehicle.model}
-                              {vehicle.registration && vehicle.registration !== vehicle.model && (
+                              {shouldShowRegistration(vehicle) && (
                                 <span className="text-sm font-normal text-gray-500 block">
                                   {vehicle.registration}
                                 </span>
@@ -674,7 +695,7 @@ const LandingPage = () => {
                             <div className="flex items-center gap-2 mb-3">
                               <Badge variant="secondary" className="flex items-center gap-1">
                                 <Users className="h-3 w-3" />
-                                {getAdjustedCapacity(vehicle.seats)} {t('fleet.seats')}
+                                {getAdjustedCapacity(vehicle)} {t('fleet.seats')}
                               </Badge>
                             </div>
                             <p className="text-gray-600 text-sm leading-relaxed">
