@@ -1,0 +1,1 @@
+Use Lovable Assets JSON pointers for new uploaded app media so binary files stay outside the repository.
