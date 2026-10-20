@@ -136,7 +136,6 @@ All colors MUST be HSL for consistency
     letter-spacing: -0.025em;
     font-weight: 600;
   }
-  section:nth-of-type(even) { background-color: hsl(var(--secondary)); }
 }
 
 /* Hide Lovable watermark */
