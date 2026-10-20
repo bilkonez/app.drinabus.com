@@ -46,14 +46,14 @@ export const TourCard = ({
   return (
     <Link 
       to={`/ponude/${slug}`}
-      className="group flex flex-col bg-card rounded-lg overflow-hidden shadow-md hover:shadow-xl transition-all duration-300 hover:-translate-y-1 h-full"
+      className="group flex flex-col bg-card rounded-3xl overflow-hidden shadow-none hover:shadow-elegant transition-all duration-300 h-full ring-1 ring-border"
     >
       {/* Image */}
       <div className="relative aspect-video overflow-hidden">
         <img
           src={coverImageUrl || '/placeholder.svg'}
           alt={title}
-          className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500"
+          className="w-full h-full object-cover group-hover:scale-[1.03] transition-transform duration-700"
         />
         {/* Type Badge */}
         <div className="absolute top-4 left-4 bg-primary text-primary-foreground px-3 py-1 rounded-full text-sm font-semibold">
@@ -102,7 +102,7 @@ export const TourCard = ({
           </div>
 
           {/* CTA Button - full width at bottom */}
-          <button className="w-full bg-primary text-primary-foreground py-3 rounded-md font-semibold hover:bg-primary/90 transition-colors text-base">
+          <button className="w-full bg-primary text-primary-foreground py-3 rounded-full font-medium hover:bg-primary/90 transition-colors text-base">
             {t('tours.learnMore')}
           </button>
         </div>
