@@ -101,28 +101,25 @@ export const FeaturedTours = () => {
   }
 
   return (
-    <section className="pt-14 pb-20 md:pt-20 md:pb-24 px-4 md:px-6 bg-gradient-to-br from-primary/5 via-background to-accent/10 relative overflow-hidden">
+    <section className="py-24 md:py-32 px-4 md:px-6 bg-background relative overflow-hidden">
       {/* Decorative background elements */}
       <div className="absolute inset-0 pointer-events-none">
-        <div className="absolute top-0 left-1/4 w-72 h-72 bg-primary/5 rounded-full blur-3xl" />
-        <div className="absolute bottom-0 right-1/4 w-96 h-96 bg-accent/5 rounded-full blur-3xl" />
       </div>
 
       <div className="container mx-auto relative z-10">
         {/* Header */}
         <div className="text-center mb-12 md:mb-16 animate-fade-in">
-          <div className="inline-flex items-center gap-2 bg-primary/10 border border-primary/20 text-primary px-4 py-1.5 rounded-full text-sm font-semibold mb-5 backdrop-blur-sm">
+          <div className="inline-flex items-center gap-2 text-primary text-sm font-medium mb-4">
             <span>🌍</span>
             <span>{t('tours.featured')}</span>
           </div>
-          <h2 className="text-4xl md:text-6xl font-bold text-foreground mb-4 md:mb-5 tracking-tight">
+          <h2 className="text-4xl md:text-6xl font-semibold text-foreground mb-4 md:mb-5 tracking-tight">
             {t('tours.title')}
           </h2>
           <p className="text-lg md:text-xl text-muted-foreground max-w-2xl mx-auto px-4 leading-relaxed">
             {t('tours.subtitle')}
           </p>
           <div className="mt-6 flex justify-center">
-            <div className="h-1 w-20 bg-gradient-to-r from-primary/60 to-accent/60 rounded-full" />
           </div>
         </div>
 
@@ -134,9 +131,9 @@ export const FeaturedTours = () => {
               {tours.map((tour) => (
                 <div key={tour.id} className="flex-[0_0_100%] min-w-0 px-2 md:px-4 pb-4">
                   {/* Tour Card with fixed height like Zagreb card */}
-                  <div className="max-w-3xl mx-auto bg-card rounded-xl overflow-visible shadow-lg md:shadow-xl hover:shadow-xl md:hover:shadow-2xl transition-all duration-500 flex flex-col relative z-10">
+                  <div className="max-w-3xl mx-auto bg-secondary rounded-[32px] overflow-hidden transition-all duration-500 flex flex-col relative z-10">
                     {/* Image Section - fixed height to ensure content below is visible */}
-                    <div className="relative h-48 md:h-56 overflow-hidden flex-shrink-0">
+                    <div className="relative h-56 md:h-80 overflow-hidden flex-shrink-0">
                       <img
                         src={tour.cover_image_url || '/placeholder.svg'}
                         alt={tour.title}
@@ -155,10 +152,10 @@ export const FeaturedTours = () => {
                     </div>
 
                     {/* Content Section - all info below image */}
-                    <div className="p-5 md:p-6 flex flex-col flex-1">
+                    <div className="p-7 md:p-10 flex flex-col flex-1">
                       {/* Title and Description */}
                       <div className="mb-4 flex-shrink-0">
-                        <h3 className="text-xl md:text-2xl font-bold text-foreground mb-3 group-hover:text-primary transition-colors line-clamp-2">
+                        <h3 className="text-2xl md:text-4xl font-semibold tracking-tight text-foreground mb-3 group-hover:text-primary transition-colors line-clamp-2">
                           {tour.title}
                         </h3>
                         
@@ -175,7 +172,7 @@ export const FeaturedTours = () => {
                       {/* Info Grid - Date and Price */}
                       <div className="grid grid-cols-2 gap-3 mb-4 flex-shrink-0">
                         {/* Date */}
-                        <div className="flex items-center gap-2 p-3 bg-secondary/50 rounded-lg">
+                        <div className="flex items-center gap-2 p-4 bg-card rounded-2xl">
                           <Calendar className="w-5 h-5 text-primary flex-shrink-0" />
                           <div className="min-w-0">
                             <div className="text-xs text-muted-foreground">{t('tours.startDate')}</div>
@@ -185,7 +182,7 @@ export const FeaturedTours = () => {
 
                         {/* Price */}
                         {tour.price && (
-                          <div className="flex items-center gap-2 p-3 bg-primary/10 rounded-lg border border-primary/20">
+                          <div className="flex items-center gap-2 p-4 bg-card rounded-2xl">
                             <div className="flex-1 min-w-0">
                               <div className="text-xs text-muted-foreground">{t('tours.from')}</div>
                               <div className="text-lg md:text-xl font-bold text-primary truncate">{tour.price.toFixed(0)} KM</div>
@@ -197,7 +194,7 @@ export const FeaturedTours = () => {
                       {/* CTA Button - pushed to bottom */}
                       <Link 
                         to={`/ponude/${tour.slug}`}
-                        className="w-full inline-flex items-center justify-center gap-2 bg-primary text-primary-foreground py-3 px-6 rounded-lg font-semibold text-base hover:bg-primary/90 transition-all duration-300 hover:gap-3 group/btn shadow-md hover:shadow-lg mt-auto"
+                        className="w-full inline-flex items-center justify-center gap-2 bg-primary text-primary-foreground py-3 px-6 rounded-full font-medium text-base hover:bg-primary-glow transition-all duration-300 hover:gap-3 group/btn mt-auto"
                       >
                         <span>{t('tours.learnMore')}</span>
                         <ArrowRight className="w-5 h-5 group-hover/btn:translate-x-1 transition-transform" />
@@ -214,14 +211,14 @@ export const FeaturedTours = () => {
             <>
               <button
                 onClick={scrollPrev}
-                className="absolute left-1 md:left-0 top-1/2 -translate-y-1/2 bg-background/80 backdrop-blur-sm hover:bg-background text-foreground p-2 md:p-3 rounded-full shadow-lg hover:shadow-xl transition-all duration-300 hover:scale-110 z-10"
+                className="absolute left-1 md:left-0 top-1/2 -translate-y-1/2 bg-background/80 backdrop-blur-sm hover:bg-background text-foreground p-2 md:p-3 rounded-full shadow-elegant transition-all duration-300 z-10"
                 aria-label="Previous tour"
               >
                 <ChevronLeft className="w-5 h-5 md:w-6 md:h-6" />
               </button>
               <button
                 onClick={scrollNext}
-                className="absolute right-1 md:right-0 top-1/2 -translate-y-1/2 bg-background/80 backdrop-blur-sm hover:bg-background text-foreground p-2 md:p-3 rounded-full shadow-lg hover:shadow-xl transition-all duration-300 hover:scale-110 z-10"
+                className="absolute right-1 md:right-0 top-1/2 -translate-y-1/2 bg-background/80 backdrop-blur-sm hover:bg-background text-foreground p-2 md:p-3 rounded-full shadow-elegant transition-all duration-300 z-10"
                 aria-label="Next tour"
               >
                 <ChevronRight className="w-5 h-5 md:w-6 md:h-6" />
@@ -252,7 +249,7 @@ export const FeaturedTours = () => {
         <div className="text-center mt-8 md:mt-12">
           <Link
             to="/ponude"
-            className="inline-flex items-center gap-2 bg-secondary text-secondary-foreground hover:bg-secondary/80 px-6 md:px-8 py-3 md:py-4 rounded-lg font-semibold text-sm md:text-base transition-all duration-300 hover:gap-3 shadow-md hover:shadow-lg"
+            className="inline-flex items-center gap-2 bg-secondary text-secondary-foreground hover:bg-secondary/80 px-6 md:px-8 py-3 md:py-4 rounded-full font-medium text-sm md:text-base transition-all duration-300 hover:gap-3"
           >
             <span>{t('tours.viewAll')}</span>
             <ArrowRight className="w-4 h-4 md:w-5 md:h-5" />
