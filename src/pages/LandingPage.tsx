@@ -233,769 +233,290 @@ const LandingPage = () => {
     vehicle.registration && vehicle.registration !== 'REGISTRACIJA-NAKNADNO' && vehicle.registration !== vehicle.model
   );
 
-  return (
-    <div className="min-h-screen bg-background">
-      {/* Navigation Bar */}
-      <nav className="fixed top-0 left-0 right-0 z-50 bg-black/30 backdrop-blur-lg border-b border-white/10">
-        <div className="max-w-7xl mx-auto px-6 py-4">
-          <div className="flex items-center justify-between">
-            <a 
-              href="#"
-              onClick={(e) => {
-                e.preventDefault();
-                window.scrollTo({ top: 0, behavior: 'smooth' });
-              }}
-              className="cursor-pointer"
-            >
-              <img 
-                src="/lovable-uploads/drina-bus-logo-transparent.png" 
-                alt="Drina Bus Logo" 
-                className="h-12 w-auto drop-shadow-lg hover:opacity-90 transition-opacity"
-                style={{ filter: 'contrast(1.2) brightness(0.95) saturate(1.1)' }}
-              />
-            </a>
-            
-            {/* Desktop Navigation */}
-            <div className="hidden lg:flex items-center gap-6">
-              <a 
-                href="#fleet" 
-                className="text-white hover:text-green-400 font-medium transition-colors duration-200 drop-shadow-lg"
-              >
-                {t('nav.fleet')}
-              </a>
-              <a 
-                href="#about" 
-                className="text-white hover:text-green-400 font-medium transition-colors duration-200 drop-shadow-lg"
-              >
-                {t('nav.about')}
-              </a>
-              <a 
-                href="#gallery" 
-                className="text-white hover:text-green-400 font-medium transition-colors duration-200 drop-shadow-lg"
-              >
-                {t('nav.gallery')}
-              </a>
-              <a 
-                href="#faq" 
-                className="text-white hover:text-green-400 font-medium transition-colors duration-200 drop-shadow-lg"
-              >
-                {t('nav.faq')}
-              </a>
-              <a 
-                href="/ponude" 
-                className="bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded-lg font-semibold transition-all duration-200 shadow-lg hover:shadow-xl hover:scale-105"
-              >
-                {t('nav.tours')}
-              </a>
-              <a 
-                href="#cta" 
-                className="bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded-lg font-semibold transition-all duration-200 shadow-lg hover:shadow-xl hover:scale-105"
-              >
-                {t('nav.booking')}
-              </a>
-              <button
-                onClick={() => setLanguage(language === 'sr' ? 'en' : 'sr')}
-                className="flex items-center gap-2 text-white hover:text-green-400 font-medium transition-colors duration-200 border-l border-white/30 pl-6 drop-shadow-lg"
-              >
-                <span className="text-sm">{language === 'sr' ? 'EN' : 'BH'}</span>
-              </button>
-            </div>
+  const services = [
+    { icon: Route, key: 'regular' },
+    { icon: GraduationCap, key: 'excursions' },
+    { icon: Compass, key: 'dayTrips' },
+    { icon: Briefcase, key: 'corporate' },
+    { icon: Globe, key: 'international' },
+    { icon: Plane, key: 'airport' },
+  ];
+  const navLink = "text-[13px] text-foreground/80 hover:text-foreground transition-colors";
+  const navPill = "text-[13px] bg-primary text-primary-foreground px-4 py-1.5 rounded-full font-medium hover:bg-primary-glow transition-colors";
 
-            {/* Mobile Menu Button */}
-            <div className="lg:hidden flex items-center gap-4">
-              <button
-                onClick={() => setLanguage(language === 'sr' ? 'en' : 'sr')}
-                className="text-white hover:text-green-400 font-medium transition-colors duration-200 drop-shadow-lg"
-              >
-                <span className="text-sm">{language === 'sr' ? 'EN' : 'BH'}</span>
-              </button>
-              <button
-                onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
-                className="text-white hover:text-green-400 transition-colors duration-200"
-                aria-label="Toggle menu"
-              >
-                {mobileMenuOpen ? (
-                  <X className="h-6 w-6" />
-                ) : (
-                  <Menu className="h-6 w-6" />
-                )}
-              </button>
-            </div>
-          </div>
-
-          {/* Mobile Menu */}
-          {mobileMenuOpen && (
-            <div className="lg:hidden mt-4 pb-4 flex flex-col gap-4 animate-fade-in">
-              <a 
-                href="#fleet" 
-                onClick={() => setMobileMenuOpen(false)}
-                className="text-white hover:text-green-400 font-medium transition-colors duration-200 drop-shadow-lg py-2"
-              >
-                {t('nav.fleet')}
-              </a>
-              <a 
-                href="#about" 
-                onClick={() => setMobileMenuOpen(false)}
-                className="text-white hover:text-green-400 font-medium transition-colors duration-200 drop-shadow-lg py-2"
-              >
-                {t('nav.about')}
-              </a>
-              <a 
-                href="#gallery" 
-                onClick={() => setMobileMenuOpen(false)}
-                className="text-white hover:text-green-400 font-medium transition-colors duration-200 drop-shadow-lg py-2"
-              >
-                {t('nav.gallery')}
-              </a>
-              <a 
-                href="#faq" 
-                onClick={() => setMobileMenuOpen(false)}
-                className="text-white hover:text-green-400 font-medium transition-colors duration-200 drop-shadow-lg py-2"
-              >
-                {t('nav.faq')}
-              </a>
-              <a 
-                href="/ponude" 
-                onClick={() => setMobileMenuOpen(false)}
-                className="bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded-lg font-semibold transition-all duration-200 shadow-lg text-center"
-              >
-                {t('nav.tours')}
-              </a>
-              <a 
-                href="#cta" 
-                onClick={() => setMobileMenuOpen(false)}
-                className="bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded-lg font-semibold transition-all duration-200 shadow-lg text-center"
-              >
-                {t('nav.booking')}
-              </a>
-            </div>
+  const renderVehicle = (vehicle: Vehicle) => {
+    const vehicleImage = getVehicleImageFromUploads(vehicle);
+    const imagePosition = getVehicleImagePosition(vehicle);
+    return (
+      <div key={vehicle.id} className="group rounded-[28px] bg-card overflow-hidden transition-shadow duration-500 hover:shadow-elegant">
+        <div className="aspect-[4/3] bg-secondary overflow-hidden">
+          {vehicleImage ? (
+            <img
+              src={vehicleImage}
+              alt={`${vehicle.brand} ${vehicle.model} - Drina Bus`}
+              className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-[1.04]"
+              style={{ objectPosition: imagePosition }}
+              loading="lazy"
+              width="400"
+              height="300"
+              onError={(e) => { (e.target as HTMLImageElement).style.visibility = 'hidden'; }}
+            />
+          ) : (
+            <div className="w-full h-full flex items-center justify-center text-muted-foreground text-sm">{t('fleet.busImage')}</div>
           )}
         </div>
+        <div className="p-7">
+          <p className="text-xs font-medium uppercase tracking-widest text-primary mb-2">
+            {getAdjustedCapacity(vehicle)} {t('fleet.seats')}
+          </p>
+          <h3 className="text-2xl font-semibold text-foreground">{vehicle.brand} {vehicle.model}</h3>
+          {shouldShowRegistration(vehicle) && (
+            <p className="text-sm text-muted-foreground mt-1">{vehicle.registration}</p>
+          )}
+          <p className="text-muted-foreground text-[15px] leading-relaxed mt-3">
+            {getVehicleDescription(vehicle.brand, vehicle.model)}
+          </p>
+        </div>
+      </div>
+    );
+  };
+
+  const SectionHead = ({ eyebrow, title, subtitle }: { eyebrow?: string; title: string; subtitle?: string }) => (
+    <div className="text-center mb-14 md:mb-20">
+      {eyebrow && <p className="text-primary font-medium mb-3">{eyebrow}</p>}
+      <h2 className="text-4xl md:text-6xl font-semibold text-foreground tracking-tight">{title}</h2>
+      {subtitle && <p className="text-lg md:text-2xl text-muted-foreground max-w-2xl mx-auto mt-4 leading-snug">{subtitle}</p>}
+    </div>
+  );
+
+  return (
+    <div className="min-h-screen bg-background">
+      <nav className="fixed top-0 left-0 right-0 z-50 bg-background/75 backdrop-blur-xl backdrop-saturate-150 border-b border-border/60">
+        <div className="max-w-6xl mx-auto px-6 h-14 flex items-center justify-between">
+          <a href="#" onClick={(e) => { e.preventDefault(); window.scrollTo({ top: 0, behavior: 'smooth' }); }}>
+            <img src="/lovable-uploads/drina-bus-logo-transparent.png" alt="Drina Bus Logo" className="h-8 w-auto" />
+          </a>
+          <div className="hidden lg:flex items-center gap-7">
+            <a href="#fleet" className={navLink}>{t('nav.fleet')}</a>
+            <a href="#about" className={navLink}>{t('nav.about')}</a>
+            <a href="#gallery" className={navLink}>{t('nav.gallery')}</a>
+            <a href="#faq" className={navLink}>{t('nav.faq')}</a>
+            <a href="/ponude" className={navPill}>{t('nav.tours')}</a>
+            <a href="#cta" className={navPill}>{t('nav.booking')}</a>
+            <button onClick={() => setLanguage(language === 'sr' ? 'en' : 'sr')} className={navLink}>
+              {language === 'sr' ? 'EN' : 'BH'}
+            </button>
+          </div>
+          <div className="lg:hidden flex items-center gap-4">
+            <button onClick={() => setLanguage(language === 'sr' ? 'en' : 'sr')} className={navLink}>
+              {language === 'sr' ? 'EN' : 'BH'}
+            </button>
+            <button onClick={() => setMobileMenuOpen(!mobileMenuOpen)} className="text-foreground" aria-label="Toggle menu">
+              {mobileMenuOpen ? <X className="h-5 w-5" /> : <Menu className="h-5 w-5" />}
+            </button>
+          </div>
+        </div>
+        {mobileMenuOpen && (
+          <div className="lg:hidden px-6 pb-6 pt-2 flex flex-col animate-fade-in bg-background/95">
+            {[['#fleet', 'nav.fleet'], ['#about', 'nav.about'], ['#gallery', 'nav.gallery'], ['#faq', 'nav.faq']].map(([href, key]) => (
+              <a key={href} href={href} onClick={() => setMobileMenuOpen(false)} className="text-2xl font-semibold text-foreground py-3 border-b border-border/60">
+                {t(key)}
+              </a>
+            ))}
+            <div className="flex gap-3 mt-5">
+              <a href="/ponude" onClick={() => setMobileMenuOpen(false)} className="flex-1 text-center bg-primary text-primary-foreground py-3 rounded-full font-medium">{t('nav.tours')}</a>
+              <a href="#cta" onClick={() => setMobileMenuOpen(false)} className="flex-1 text-center bg-secondary text-foreground py-3 rounded-full font-medium">{t('nav.booking')}</a>
+            </div>
+          </div>
+        )}
       </nav>
 
       <WhatsAppButton />
-      
-      {/* Hero Section */}
-      <section className="relative min-h-screen flex items-center justify-center overflow-hidden">
-        {/* Blurred Bus Gallery Background with Parallax */}
-        <div 
-          className="absolute inset-0"
-          style={{
-            transform: `translateY(${scrollY * 0.5}px)`,
-            transition: 'transform 0.1s ease-out'
-          }}
-        >
-          <img 
-            src="/lovable-uploads/1bc6f777-073d-4e8d-be07-8473954f5e95.png" 
-            alt="Drina Bus Fleet" 
-            className="w-full h-full object-cover scale-110 blur-sm"
-          />
-          {/* Green Overlay */}
-          <div className="absolute inset-0 bg-gradient-to-br from-green-900/80 via-emerald-800/75 to-green-900/85" />
-        </div>
-        
-        {/* Content */}
-        <div className="relative z-10 text-center text-white max-w-6xl mx-auto px-6 py-20">
-          {/* Logo with creative white banner */}
-          <div className="mb-12 flex justify-center animate-fade-in">
-            <div className="relative px-16 py-8 bg-white rounded-2xl shadow-2xl transform hover:scale-105 transition-transform duration-300 animate-scale-in" style={{ animationDelay: '0.1s', animationFillMode: 'both' }}>
-              {/* Green accent lines */}
-              <div className="absolute -top-1 left-8 right-8 h-1 bg-gradient-to-r from-transparent via-green-600 to-transparent rounded-full animate-fade-in" style={{ animationDelay: '0.5s', animationFillMode: 'both' }} />
-              <div className="absolute -bottom-1 left-8 right-8 h-1 bg-gradient-to-r from-transparent via-emerald-600 to-transparent rounded-full animate-fade-in" style={{ animationDelay: '0.5s', animationFillMode: 'both' }} />
-              
-              {/* Decorative corner elements */}
-              <div className="absolute -top-2 -left-2 w-4 h-4 border-t-2 border-l-2 border-green-600 rounded-tl-lg animate-fade-in" style={{ animationDelay: '0.6s', animationFillMode: 'both' }} />
-              <div className="absolute -top-2 -right-2 w-4 h-4 border-t-2 border-r-2 border-green-600 rounded-tr-lg animate-fade-in" style={{ animationDelay: '0.6s', animationFillMode: 'both' }} />
-              <div className="absolute -bottom-2 -left-2 w-4 h-4 border-b-2 border-l-2 border-emerald-600 rounded-bl-lg animate-fade-in" style={{ animationDelay: '0.7s', animationFillMode: 'both' }} />
-              <div className="absolute -bottom-2 -right-2 w-4 h-4 border-b-2 border-r-2 border-emerald-600 rounded-br-lg animate-fade-in" style={{ animationDelay: '0.7s', animationFillMode: 'both' }} />
-              
-              {/* Subtle pattern background */}
-              <div className="absolute inset-0 opacity-5 rounded-2xl" style={{
-                backgroundImage: `url("data:image/svg+xml,%3Csvg width='20' height='20' viewBox='0 0 20 20' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='%23059669' fill-opacity='1' fill-rule='evenodd'%3E%3Ccircle cx='3' cy='3' r='1'/%3E%3Ccircle cx='13' cy='13' r='1'/%3E%3C/g%3E%3C/svg%3E")`
-              }} />
-              
-              {/* Logo */}
-              <img 
-                src="/lovable-uploads/drina-bus-logo-transparent.png" 
-                alt="Drina Bus" 
-                className="relative h-24 md:h-32 w-auto animate-fade-in"
-                style={{ animationDelay: '0.3s', animationFillMode: 'both' }}
-              />
-            </div>
-          </div>
-          
-          <h1 className="text-5xl md:text-6xl lg:text-8xl font-bold mb-8 leading-tight drop-shadow-2xl animate-fade-in" style={{ animationDelay: '0.2s', animationFillMode: 'both' }}>
+
+      {/* Hero */}
+      <section className="pt-32 md:pt-40 pb-12 px-6 bg-background">
+        <div className="max-w-5xl mx-auto text-center animate-fade-in">
+          <img src="/lovable-uploads/drina-bus-logo-transparent.png" alt="Drina Bus" className="h-14 md:h-20 w-auto mx-auto mb-8" />
+          <h1 className="text-5xl md:text-7xl lg:text-8xl font-semibold tracking-tighter text-foreground leading-[1.02]">
             {t('hero.title')}
           </h1>
-          
-          <p className="text-2xl md:text-3xl lg:text-4xl font-light mb-12 text-white/95 animate-fade-in" style={{ animationDelay: '0.4s', animationFillMode: 'both' }}>
+          <p className="text-xl md:text-3xl text-muted-foreground mt-6 max-w-3xl mx-auto">
             {t('hero.subtitle')}
           </p>
-
-          <div className="flex flex-col sm:flex-row gap-6 justify-center items-center animate-fade-in" style={{ animationDelay: '0.6s', animationFillMode: 'both' }}>
-            <a 
-              href="#fleet" 
-              className="bg-green-600 hover:bg-green-700 text-white px-8 py-4 rounded-lg text-lg font-semibold transition-all duration-300 shadow-lg hover:shadow-xl hover:scale-105"
-            >
+          <div className="flex flex-wrap gap-4 justify-center mt-10">
+            <a href="#fleet" className="bg-primary text-primary-foreground px-7 py-3 rounded-full text-[17px] font-medium hover:bg-primary-glow transition-colors">
               {t('hero.viewFleet')}
             </a>
-            <a 
-              href="/ponude" 
-              className="bg-white/10 backdrop-blur-sm hover:bg-white/20 text-white border-2 border-white/50 px-8 py-4 rounded-lg text-lg font-semibold transition-all duration-300 shadow-lg hover:shadow-xl hover:scale-105"
-            >
-              {t('hero.viewTours')}
+            <a href="/ponude" className="text-primary px-7 py-3 rounded-full text-[17px] font-medium ring-1 ring-primary hover:bg-primary hover:text-primary-foreground transition-colors">
+              {t('hero.viewTours')} ›
             </a>
           </div>
         </div>
-
-      </section>
-
-      {/* Detailed Services Section */}
-      <section id="services" className="py-20 px-6 bg-gradient-to-br from-green-50 to-emerald-50 relative overflow-hidden scroll-mt-20">
-        <div className="absolute inset-0 opacity-5 bg-repeat" style={{ 
-          backgroundImage: `url("data:image/svg+xml,%3Csvg width='40' height='40' viewBox='0 0 40 40' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M20 20.5V18H0v-2h20v-2H0v-2h20v-2H0V8h20V6H0V4h20V2H0V0h22v20h2V0h2v20h2V0h2v20h2V0h2v20h2V0h2v20h2v2H20v-1.5zM0 20h2v20H0V20zm4 0h2v20H4V20zm4 0h2v20H8V20zm4 0h2v20h-2V20zm4 0h2v20h-2V20zm4 4h20v2H20v-2zm0 4h20v2H20v-2zm0 4h20v2H20v-2zm0 4h20v2H20v-2z' fill='%23059669' fill-opacity='1' fill-rule='evenodd'/%3E%3C/svg%3E")`,
-        }} />
-        
-        <div className="max-w-7xl mx-auto relative">
-          <div className="text-center mb-16">
-            <h2 className="text-3xl md:text-4xl lg:text-5xl font-bold text-gray-900 mb-4">
-              {t('detailedServices.title')}
-            </h2>
-            <p className="text-lg text-gray-600 max-w-3xl mx-auto">
-              {t('detailedServices.subtitle')}
-            </p>
-          </div>
-
-          <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
-            {/* Regular Transport */}
-            <Card className="group hover:shadow-2xl transition-all duration-300 border-2 hover:border-green-300 bg-white/80 backdrop-blur-sm">
-              <CardContent className="p-8">
-                <div className="w-16 h-16 bg-gradient-to-br from-green-500 to-emerald-600 rounded-2xl flex items-center justify-center mx-auto mb-6 group-hover:scale-110 transition-transform shadow-lg">
-                  <Route className="h-8 w-8 text-white" />
-                </div>
-                <h3 className="text-xl font-bold text-gray-900 mb-3 text-center">{t('detailedServices.regular.title')}</h3>
-                <p className="text-gray-600 leading-relaxed text-center">
-                  {t('detailedServices.regular.desc')}
-                </p>
-              </CardContent>
-            </Card>
-
-            {/* School Excursions */}
-            <Card className="group hover:shadow-2xl transition-all duration-300 border-2 hover:border-green-300 bg-white/80 backdrop-blur-sm">
-              <CardContent className="p-8">
-                <div className="w-16 h-16 bg-gradient-to-br from-emerald-500 to-green-600 rounded-2xl flex items-center justify-center mx-auto mb-6 group-hover:scale-110 transition-transform shadow-lg">
-                  <GraduationCap className="h-8 w-8 text-white" />
-                </div>
-                <h3 className="text-xl font-bold text-gray-900 mb-3 text-center">{t('detailedServices.excursions.title')}</h3>
-                <p className="text-gray-600 leading-relaxed text-center">
-                  {t('detailedServices.excursions.desc')}
-                </p>
-              </CardContent>
-            </Card>
-
-            {/* Day Trips */}
-            <Card className="group hover:shadow-2xl transition-all duration-300 border-2 hover:border-green-300 bg-white/80 backdrop-blur-sm">
-              <CardContent className="p-8">
-                <div className="w-16 h-16 bg-gradient-to-br from-green-600 to-emerald-700 rounded-2xl flex items-center justify-center mx-auto mb-6 group-hover:scale-110 transition-transform shadow-lg">
-                  <Compass className="h-8 w-8 text-white" />
-                </div>
-                <h3 className="text-xl font-bold text-gray-900 mb-3 text-center">{t('detailedServices.dayTrips.title')}</h3>
-                <p className="text-gray-600 leading-relaxed text-center">
-                  {t('detailedServices.dayTrips.desc')}
-                </p>
-              </CardContent>
-            </Card>
-
-            {/* Corporate Transport */}
-            <Card className="group hover:shadow-2xl transition-all duration-300 border-2 hover:border-green-300 bg-white/80 backdrop-blur-sm">
-              <CardContent className="p-8">
-                <div className="w-16 h-16 bg-gradient-to-br from-emerald-600 to-green-700 rounded-2xl flex items-center justify-center mx-auto mb-6 group-hover:scale-110 transition-transform shadow-lg">
-                  <Briefcase className="h-8 w-8 text-white" />
-                </div>
-                <h3 className="text-xl font-bold text-gray-900 mb-3 text-center">{t('detailedServices.corporate.title')}</h3>
-                <p className="text-gray-600 leading-relaxed text-center">
-                  {t('detailedServices.corporate.desc')}
-                </p>
-              </CardContent>
-            </Card>
-
-            {/* International Charter */}
-            <Card className="group hover:shadow-2xl transition-all duration-300 border-2 hover:border-green-300 bg-white/80 backdrop-blur-sm">
-              <CardContent className="p-8">
-                <div className="w-16 h-16 bg-gradient-to-br from-green-500 to-emerald-600 rounded-2xl flex items-center justify-center mx-auto mb-6 group-hover:scale-110 transition-transform shadow-lg">
-                  <Globe className="h-8 w-8 text-white" />
-                </div>
-                <h3 className="text-xl font-bold text-gray-900 mb-3 text-center">{t('detailedServices.international.title')}</h3>
-                <p className="text-gray-600 leading-relaxed text-center">
-                  {t('detailedServices.international.desc')}
-                </p>
-              </CardContent>
-            </Card>
-
-            {/* Airport Transfer */}
-            <Card className="group hover:shadow-2xl transition-all duration-300 border-2 hover:border-green-300 bg-white/80 backdrop-blur-sm">
-              <CardContent className="p-8">
-                <div className="w-16 h-16 bg-gradient-to-br from-emerald-500 to-green-600 rounded-2xl flex items-center justify-center mx-auto mb-6 group-hover:scale-110 transition-transform shadow-lg">
-                  <Plane className="h-8 w-8 text-white" />
-                </div>
-                <h3 className="text-xl font-bold text-gray-900 mb-3 text-center">{t('detailedServices.airport.title')}</h3>
-                <p className="text-gray-600 leading-relaxed text-center">
-                  {t('detailedServices.airport.desc')}
-                </p>
-              </CardContent>
-            </Card>
+        <div className="max-w-6xl mx-auto mt-16 md:mt-20">
+          <div className="rounded-[32px] overflow-hidden aspect-[16/9] md:aspect-[21/9] bg-secondary">
+            <img
+              src="/lovable-uploads/1bc6f777-073d-4e8d-be07-8473954f5e95.png"
+              alt="Drina Bus Fleet"
+              className="w-full h-full object-cover"
+              style={{ transform: `scale(${1 + Math.min(scrollY, 600) / 6000})` }}
+            />
           </div>
         </div>
       </section>
 
-      {/* Featured Tours Section */}
-      <FeaturedTours />
-
-      {/* Fleet Section */}
-      <section id="fleet" className="py-20 px-6 bg-gray-50 scroll-mt-20">
+      {/* Services */}
+      <section id="services" className="py-24 md:py-32 px-6 bg-secondary scroll-mt-14">
         <div className="max-w-6xl mx-auto">
-          <div className="text-center mb-16">
-            <h2 className="text-3xl md:text-4xl font-bold text-gray-900 mb-4">
-              {t('fleet.title')}
-            </h2>
-            <p className="text-lg text-gray-600 max-w-2xl mx-auto">
-              {t('fleet.subtitle')}
-            </p>
-          </div>
-
-          {loading ? (
-            <div className="text-center py-12">
-              <p className="text-gray-500">{t('fleet.loading')}</p>
-            </div>
-          ) : (
-            <div className="space-y-8">
-              {/* First row - 3 cards */}
-              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 lg:gap-8">
-                {vehicles.slice(0, 3).map((vehicle) => {
-                  const vehicleImage = getVehicleImageFromUploads(vehicle);
-                  const imagePosition = getVehicleImagePosition(vehicle);
-                  
-                  return (
-                    <Card 
-                      key={vehicle.id} 
-                      className="group hover:shadow-xl transition-all duration-300 overflow-hidden w-full shadow-sm border-2 hover:border-green-200 rounded-lg"
-                    >
-                      <div className="aspect-video bg-gray-100 overflow-hidden rounded-t-lg">
-                        {vehicleImage ? (
-                          <img 
-                            src={vehicleImage}
-                            alt={`${vehicle.brand} ${vehicle.model} - Drina Bus`}
-                            className={`w-full h-full object-cover transition-transform duration-300 ${
-                              vehicle.registration === 'T17-M-331' ? 'group-hover:scale-180' : 'group-hover:scale-110'
-                            }`}
-                            style={{ objectPosition: imagePosition }}
-                            loading="lazy"
-                            width="400"
-                            height="225"
-                            onError={(e) => {
-                              const target = e.target as HTMLImageElement;
-                              target.style.display = 'none';
-                              const fallback = document.createElement('div');
-                              fallback.className = 'w-full h-full bg-gradient-to-br from-green-400 to-emerald-600 flex items-center justify-center';
-                              const inner = document.createElement('div');
-                              inner.className = 'text-white text-center';
-                              const emoji = document.createElement('div');
-                              emoji.className = 'text-4xl mb-2';
-                              emoji.textContent = '🚌';
-                              const label = document.createElement('p');
-                              label.className = 'text-sm opacity-80';
-                              label.textContent = t('fleet.busImage');
-                              inner.appendChild(emoji);
-                              inner.appendChild(label);
-                              fallback.appendChild(inner);
-                              target.parentElement!.replaceChildren(fallback);
-                            }}
-                          />
-                        ) : (
-                          <div className="w-full h-full bg-gradient-to-br from-green-400 to-emerald-600 flex items-center justify-center">
-                            <div className="text-white text-center">
-                              <div className="text-4xl mb-2">🚌</div>
-                              <p className="text-sm opacity-80">{t('fleet.busImage')}</p>
-                            </div>
-                          </div>
-                        )}
-                      </div>
-                      <CardContent className="p-6">
-                        <h3 className="text-xl font-bold text-gray-900 mb-2">
-                          {vehicle.brand} {vehicle.model}
-                          {shouldShowRegistration(vehicle) && (
-                            <span className="text-sm font-normal text-gray-500 block">
-                              {vehicle.registration}
-                            </span>
-                          )}
-                        </h3>
-                        <div className="flex items-center gap-2 mb-3">
-                          <Badge variant="secondary" className="flex items-center gap-1">
-                            <Users className="h-3 w-3" />
-                            {getAdjustedCapacity(vehicle)} {t('fleet.seats')}
-                          </Badge>
-                        </div>
-                        <p className="text-gray-600 text-sm leading-relaxed">
-                          {getVehicleDescription(vehicle.brand, vehicle.model)}
-                        </p>
-                      </CardContent>
-                    </Card>
-                  );
-                })}
-              </div>
-              
-              {/* Second row - 2 cards centered */}
-              {vehicles.length > 3 && (
-                <div className="flex justify-center">
-                  <div className={`grid grid-cols-1 md:grid-cols-2 gap-6 lg:gap-8 w-full ${
-                    vehicles.length - 3 === 2 ? 'max-w-2xl' : vehicles.length - 3 === 1 ? 'max-w-sm md:grid-cols-1' : 'lg:grid-cols-3'
-                  }`}>
-                    {vehicles.slice(3).map((vehicle) => {
-                      const vehicleImage = getVehicleImageFromUploads(vehicle);
-                      const imagePosition = getVehicleImagePosition(vehicle);
-                      
-                      return (
-                        <Card 
-                          key={vehicle.id} 
-                          className="group hover:shadow-xl transition-all duration-300 overflow-hidden w-full shadow-sm border-2 hover:border-green-200 rounded-lg"
-                        >
-                          <div className="aspect-video bg-gray-100 overflow-hidden rounded-t-lg">
-                            {vehicleImage ? (
-                              <img 
-                                src={vehicleImage}
-                                alt={`${vehicle.brand} ${vehicle.model} - Drina Bus`}
-                                className={`w-full h-full object-cover transition-transform duration-300 ${
-                                  vehicle.registration === 'T17-M-331' ? 'group-hover:scale-125' : 'group-hover:scale-110'
-                                }`}
-                                style={{ objectPosition: imagePosition }}
-                                loading="lazy"
-                                width="400"
-                                height="225"
-                                onError={(e) => {
-                                  const target = e.target as HTMLImageElement;
-                                  target.style.display = 'none';
-                                  const fallback = document.createElement('div');
-                                  fallback.className = 'w-full h-full bg-gradient-to-br from-green-400 to-emerald-600 flex items-center justify-center';
-                                  const inner = document.createElement('div');
-                                  inner.className = 'text-white text-center';
-                                  const emoji = document.createElement('div');
-                                  emoji.className = 'text-4xl mb-2';
-                                  emoji.textContent = '🚌';
-                                  const label = document.createElement('p');
-                                  label.className = 'text-sm opacity-80';
-                                  label.textContent = t('fleet.busImage');
-                                  inner.appendChild(emoji);
-                                  inner.appendChild(label);
-                                  fallback.appendChild(inner);
-                                  target.parentElement!.replaceChildren(fallback);
-                                }}
-                              />
-                            ) : (
-                              <div className="w-full h-full bg-gradient-to-br from-green-400 to-emerald-600 flex items-center justify-center">
-                                <div className="text-white text-center">
-                                  <div className="text-4xl mb-2">🚌</div>
-                                  <p className="text-sm opacity-80">{t('fleet.busImage')}</p>
-                                </div>
-                              </div>
-                            )}
-                          </div>
-                          <CardContent className="p-6">
-                            <h3 className="text-xl font-bold text-gray-900 mb-2">
-                              {vehicle.brand} {vehicle.model}
-                              {shouldShowRegistration(vehicle) && (
-                                <span className="text-sm font-normal text-gray-500 block">
-                                  {vehicle.registration}
-                                </span>
-                              )}
-                            </h3>
-                            <div className="flex items-center gap-2 mb-3">
-                              <Badge variant="secondary" className="flex items-center gap-1">
-                                <Users className="h-3 w-3" />
-                                {getAdjustedCapacity(vehicle)} {t('fleet.seats')}
-                              </Badge>
-                            </div>
-                            <p className="text-gray-600 text-sm leading-relaxed">
-                              {getVehicleDescription(vehicle.brand, vehicle.model)}
-                            </p>
-                          </CardContent>
-                        </Card>
-                      );
-                    })}
-                  </div>
-                </div>
-              )}
-            </div>
-          )}
-        </div>
-      </section>
-
-      {/* About Us Section */}
-      <section id="about" className="py-20 px-6 bg-white scroll-mt-20">
-        <div className="max-w-4xl mx-auto text-center">
-          <h2 className="text-3xl md:text-4xl font-bold text-gray-900 mb-8">
-            {t('about.title')}
-          </h2>
-          <div className="prose prose-lg mx-auto text-gray-600 leading-relaxed">
-            <p className="text-lg mb-6">
-              {t('about.text1')}
-            </p>
-            <p className="text-lg mb-12">
-              {t('about.text2')}
-            </p>
-          </div>
-          
-          {/* Stats Section */}
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-8 mt-12 max-w-3xl mx-auto">
-            <div className="text-center p-6 bg-green-50 rounded-lg border-2 border-green-100 hover:border-green-300 transition-all duration-300">
-              <div className="text-4xl font-bold text-green-600 mb-2">15+</div>
-              <div className="text-gray-700 font-medium">{t('about.stats.experience')}</div>
-            </div>
-            <div className="text-center p-6 bg-green-50 rounded-lg border-2 border-green-100 hover:border-green-300 transition-all duration-300">
-              <div className="text-4xl font-bold text-green-600 mb-2">2000+</div>
-              <div className="text-gray-700 font-medium">{t('about.stats.trips')}</div>
-            </div>
-            <div className="text-center p-6 bg-green-50 rounded-lg border-2 border-green-100 hover:border-green-300 transition-all duration-300">
-              <div className="text-4xl font-bold text-green-600 mb-2">30+</div>
-              <div className="text-gray-700 font-medium">{t('about.stats.clients')}</div>
-            </div>
-          </div>
-        </div>
-      </section>
-
-      {/* Gallery Section */}
-      <section id="gallery" className="py-20 px-6 bg-gray-50 scroll-mt-20">
-        <div className="max-w-6xl mx-auto">
-          <div className="text-center mb-16">
-            <h2 className="text-3xl md:text-4xl font-bold text-gray-900 mb-4">
-              {t('gallery.title')}
-            </h2>
-            <p className="text-lg text-gray-600 max-w-2xl mx-auto">
-              {t('gallery.subtitle')}
-            </p>
-          </div>
-
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
-            {galleryImages.map((image, index) => (
-              <div 
-                key={index}
-                className="aspect-square bg-gray-200 rounded-lg overflow-hidden cursor-pointer group hover:shadow-lg transition-all duration-300"
-                onClick={() => setSelectedImage(image.url)}
-              >
-                <img 
-                  src={image.url} 
-                  alt={image.alt}
-                  className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
-                  loading="lazy"
-                  width="300"
-                  height="300"
-                  onError={(e) => {
-                    const target = e.target as HTMLImageElement;
-                    target.src = 'data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMjAwIiBoZWlnaHQ9IjIwMCIgdmlld0JveD0iMCAwIDIwMCAyMDAiIGZpbGw9Im5vbmUiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+PHJlY3Qgd2lkdGg9IjIwMCIgaGVpZ2h0PSIyMDAiIGZpbGw9IiNGM0Y0RjYiLz48dGV4dCB4PSIxMDAiIHk9IjEwMCIgdGV4dC1hbmNob3I9Im1pZGRsZSIgZG9taW5hbnQtYmFzZWxpbmU9Im1pZGRsZSIgZmlsbD0iIzlDQTNBRiIgZm9udC1zaXplPSIxNCIgZm9udC1mYW1pbHk9InNhbnMtc2VyaWYiPkRyaW5hIEJ1czwvdGV4dD48L3N2Zz4=';
-                  }}
-                />
+          <SectionHead title={t('detailedServices.title')} subtitle={t('detailedServices.subtitle')} />
+          <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-5">
+            {services.map(({ icon: Icon, key }) => (
+              <div key={key} className="bg-card rounded-[28px] p-8 md:p-10 transition-transform duration-500 hover:scale-[1.015]">
+                <Icon className="h-9 w-9 text-primary mb-8" strokeWidth={1.5} />
+                <h3 className="text-2xl font-semibold text-foreground mb-3">{t(`detailedServices.${key}.title`)}</h3>
+                <p className="text-muted-foreground text-[15px] leading-relaxed">{t(`detailedServices.${key}.desc`)}</p>
               </div>
             ))}
           </div>
         </div>
       </section>
 
-      {/* FAQ Section */}
-      <section id="faq" className="py-20 px-6 bg-white scroll-mt-20">
-        <div className="max-w-4xl mx-auto">
-          <div className="text-center mb-16">
-            <h2 className="text-3xl md:text-4xl lg:text-5xl font-bold text-gray-900 mb-4">
-              {t('faq.title')}
-            </h2>
-            <p className="text-lg text-gray-600 max-w-2xl mx-auto">
-              {t('faq.subtitle')}
-            </p>
+      <FeaturedTours />
+
+      {/* Fleet */}
+      <section id="fleet" className="py-24 md:py-32 px-6 bg-secondary scroll-mt-14">
+        <div className="max-w-6xl mx-auto">
+          <SectionHead title={t('fleet.title')} subtitle={t('fleet.subtitle')} />
+          {loading ? (
+            <p className="text-center text-muted-foreground py-12">{t('fleet.loading')}</p>
+          ) : (
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5">
+              {vehicles.map(renderVehicle)}
+            </div>
+          )}
+        </div>
+      </section>
+
+      {/* About */}
+      <section id="about" className="py-24 md:py-32 px-6 bg-background scroll-mt-14">
+        <div className="max-w-4xl mx-auto text-center">
+          <h2 className="text-4xl md:text-6xl font-semibold tracking-tight text-foreground mb-10">{t('about.title')}</h2>
+          <p className="text-xl md:text-2xl text-muted-foreground leading-relaxed mb-6">{t('about.text1')}</p>
+          <p className="text-xl md:text-2xl text-muted-foreground leading-relaxed">{t('about.text2')}</p>
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-10 mt-20">
+            {[['15+', 'about.stats.experience'], ['2000+', 'about.stats.trips'], ['30+', 'about.stats.clients']].map(([n, k]) => (
+              <div key={k}>
+                <div className="text-6xl md:text-7xl font-semibold tracking-tighter text-foreground">{n}</div>
+                <div className="text-muted-foreground mt-2">{t(k)}</div>
+              </div>
+            ))}
           </div>
+        </div>
+      </section>
 
-          <Accordion type="single" collapsible className="space-y-4">
-            <AccordionItem value="item-1" className="border-2 border-gray-200 rounded-lg px-6 hover:border-green-300 transition-colors">
-              <AccordionTrigger className="text-left text-lg font-semibold text-gray-900 hover:text-green-600">
-                {t('faq.q1')}
-              </AccordionTrigger>
-              <AccordionContent className="text-gray-600 leading-relaxed pt-4">
-                {t('faq.a1')}
-              </AccordionContent>
-            </AccordionItem>
+      {/* Gallery */}
+      <section id="gallery" className="py-24 md:py-32 px-6 bg-secondary scroll-mt-14">
+        <div className="max-w-6xl mx-auto">
+          <SectionHead title={t('gallery.title')} subtitle={t('gallery.subtitle')} />
+          <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 md:gap-4">
+            {galleryImages.map((image, index) => (
+              <button
+                key={index}
+                className="aspect-square rounded-3xl overflow-hidden bg-card group"
+                onClick={() => setSelectedImage(image.url)}
+              >
+                <img
+                  src={image.url}
+                  alt={image.alt}
+                  className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-[1.05]"
+                  loading="lazy"
+                  width="300"
+                  height="300"
+                  onError={(e) => { (e.target as HTMLImageElement).style.visibility = 'hidden'; }}
+                />
+              </button>
+            ))}
+          </div>
+        </div>
+      </section>
 
-            <AccordionItem value="item-2" className="border-2 border-gray-200 rounded-lg px-6 hover:border-green-300 transition-colors">
-              <AccordionTrigger className="text-left text-lg font-semibold text-gray-900 hover:text-green-600">
-                {t('faq.q2')}
-              </AccordionTrigger>
-              <AccordionContent className="text-gray-600 leading-relaxed pt-4">
-                {t('faq.a2')}
-              </AccordionContent>
-            </AccordionItem>
-
-            <AccordionItem value="item-3" className="border-2 border-gray-200 rounded-lg px-6 hover:border-green-300 transition-colors">
-              <AccordionTrigger className="text-left text-lg font-semibold text-gray-900 hover:text-green-600">
-                {t('faq.q3')}
-              </AccordionTrigger>
-              <AccordionContent className="text-gray-600 leading-relaxed pt-4">
-                {t('faq.a3')}
-              </AccordionContent>
-            </AccordionItem>
-
-            <AccordionItem value="item-4" className="border-2 border-gray-200 rounded-lg px-6 hover:border-green-300 transition-colors">
-              <AccordionTrigger className="text-left text-lg font-semibold text-gray-900 hover:text-green-600">
-                {t('faq.q4')}
-              </AccordionTrigger>
-              <AccordionContent className="text-gray-600 leading-relaxed pt-4">
-                {t('faq.a4')}
-              </AccordionContent>
-            </AccordionItem>
-
-            <AccordionItem value="item-5" className="border-2 border-gray-200 rounded-lg px-6 hover:border-green-300 transition-colors">
-              <AccordionTrigger className="text-left text-lg font-semibold text-gray-900 hover:text-green-600">
-                {t('faq.q5')}
-              </AccordionTrigger>
-              <AccordionContent className="text-gray-600 leading-relaxed pt-4">
-                {t('faq.a5')}
-              </AccordionContent>
-            </AccordionItem>
+      {/* FAQ */}
+      <section id="faq" className="py-24 md:py-32 px-6 bg-background scroll-mt-14">
+        <div className="max-w-3xl mx-auto">
+          <SectionHead title={t('faq.title')} subtitle={t('faq.subtitle')} />
+          <Accordion type="single" collapsible className="border-t border-border">
+            {[1, 2, 3, 4, 5].map((i) => (
+              <AccordionItem key={i} value={`item-${i}`} className="border-b border-border">
+                <AccordionTrigger className="text-left text-lg md:text-xl font-semibold text-foreground py-6 hover:no-underline">
+                  {t(`faq.q${i}`)}
+                </AccordionTrigger>
+                <AccordionContent className="text-muted-foreground text-base leading-relaxed">
+                  {t(`faq.a${i}`)}
+                </AccordionContent>
+              </AccordionItem>
+            ))}
           </Accordion>
         </div>
       </section>
 
-      {/* Call to Action Section */}
-      <section id="cta" className="relative py-24 px-6 bg-gradient-to-br from-green-700 to-emerald-800 text-white overflow-hidden">
-        {/* Background Pattern */}
-        <div className="absolute inset-0 opacity-10 bg-repeat" style={{ 
-          backgroundImage: `url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%23ffffff' fill-opacity='1'%3E%3Cpath d='M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E")`
-        }} />
-        
-        <div className="max-w-5xl mx-auto text-center relative z-10">
-          {/* Trust Badge */}
-          <div className="inline-flex items-center gap-2 bg-white/10 backdrop-blur-sm px-4 py-2 rounded-full mb-8 animate-fade-in">
-            <Badge className="bg-white text-green-700 hover:bg-white/90">
-              ✓ 15+ {t('cta.years')}
-            </Badge>
-            <span className="text-white/90 text-sm">{t('cta.trusted')}</span>
-          </div>
-
-          {/* Main Headline */}
-          <h2 className="text-4xl md:text-5xl lg:text-6xl font-bold mb-6 animate-fade-in drop-shadow-2xl" style={{ animationDelay: '0.1s', animationFillMode: 'both' }}>
-            {t('cta.title')}
-          </h2>
-          
-          {/* Subheadline */}
-          <p className="text-xl md:text-2xl mb-12 text-white/95 max-w-3xl mx-auto leading-relaxed animate-fade-in" style={{ animationDelay: '0.2s', animationFillMode: 'both' }}>
-            {t('cta.subtitle')}
-          </p>
-
-          {/* CTA Buttons */}
-          <div className="flex flex-col sm:flex-row gap-4 justify-center items-center animate-fade-in" style={{ animationDelay: '0.3s', animationFillMode: 'both' }}>
-            {/* Primary CTA - Phone */}
-            <a 
-              href="tel:+38762888702"
-              className="group relative bg-white text-green-700 px-8 py-4 rounded-xl text-lg font-bold transition-all duration-300 shadow-2xl hover:shadow-[0_0_30px_rgba(255,255,255,0.3)] hover:scale-105 flex items-center gap-3 min-w-[200px] justify-center"
-            >
-              <Phone className="h-5 w-5 group-hover:animate-pulse" />
-              <span>{t('cta.callNow')}</span>
-              <div className="absolute inset-0 rounded-xl bg-gradient-to-r from-transparent via-white/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
+      {/* CTA */}
+      <section id="cta" className="px-4 md:px-6 pb-6 bg-background scroll-mt-14">
+        <div className="max-w-6xl mx-auto rounded-[36px] bg-foreground text-background py-20 md:py-28 px-6 text-center">
+          <p className="text-primary-glow font-medium mb-4">✓ 15+ {t('cta.years')} · {t('cta.trusted')}</p>
+          <h2 className="text-4xl md:text-6xl lg:text-7xl font-semibold tracking-tight">{t('cta.title')}</h2>
+          <p className="text-lg md:text-2xl text-background/70 max-w-2xl mx-auto mt-5">{t('cta.subtitle')}</p>
+          <div className="flex flex-col sm:flex-row gap-3 justify-center items-center mt-12">
+            <a href="tel:+38762888702" className="flex items-center gap-2 bg-background text-foreground px-7 py-3.5 rounded-full text-[17px] font-medium hover:opacity-90 transition-opacity min-w-[190px] justify-center">
+              <Phone className="h-4 w-4" />{t('cta.callNow')}
             </a>
-
-            {/* Secondary CTA - WhatsApp */}
-            <a 
+            <a
               href="https://wa.me/38762888702?text=Zdravo,%20želim%20da%20se%20informišem%20o%20vašim%20uslugama%20prevoza."
               target="_blank"
               rel="noopener noreferrer"
-              className="group bg-[#25D366] hover:bg-[#20BA5A] text-white px-8 py-4 rounded-xl text-lg font-bold transition-all duration-300 shadow-xl hover:shadow-2xl hover:scale-105 flex items-center gap-3 min-w-[200px] justify-center"
+              className="flex items-center gap-2 bg-primary text-primary-foreground px-7 py-3.5 rounded-full text-[17px] font-medium hover:bg-primary-glow transition-colors min-w-[190px] justify-center"
             >
-              <MessageCircle className="h-5 w-5 group-hover:animate-pulse" />
-              <span>WhatsApp</span>
+              <MessageCircle className="h-4 w-4" />WhatsApp
             </a>
-
-            {/* Tertiary CTA - Email */}
-            <a 
-              href="mailto:drinabus@hotmail.com"
-              className="group bg-white/10 backdrop-blur-sm hover:bg-white/20 text-white border-2 border-white/50 px-8 py-4 rounded-xl text-lg font-bold transition-all duration-300 shadow-lg hover:shadow-xl hover:scale-105 flex items-center gap-3 min-w-[200px] justify-center"
-            >
-              <Mail className="h-5 w-5 group-hover:animate-pulse" />
-              <span>{t('cta.email')}</span>
+            <a href="mailto:drinabus@hotmail.com" className="flex items-center gap-2 ring-1 ring-background/30 text-background px-7 py-3.5 rounded-full text-[17px] font-medium hover:bg-background/10 transition-colors min-w-[190px] justify-center">
+              <Mail className="h-4 w-4" />{t('cta.email')}
             </a>
           </div>
         </div>
       </section>
 
-      {/* Contact Section */}
-      <section id="contact" className="py-20 px-6 bg-green-900 text-white scroll-mt-20">
+      {/* Contact */}
+      <section id="contact" className="py-20 px-6 bg-background scroll-mt-14">
         <div className="max-w-6xl mx-auto">
-          <div className="text-center mb-16">
-            <h2 className="text-3xl md:text-4xl font-bold mb-4">
-              {t('contact.title')}
-            </h2>
-            <p className="text-xl opacity-90 max-w-2xl mx-auto">
-              {t('contact.subtitle')}
-            </p>
-          </div>
-
-          <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-8">
-            <div className="text-center">
-              <div className="w-16 h-16 bg-green-700 rounded-full flex items-center justify-center mx-auto mb-4">
-                <MapPin className="h-8 w-8" />
+          <h2 className="text-3xl md:text-4xl font-semibold tracking-tight text-foreground text-center">{t('contact.title')}</h2>
+          <p className="text-lg text-muted-foreground text-center mt-3 mb-12">{t('contact.subtitle')}</p>
+          <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
+            {[
+              [MapPin, 'contact.location', t('contact.addressValue')],
+              [Phone, 'contact.phone', '+387 62 888 702'],
+              [Mail, 'contact.email', 'drinabus@hotmail.com'],
+              [Instagram, 'contact.instagram', '@drinabus'],
+            ].map(([Icon, k, v]: any) => (
+              <div key={k} className="bg-secondary rounded-3xl p-6 md:p-8">
+                <Icon className="h-6 w-6 text-primary mb-6" strokeWidth={1.5} />
+                <p className="text-sm text-muted-foreground">{t(k)}</p>
+                <p className="text-foreground font-medium mt-1 break-words">{v}</p>
               </div>
-              <h3 className="font-bold text-lg mb-2">{t('contact.location')}</h3>
-              <p className="opacity-90">{t('contact.addressValue')}</p>
-            </div>
-
-            <div className="text-center">
-              <div className="w-16 h-16 bg-green-700 rounded-full flex items-center justify-center mx-auto mb-4">
-                <Phone className="h-8 w-8" />
-              </div>
-              <h3 className="font-bold text-lg mb-2">{t('contact.phone')}</h3>
-              <p className="opacity-90">+387 62 888 702</p>
-            </div>
-
-            <div className="text-center">
-              <div className="w-16 h-16 bg-green-700 rounded-full flex items-center justify-center mx-auto mb-4">
-                <Mail className="h-8 w-8" />
-              </div>
-              <h3 className="font-bold text-lg mb-2">{t('contact.email')}</h3>
-              <p className="opacity-90">drinabus@hotmail.com</p>
-            </div>
-
-            <div className="text-center">
-              <div className="w-16 h-16 bg-green-700 rounded-full flex items-center justify-center mx-auto mb-4">
-                <Instagram className="h-8 w-8" />
-              </div>
-              <h3 className="font-bold text-lg mb-2">{t('contact.instagram')}</h3>
-              <p className="opacity-90">@drinabus</p>
-            </div>
+            ))}
           </div>
         </div>
       </section>
 
-      {/* Footer */}
-      <footer className="py-8 bg-green-950 text-white text-center">
-        <div className="max-w-6xl mx-auto px-6">
-          <p className="opacity-80">
-            © 2025 Drina Bus – {t('footer.rights')}
-          </p>
+      <footer className="py-8 px-6 bg-secondary border-t border-border">
+        <div className="max-w-6xl mx-auto flex flex-col md:flex-row items-center justify-between gap-3 text-xs text-muted-foreground">
+          <img src="/lovable-uploads/drina-bus-logo-transparent.png" alt="Drina Bus" className="h-6 w-auto" />
+          <p>© 2025 Drina Bus – {t('footer.rights')}</p>
         </div>
       </footer>
 
-      {/* Gallery Lightbox */}
       <Dialog open={!!selectedImage} onOpenChange={() => setSelectedImage(null)}>
-        <DialogContent className="max-w-4xl max-h-[90vh] p-0">
-          <div className="relative">
-            <button
-              onClick={() => setSelectedImage(null)}
-              className="absolute top-4 right-4 z-10 p-2 bg-black/50 text-white rounded-full hover:bg-black/70 transition-colors"
-            >
-              <X className="h-6 w-6" />
-            </button>
-            {selectedImage && (
-              <img
-                src={selectedImage}
-                alt="Drina Bus galerija"
-                className="w-full h-auto max-h-[85vh] object-contain"
-              />
-            )}
-          </div>
+        <DialogContent className="max-w-4xl max-h-[90vh] p-0 overflow-hidden rounded-3xl">
+          {selectedImage && (
+            <img src={selectedImage} alt="Drina Bus galerija" className="w-full h-auto max-h-[85vh] object-contain" />
+          )}
         </DialogContent>
       </Dialog>
     </div>
