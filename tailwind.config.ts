@@ -24,7 +24,8 @@ export default {
 				'180': '1.80',
 			},
 			fontFamily: {
-				'bebas': ['Bebas Neue', 'cursive'],
+				'bebas': ['-apple-system', 'BlinkMacSystemFont', 'SF Pro Display', 'Helvetica Neue', 'Arial', 'sans-serif'],
+				sans: ['-apple-system', 'BlinkMacSystemFont', 'SF Pro Text', 'Helvetica Neue', 'Arial', 'sans-serif'],
 			},
 			backgroundImage: {
 				'gradient-primary': 'var(--gradient-primary)',
