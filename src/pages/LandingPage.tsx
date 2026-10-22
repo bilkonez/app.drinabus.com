@@ -9,7 +9,7 @@ import heroBackground from '@/assets/hero-river-bus.jpg';
 import WhatsAppButton from '@/components/ui/WhatsAppButton';
 import { useLanguage } from '@/contexts/LanguageContext';
 import { FeaturedTours } from '@/components/tours/FeaturedTours';
-import manLionCoachImage from '@/assets/man-lions-coach.jpeg.asset.json';
+import manLionCoachImage from '@/assets/man-lions-coach-new.jpg.asset.json';
 
 interface Vehicle {
   id: string;
@@ -508,7 +508,7 @@ const LandingPage = () => {
       <footer className="py-8 px-6 bg-secondary border-t border-border">
         <div className="max-w-6xl mx-auto flex flex-col md:flex-row items-center justify-between gap-3 text-xs text-muted-foreground">
           <img src="/lovable-uploads/drina-bus-logo-transparent.png" alt="Drina Bus" className="h-6 w-auto" />
-          <p>© 2025 Drina Bus – {t('footer.rights')}</p>
+          <p>© 2026 Drina Bus – {t('footer.rights')}</p>
         </div>
       </footer>
 
