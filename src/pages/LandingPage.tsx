@@ -62,7 +62,7 @@ const getVehicleImagePosition = (vehicle: Vehicle): string => {
   const registration = vehicle.registration?.trim();
 
   if (brand === 'MAN' && model === 'Lion Coach') {
-    return 'center 58%';
+    return 'center 80%';
   }
   
   // Mercedes Vito - perfect positioning (70%)
